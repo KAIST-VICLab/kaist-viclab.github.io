@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>KAIST VICLaB</title>
+
+    <meta name="author" content="KAIST VICLaB">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+    
+  </head>
+
+  <body>
+    <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+      <tr style="padding:0px">
+        <td style="padding:0px">
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr style="padding:0px">
+              <td style="padding:2.5%;width:63%;vertical-align:middle">
+                <p class="name" style="text-align: center;">
+                  KAIST VICLaB
+                </p>
+                <p>Academic website of <a href="https://www.viclab.kaist.ac.kr/">KAIST VICLab</a>, under the advisory of Prof.<a href="https://scholar.google.com/citations?user=bGXte_4AAAAJ&hl=vi&oi=ao/">Munchurl Kim</a>, Korea Advanced Institute of Science & Technology (KAIST), Korea.
+                </p>
+                <p>       
+                  Our research of interest includes deep-learning-based computer vision, computational image & video processing as well as image & video understanding and 2D/3D video coding.
+                </p>
+                <p style="text-align:center">
+                  <a href="mailto:mkim@ee.kaist.ac.kr">Email</a> &nbsp;/&nbsp;
+                  <a href="https://www.viclab.kaist.ac.kr/">Homepage</a> &nbsp;/&nbsp;
+                  <a href="https://www.viclab.kaist.ac.kr/contact">Contact</a> &nbsp;/&nbsp;
+                  <a href="https://github.com/KAIST-VICLab/">Github</a>
+                </p>
+              </td>
+              <td style="padding:2.5%;width:37%;max-width:37%">
+                <a href="images/viclab_profile.png"><img style="width:100%;max-width:100%;object-fit: cover; border-radius: 50%;" alt="profile photo" src="images/viclab_profile.png" class="hoverZoomLink"></a>
+              </td>
+            </tr>
+          </tbody></table>
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+              <tr>
+              <td style="padding:16px;width:100%;vertical-align:middle">
+                <h2>Research</h2>
+                <p>
+                  Our recent intensive works focus on Computer Vision research
+                </p>
+                <p><font color="red">[1] in the fields of natural image and video restoration: </font> (1) super-resolution, (2) frame interpolation, (3) SDR-to-HDR inverse tone mapping, (4) image in-painting, (5) depth estimation, (6) image deraining, (7) image dehazing, (8) video motion debluring; (9) generative restoration of old photos,</p>
+                <p><font color="red">[2] in the fields of 3D image/video reconstruction:</font> (1) optical flow estimation, (2) camera pose estimation, (3) dynamic neural radiance field (NeRF) and Gaussian splatting learning of video for novel view synthesis;</p>
+                <p><font color="red">[3] in the fields of satellite images:</font> (1) PAN sharpening, super-resolution and cloud removal of Electro-Optical (EO) images, (2) super-resolution, detection and classification of Synthetic Aperture Radar (SAR) image targets, (3) SAR-to-EO image-to-image translation learning, etc.  </p>
+                <p>Some papers are <span class="highlight">highlighted</span>.</p>
+                
+              </td>
+            </tr>
+          </tbody></table>
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+
+
+    <tr onmouseout="splinegs_stop()" onmouseover="splinegs_start()">
+      <td style="padding:16px;width:20%;vertical-align:middle">
+        <div class="one">
+          <div class="two" id='splinegs_image'><video  width=100% muted autoplay loop>
+          <source src="images/splinegs.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+          </video></div>
+          <img src='images/splinegs.png' width=100%>
+        </div>
+        <script type="text/javascript">
+          function splinegs_start() {
+            document.getElementById('splinegs_image').style.opacity = "1";
+          }
+
+          function splinegs_stop() {
+            document.getElementById('splinegs_image').style.opacity = "0";
+          }
+          splinegs_stop()
+        </script>
+      </td>
+      <td style="padding:8px;width:80%;vertical-align:middle">
+        <a href="">
+          <span class="papertitle">SplineGS: Robust Motion-Adaptive Spline for Real-Time Dynamic 3D Gaussians from Monocular Video</span>
+        </a>
+        <br>
+        <a href="https://www.viclab.kaist.ac.kr/">Jongmin Park</a>,
+        <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui</a>, 
+        <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello </a>,
+        <a href="https://www.viclab.kaist.ac.kr/"> Jaeho Moon </a>, 
+        <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
+        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+        <br>
+        <em>CVPR</em>, 2025
+        <br>
+        <a href="">project page</a>
+        /
+        <a href="">arXiv</a>
+        <p></p>
+        <p>
+          COLMAP-free dynamic 3D Gaussian Splatting (3DGS) framework for high-quality reconstruction and fast rendering from monocular videos.
+        </p>
+      </td>
+    </tr>
+
+
+          
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr>
+              <td style="padding:0px">
+                <br>
+                <p style="text-align:right;font-size:small;">
+                  This website's source code is borrowed from <a href="https://github.com/jonbarron/jonbarron_website">Jon Barron's source code</a>.
+                </p>
+              </td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

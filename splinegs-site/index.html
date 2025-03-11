@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SplineGS</title>
+
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" type="image/png" href="static\image\icon.png"/>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/video_comparison.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <!-- <div class="title is-2 publication-title"><h1 style="display: inline; clear:none;">SplineGS: Robust Motion-Adaptive Spline for Real-Time Dynamic 3D Gaussians from Monocular Video</h1></div> -->
+          <div class="title is-1 publication-title"><img src="./static/image/icon.png" width="75", height="75"><h1 style="display: inline; clear:none;">SplineGS:</h1> <h1 style="display: inline; clear:none;">Robust Motion-Adaptive Spline for Real-Time Dynamic 3D Gaussians from Monocular Video</h1></div>
+          <h1 class="title is-3 publication-title">CVPR 2025</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Jongmin Park</a><sup>* <img src="./static/image/kaist_icon.png" width="25"></sup>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Minh-Quan Viet Bui</a><sup>* <img src="./static/image/kaist_icon.png" width="25"></sup>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello</a><sup> <img src="./static/image/kaist_icon.png" width="25"></sup>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Jaeho Moon</a><sup> <img src="./static/image/kaist_icon.png" width="25"></sup>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/ozbro/">Jihyong Oh</a><sup>† <img src="./static/image/cau_icon.jpg" width="20"></sup>&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a><sup>† <img src="./static/image/kaist_icon.png" width="25"></sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>*</sup>Co-first authors (equal contribution)</span>
+            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"> <sup>†</sup>Co-corresponding authors</span>
+            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup><img src="./static/image/kaist_icon.png" width="25"></sup>KAIST, South Korea</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block"><sup><img src="./static/image/cau_icon.jpg" width="20"></sup>Chung-Ang University, South Korea</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2412.09982"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (To be released)</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3 no-bottom">COLMAP-free NVS Comparisons with RoDynRF on DAVIS</h2>
+    <div class="content has-text-justified">We compare our SplineGS with the <i>COLMAP-free</i> novel view synthesis method RoDynRF [<font color="blue">27</font>]. Each monocular sequence consists of 40-90 frames of resolution 480x854. We provide the fixed-view-varying-time and spiral-zoom renderings and evaluate the quality by blindly image quality assessment via MUSIQ* score (<font color="red">the higher the better</font>).</div>
+    <div class="content has-text-justified"><i>*MUSIQ: Multi-scale Image Quality Transformer. In ICCV, 2021.</i></div>
+    <div class="video-container" align="center"  style="margin-bottom: 30px;">
+      <a onclick="togglePlay()">
+        <video class="video" id="viz_input" loop muted src="./static/video/davis/fixed_our_rodynrf_breakdance-flare.mp4" onloadeddata="initVideo()"></video>
+        <canvas height=0 class="videoMerge" id="viz_inputMerge"></canvas>
+      </a>
+      <h2 class="title is-4" style="display: inline;">Fixed-view-varying-time. </h2> <h2 class="title is-4" style="display: inline; font-weight: normal;"><font>RoDynRF (left) vs. Ours (right).</font></h2>
+    </div>
+
+    <div class="video-container" align="center"  style="margin-bottom: 30px;">
+      <a onclick="togglePlay_rodynrf_spiral()">
+        <video class="video" id="viz_input_rodynrf_spiral" loop muted src="./static/video/davis/spiral_our_rodynrf_breakdance-flare.mp4" onloadeddata="initVideo_rodynrf_spiral()"></video>
+        <canvas height=0 class="videoMerge" id="viz_input_rodynrf_spiralMerge"></canvas>
+      </a>
+      <h2 class="title is-4" style="display: inline;">Spiral-zoom. </h2> <h2 class="title is-4" style="display: inline; font-weight: normal;"><font>RoDynRF (left) vs. Ours (right).</font></h2>
+    </div>
+
+    <div class="video-select" align="center">
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_breakdance-flare.mp4', './static/video/davis/spiral_our_rodynrf_breakdance-flare.mp4', 'breakdance-flare')">
+        <button class="button-19 button-19-selected" role="button" id="btn_davis_breakdance-flare" >Breakdance-flare</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_lucia.mp4', './static/video/davis/spiral_our_rodynrf_lucia.mp4', 'lucia')">
+        <button class="button-19 " role="button" id="btn_davis_lucia" >Lucia</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_horsejump-low.mp4', './static/video/davis/spiral_our_rodynrf_horsejump-low.mp4', 'horsejump-low')">
+        <button class="button-19" role="button" id="btn_davis_horsejump-low" >Horsejump-low</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_train.mp4', './static/video/davis/spiral_our_rodynrf_train.mp4', 'train')">
+        <button class="button-19" role="button" id="btn_davis_train" >Train</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_horsejump-high.mp4', './static/video/davis/spiral_our_rodynrf_horsejump-high.mp4', 'horsejump-high')">
+        <button class="button-19" role="button" id="btn_davis_horsejump-high" >Horsejump-high</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_bus.mp4', './static/video/davis/spiral_our_rodynrf_bus.mp4', 'bus')">
+        <button class="button-19" role="button" id="btn_davis_bus" >Bus</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_paragliding.mp4', './static/video/davis/spiral_our_rodynrf_paragliding.mp4', 'paragliding')">
+        <button class="button-19" role="button" id="btn_davis_paragliding" >Paragliding</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis('./static/video/davis/fixed_our_rodynrf_paragliding-launch.mp4', './static/video/davis/spiral_our_rodynrf_paragliding-launch.mp4', 'paragliding-launch')">
+        <button class="button-19" role="button" id="btn_davis_paragliding-launch" >Paragliding-launch</button>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            TL;DR:
+            We propose SplineGS, a COLMAP-free dynamic 3D Gaussian Splatting (3DGS) framework for high-quality reconstruction and fast rendering from monocular videos. At its core is a novel Motion-Adaptive Spline (MAS) method, which represents continuous dynamic 3D Gaussian trajectories using cubic Hermite splines.
+            Experiments show that SplineGS significantly outperforms state-of-the-art methods in novel view synthesis quality for dynamic scenes from monocular videos, achieving thousands times faster rendering speed.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">Framework Architecture</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <image src="./static/image/architecture.png" class="img-responsive" alt="architecture"><br>
+        <div class="content has-text-justified">
+          <p>
+            <b>Overview of SplineGS.</b> Our SplineGS leverages spline-based functions to model the deformation of dynamic 3D Gaussians with a novel Motion-Adaptive Spline (MAS) architecture. It is composed of sets of learnable control points based on a cubic Hermite spline function to accurately model the trajectory of each dynamic 3D Gaussian and to achieve faster rendering speed. To avoid any preprocessing of camera parameters, i.e. COLMAP-free, we adopt a two-stage optimization: warm-up and main training stages.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3 no-bottom">Novel View Synthesis on NVIDIA</h2>
+    <div class="content has-text-justified">We follow the experimental settings of RoDynRF [<font color="blue">27</font>]. Each monocular training sequence consists of 12 frames of resolution 270x480.</div>
+    <div class="video-container" align="center" style="margin-bottom: 30px; margin-top: 30px;">
+        <video id="nvidia_input" loop playsinline muted controls autoplay style="height: 150px;">
+          <source src="./static/video/nvidia/skating_input.mp4" type="video/mp4">
+        </video>
+        <h2 class="title is-4">Training Views. </h2>
+    </div>
+    
+    <div class="video-container" align="center" style="margin-bottom: 30px;">
+      <video id="nvidia_novelview" loop playsinline muted controls autoplay style="max-height: 100%; ">
+        <source src="./static/video/nvidia/NVS_Skating.mp4" type="video/mp4">
+      </video>
+      <h2 class="title is-4" style="display: inline;">Novel View Synthesis. </h2> <h2 class="title is-4" style="display: inline; font-weight: normal;">Full screen for better visualization.</h2>
+    </div>
+
+
+    <div class="video-select" align="center">
+      <a class="video-item" onclick="changeVideo_nvidia('./static/video/nvidia/skating_input.mp4', './static/video/nvidia/NVS_Skating.mp4', 'skating')">
+        <button class="button-17 button-17-selected" role="button" id="btn_nvidia_skating" >Skating</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_nvidia('./static/video/nvidia/jumping_input.mp4', './static/video/nvidia/NVS_Jumping.mp4', 'jumping')">
+        <button class="button-17" role="button" id="btn_nvidia_jumping" >Jumping</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_nvidia('./static/video/nvidia/playground_input.mp4', './static/video/nvidia/NVS_Playground.mp4', 'playground')">
+        <button class="button-17" role="button" id="btn_nvidia_playground" >Playground</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_nvidia('./static/video/nvidia/truck_input.mp4', './static/video/nvidia/NVS_Truck.mp4', 'truck')">
+        <button class="button-17" role="button" id="btn_nvidia_truck" >Truck</button>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3 no-bottom">Novel View and Time Synthesis on NVIDIA <span style="font-weight: normal;">(more challenging)</span></h2>
+    <div class="content has-text-justified">As discussed in Section <font color="red">5.1</font> in the main paper, we propose to evaluate the rendering for unseen timesteps during training. We follow the dataset sampling strategy in [<font color="blue">22</font>], which samples 24 timestamps from the NVIDIA dataset. In addition, to simulate a larger motion, we exclude frames with odd time indices in the training sets.
+      To ensure all test timestamps are not seen during training, and thus, to create a more <i>challenging</i> novel view and time synthesis validation, we exclude frames with even time indices in the test sets. Each training frame has the resolution 288x540.</div>
+    <div class="video-container" align="center" style="margin-bottom: 30px; margin-top: 30px;">
+        <video id="nvidia_low_input" loop playsinline muted controls autoplay style="height: 150px;">
+          <source src="./static/video/nvidia_low/input_Balloon2.mp4" type="video/mp4">
+        </video>
+        <h2 class="title is-4">Training Views</h2>
+    </div>
+    
+    <div class="video-container" align="center" style="margin-bottom: 30px;">
+      <video id="nvidia_low_novelview" loop playsinline muted controls autoplay style="max-height: 100%; ">
+        <source src="./static/video/nvidia_low/NVTS_Balloon2.mp4" type="video/mp4">
+      </video>
+      <h2 class="title is-4" style="display: inline;">Novel View and Time Synthesis. </h2> <h2 class="title is-4" style="display: inline; font-weight: normal;">Full screen for better visualization.</h2>
+    </div>
+
+
+    <div class="video-select" align="center">
+      <a class="video-item" onclick="changeVideo_nvidia_low('./static/video/nvidia_low/input_Balloon2.mp4', './static/video/nvidia_low/NVTS_Balloon2.mp4', 'balloon2')">
+        <button class="button-18 button-18-selected" role="button" id="btn_nvidia_low_balloon2" >Balloon2</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_nvidia_low('./static/video/nvidia_low/input_Jumping.mp4', './static/video/nvidia_low/NVTS_Jumping.mp4', 'jumping')">
+        <button class="button-18" role="button" id="btn_nvidia_low_jumping" >Jumping</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_nvidia_low('./static/video/nvidia_low/input_Umbrella.mp4', './static/video/nvidia_low/NVTS_Umbrella.mp4', 'umbrella')">
+        <button class="button-18" role="button" id="btn_nvidia_low_umbrella" >Umbrella</button>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3 no-bottom">Dynamic 3D Gaussian Trajectory Visualization on DAVIS</h2>
+    <div class="content has-text-justified">We visualize the rasterized 2D trajectories of the dynamic 3D Gaussians of SplineGS on DAVIS dataset. The 3D trajectories are projected to a fixed 2D novel view.</div>
+    <div class="video-container" align="center" style="margin-bottom: 30px; margin-top: 30px;">
+        <video id="davis_track" loop playsinline muted controls autoplay style="width: 1000px;">
+          <source src="./static/video/davis/track_train.mp4" type="video/mp4">
+        </video>
+    </div>
+
+
+    <div class="video-select" align="center">
+      <a class="video-item" onclick="changeVideo_davis_track('./static/video/davis/track_train.mp4', 'train')">
+        <button class="button-20 button-20-selected" role="button" id="btn_davs_track_train" >Train</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis_track('./static/video/davis/track_horsejump-low.mp4', 'horsejump-low')">
+        <button class="button-20 " role="button" id="btn_davs_track_horsejump-low" >Horsejump-low</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis_track('./static/video/davis/track_breakdance-flare.mp4', 'breakdance-flare')">
+        <button class="button-20 " role="button" id="btn_davs_track_breakdance-flare" >Breakdance-flare</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis_track('./static/video/davis/track_paragliding-launch.mp4', 'paragliding-launch')">
+        <button class="button-20 " role="button" id="btn_davs_track_paragliding-launch" >Paragliding-launch</button>
+      </a>
+      <a class="video-item" onclick="changeVideo_davis_track('./static/video/davis/track_camel.mp4', 'camel')">
+        <button class="button-20 " role="button" id="btn_davs_track_camel" >Camel</button>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3 no-bottom">Toy Example of Dynamic 3D Gaussian Trajectory Editing</h2>
+    <div class="content has-text-justified">We visualize a toy example for editing effects when we modify a few control points. The spline-based representation potentially offers a simple motion trajectory manipulation while preserving smooth motion along temporal axis, which can be explored in future works.</div>
+    <div class="video-container" align="center" style="margin-bottom: 30px; margin-top: 30px;">
+        <video id="davis_track" loop playsinline muted controls autoplay>
+          <source src="./static/video/davis/edit_horsejump-low.mp4" type="video/mp4">
+        </video>
+    </div>
+
+  </div>
+</section>
+<section class="section" id="BibTeX">
+  <div class="container is-widescreen content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{park2024splinegsrobustmotionadaptivespline,
+      title={SplineGS: Robust Motion-Adaptive Spline for Real-Time Dynamic 3D Gaussians from Monocular Video}, 
+      author={Jongmin Park and Minh-Quan Viet Bui and Juan Luis Gonzalez Bello and Jaeho Moon and Jihyong Oh and Munchurl Kim},
+      year={2024},
+      eprint={2412.09982},
+      archivePrefix={arXiv},
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <!-- <div class="content has-text-centered">
+      <a target="_blank" rel="noopener noreferrer" class="icon-link"
+         href="https://arxiv.org/pdf/2312.13528.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab/DyBluRF" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div> -->
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a target="_blank" rel="noopener noreferrer" href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>  that kindly open sourced the template of this website. 
+            Please visit our <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting researches
+          </p>
+        </div>
+      </div>
+      <!-- <a href="https://mapmyvisitors.com/web/1bvn0"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=WDpUeHA9ekEwxJyLBIcXhVkMyDnN_54eHGOfpbaphpo&cl=ffffff" /></a> -->
+    </div>
+  </div>
+</footer>
+</body>
+</html>
