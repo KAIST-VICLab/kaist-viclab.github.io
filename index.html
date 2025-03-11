@@ -437,6 +437,46 @@
       </td>
     </tr>
 
+    <tr onmouseout="skate_stop()" onmouseover="skate_start()">
+      <td style="padding:16px;width:20%;vertical-align:middle">
+        <div class="one">
+          <div class="two" id='skate_image'><video  width=100% muted autoplay loop>
+          <source src="images/skate.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+          </video></div>
+          <img src='images/skate.png' width=100%>
+        </div>
+        <script type="text/javascript">
+          function skate_start() {
+            document.getElementById('skate_image').style.opacity = "1";
+          }
+
+          function skate_stop() {
+            document.getElementById('skate_image').style.opacity = "0";
+          }
+          skate_stop()
+        </script>
+      </td>
+      <td style="padding:8px;width:80%;vertical-align:middle">
+        <a href="https://kaist-viclab.github.io/SkateFormer_site/">
+          <span class="papertitle">SkateFormer: Skeletal-Temporal Transformer for Human Action Recognition</span>
+        </a>
+        <br>
+        <a href="https://www.viclab.kaist.ac.kr/">Jeonghyeok Do</a>,
+        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+        <br>
+        <em>ECCV</em>, 2024
+        <br>
+        <a href="https://kaist-viclab.github.io/SkateFormer_site/">project page</a>
+        /
+        <a href="https://arxiv.org/abs/2403.09508">arXiv</a>
+        <p></p>
+        <p>
+          TBD.
+        </p>
+      </td>
+    </tr>
+
     <tr onmouseout="fgto_stop()" onmouseover="fgto_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">

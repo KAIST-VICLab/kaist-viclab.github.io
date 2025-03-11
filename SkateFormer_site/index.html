@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description"
+          content="Skeleton-based Action Recognition.">
+    <meta name="keywords" content="Skeleton-based Action Recognition, Trnasformer, Partition-specific Attention">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SkateFormer: Skeletal-Temporal Transformer for Human Action Recognition</title>
+    <style>
+    @keyframes shake {
+      0% {transform: translateX(0);}
+      10%, 90% {transform: translateX(-5px);}
+      20%, 80% {transform: translateX(5px);}
+      30%, 50%, 70% {transform: translateX(-5px);}
+      40%, 60% {transform: translateX(5px);}
+      100% {transform: translateX(0);}
+    }
+
+    #blur {
+      /* font-size: 60px; */
+      color: rgb(52,144,197);
+      filter: blur(3x);
+      -webkit-filter: blur(2.5px);
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+    #shake {
+      /* font-size: 60px; */
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+
+
+
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5RKN1Y3NQ"></script>
+    <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-J5RKN1Y3NQ');
+
+
+
+    </script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+    <link rel="icon" sizes="256x256" href="./static/image/skate.png" type="image/png"/>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <script src="./static/js/video_comparison.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+</nav>
+
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                    <div class="title is-2 publication-title"><h1 style="display: inline; clear:none;"><img
+                            src="./static/image/skate.png" width="40" , height="40"><font
+                            color="#d91421"><b>Ska</b></font><font color="#1484d9"><b>te</b></font><b>Former</b>: <font
+                            color="#d91421"><b>Sk</b></font>elet<font color="#d91421"><b>a</b></font>l-<font
+                            color="#1484d9"><b>Te</b></font>mporal Trans<b>former</b> for Human Action Recognition</h1>
+                    </div>
+                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo/">Jeonghyeok Do</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	        </span>
+                        <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer"
+                 href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ">Munchurl Kim</a><sup>†</sup>
+            </span>
+                    </div>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block"> <sup>†</sup>Corresponding author</span>
+                    </div>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block">Korea Advanced Institute of Science and Technology (KAIST), South Korea</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
+	        <div class="is-size-4 publication-authors">
+                        <span class="author-block", style="color:#346dc2">ECCV 2024</span>
+                    </div>
+                    <div class="column has-text-centered">
+                        <div class="publication-links">
+                            <!-- PDF Link. -->
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/05796.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2403.09508"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+<!-- Video Link. -->
+              <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=kbYexZ-LfTM"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+                            <!-- Code Link. -->
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/SkateFormer"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+</section>
+
+<!-- Overview. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <image src="./static/image/motiv.png"><br>
+            <div class="content has-text-justified" style="margin-bottom: 40px;">
+                <p>
+                    <b>Overview of SkateFormer's partition-specific attention strategy.</b> SkateFormer partitions
+                    joints and frames based on different types of skeletal-temporal relation (4 Skate-Types) and
+                    performs skeletal-temporal self-attention (Skate-MSA) within each partition.
+                </p>
+            </div>
+    </div>
+</section>
+
+<!-- Abstract. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <h2 class="title is-3">Abstract</h2>
+                <div class="content has-text-justified" style="margin-bottom: 40px;">
+                    <p>
+                        We propose a Skeletal-Temporal Transformer (SkateFormer), a partition-specific attention
+                        strategy
+                        (Skate-MSA) for skeleton-based action recognition that captures skeletal-temporal relations and
+                        reduces
+                        computational complexity.
+                    </p>
+                    <p>
+                        We introduce a range of augmentation techniques and an effective positional embedding method,
+                        named
+                        Skate-Embedding, which combines skeletal and temporal features.
+                        This method significantly enhances action recognition performance by forming an outer product
+                        between
+                        learnable skeletal features and fixed temporal index features.
+                    </p>
+                    <p>
+                        Our SkateFormer sets a new state-of-the-art for action recognition performance across multiple
+                        modalities
+                        (4-ensemble condition) and single modalities (joint, bone, joint motion, bone motion), showing
+                        notable
+                        improvement over the most recent state-of-the-art methods.
+                        Additionally, it concurrently establishes a new state-of-the-art in interaction recognition, a
+                        sub-field
+                        of action recognition.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Network Architecture. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Network Architecture</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/network.png"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Top.</b> The overall framework of SkateFormer. <br>
+                            <b>Bottom left.</b> The Skate-MSA of SkateFormer. <br>
+                            <b>Bottom right.</b> Skate-Type partition and reverse.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Discussion. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Discussion on Various Partition-Based Approaches</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/novelty.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Comparison with existing transformer-based methods.</b> S-Type, T-Type, S-Attn, T-Attn,
+                            T-Conv, and ST-Attn indicate 'physically neighboring
+                            joints', 'local motion', ‘skeletal attention’, ‘temporal attention’,
+                            ‘temporal convolution’ and ‘skeletal-temporal attention’, respectively.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Performance Comparison. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Ensemble Performance Comparison</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/table1.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Top-1 accuracy of skeleton-based action recognition methods.</b> (i) E1- joint
+                            modality only; (ii) E2 - joint + bone modalities; and (iii)
+                            E4 - joint + bone + joint motion + bone motion modalities.
+                        </p>
+                    </div>
+            </div>
+        </div>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/table2.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Top-1 accuracy of skeleton-based interaction recognition methods.</b> Human interaction
+                            recognition is a
+                            sub-part of skeleton-based action recognition, specifically focusing on scenarios
+                            where two or more individuals coexist within a single action.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+<!-- Computational Complexity Comparision. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Computational Complexity Comparision</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/table4.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            Comparative analysis of SkateFormer with other methods by parameters,
+                            FLOPs, inference time, and average top-1 accuracy for joint modality.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Single Modality Comparision. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Single Modality Comparision</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/table3.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            (i) J - joint modality; (ii) B - bone modality; (iii) JM - joint motion
+                            modality; and (iv) BM - bone motion modality.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Analysis of Partition-specific Attention. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Analysis of Partition-Specific Attention</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/score.png"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>The activation level of Skate-Types according to action labels.</b> For 'sitting down'
+                            (action label: 7) and 'standing up' (action label: 8), Skate-Type-3 or Skate-Type-4
+                            exhibited pronounced activations, while 'reading' (action label: 10) and 'writing' (action
+                            label: 11) prominently activated Skate-Type-1.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="BibTeX">
+    <div class="container is-max-desktop">
+        <h2 class="title">BibTeX</h2>
+        <pre><code>@inproceedings{do2025skateformer,
+  title={Skateformer: skeletal-temporal transformer for human action recognition},
+  author={Do, Jeonghyeok and Kim, Munchurl},
+  booktitle={European Conference on Computer Vision},
+  pages={401--420},
+  year={2025},
+  organization={Springer}
+}</code></pre>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <a target="_blank" rel="noopener noreferrer" class="icon-link"
+               href="https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/05796.pdf">
+                <i class="fas fa-file-pdf"></i>
+            </a>
+            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab"
+               class="external-link" disabled>
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        <div class="columns is-centered">
+            <div class="column is-8">
+                <div class="content">
+                    <p>
+                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
+                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> that
+                        kindly open sourced the template of this website.
+                        Please visit our <a target="_blank" rel="noopener noreferrer"
+                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
+                        researches.
+                    </p>
+                </div>
+            </div>
+            <a href="https://mapmyvisitors.com/web/1bw7c" title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=LTWZqBYr9s2OPIQ_fArLjKld7T2K1HlQjSmT1yWWXlE&cl=ffffff"></a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
