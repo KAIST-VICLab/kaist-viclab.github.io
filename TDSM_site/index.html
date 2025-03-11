@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description"
+          content="Zero-Shot Skeleton-based Action Recognition.">
+    <meta name="keywords"
+          content="Skeleton-based Action Recognition, Zero-Shot Skeleton-based Action Recognition, Diffusion Models">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TDSM: Triplet Diffusion for Skeleton-Text Matching in Zero-Shot Action Recognition</title>
+    <style>
+    @keyframes shake {
+      0% {transform: translateX(0);}
+      10%, 90% {transform: translateX(-5px);}
+      20%, 80% {transform: translateX(5px);}
+      30%, 50%, 70% {transform: translateX(-5px);}
+      40%, 60% {transform: translateX(5px);}
+      100% {transform: translateX(0);}
+    }
+
+    #blur {
+      /* font-size: 60px; */
+      color: rgb(52,144,197);
+      filter: blur(3x);
+      -webkit-filter: blur(2.5px);
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+    #shake {
+      /* font-size: 60px; */
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+    </style>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MQVFTG44');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+    <link rel="icon" sizes="256x256" href="./static/image/skeleton.png" type="image/png"/>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <script src="./static/js/video_comparison.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+</nav>
+
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                    <div class="title is-2 publication-title"><h1 style="display: inline; clear:none;"><img
+                            src="./static/image/skeleton.png" width="40" , height="40"><font
+                            color="#34a853"><b>TD</b></font><font color="#1484d9"><b>SM</b></font>: <font
+                            color="#34a853"><b>T</b></font>riplet <font
+                            color="#34a853"><b>D</b></font>iffusion
+                        for <font color="#1484d9"><b>S</b></font>keleton-Text <font color="#1484d9"><b>M</b></font>atching
+                        in Zero-Shot Action Recognition</h1>
+                    </div>
+                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo/">Jeonghyeok Do</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	        </span>
+                        <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer"
+                 href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ">Munchurl Kim</a><sup>†</sup>
+            </span>
+                    </div>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block"> <sup>†</sup>Corresponding author</span>
+                    </div>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block">Korea Advanced Institute of Science and Technology (KAIST), South Korea</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
+
+                    <div class="column has-text-centered">
+                        <div class="publication-links">
+                            <!-- PDF Link. -->
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2411.10745"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2411.10745"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+                            <!-- Code Link. -->
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/TDSM"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+</section>
+
+<!-- Motivation. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/motivation.PNG" style="width: 80%; height: auto;"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Motivation of the our TDSM pipeline.</b> Previous methods rely on direct alignment
+                            between
+                            skeleton and text latent spaces, but suffer from modality gaps that limit generalization.
+                            Our TDSM
+                            overcomes this challenge by leveraging a reverse diffusion process to embed text prompts
+                            into the
+                            unified skeleton-text latent space, ensuring more effective cross-modal alignment.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Abstract. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <h2 class="title is-3">Abstract</h2>
+                <div class="content has-text-justified" style="margin-bottom: 40px;">
+                    <p>
+                        We <em>firstly</em> present a diffusion-based action recognition with zero-shot learning for
+                        skeleton inputs, called a <b>Triplet Diffusion for Skeleton-Text Matching (TDSM)</b>, which is
+                        the first
+                        framework to apply diffusion models and to implicitly align the skeleton features with text
+                        prompts by fully taking advantage of excellent text-image correspondence learning in
+                        generative diffusion processes, thus being able to learn fused discriminative features in a
+                        unified latent space.
+                    </p>
+                    <p>
+                        We propose a novel <b>triplet diffusion (TD) loss</b> to enhance the model's discriminative
+                        power by
+                        ensuring accurate denoising for correct skeleton-text pairs while suppressing incorrect pairs.
+                    </p>
+                    <p>
+                        Our TDSM <em>significantly</em> outperforms the very recent state-of-the-art (SOTA) methods with
+                        large margins of 2.36%-point to 13.05%-point across multiple benchmarks, demonstrating
+                        scalability and robustness under various seen-unseen split settings.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Overview of TDSM. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Overview of TDSM</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/train.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <b>Training framework of our TDSM for zero-shot skeleton-based action recognition.</b> During
+                        training, the skeleton and its GT text prompt are treated as positive pairs to enhance
+                        accurate denoising, while the skeleton and wrong text prompts are treated as negative pairs
+                        to suppress denoising. This process is driven by the proposed TD loss, which
+                        operates within the reverse diffusion process to maximize the noise prediction discrepancy
+                        between positive and negative pairs, thereby improving the model's discriminative alignment
+                        between skeleton features and text prompts.
+                    </div>
+            </div>
+        </div>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/inference.PNG" style="width: 70%; height: auto;"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Inference framework of our TDSM for zero-shot skeleton-based action recognition.</b>
+                            During inference, the model evaluates all candidate text prompts for a given unseen skeleton
+                            sequence by comparing their predicted noises with a fixed Gaussian noise, and selects the
+                            candidate that best denoises as the predicted label.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Performance Evaluation. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Performance Evaluation</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/table1.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Evaluation on SynSE and PURLS benchmarks.</b> Top-1 accuracy of zero-shot skeleton-based
+                            action recognition methods. Each split is
+                            denoted as X/Y, where X represents the number of seen classes and Y the number of unseen
+                            classes.
+                        </p>
+                    </div>
+            </div>
+        </div>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/table2.PNG" style="width: 60%; height: auto;"><br>
+                    <div class="content has-text-justified">
+                        <p>
+                            <b>Evaluation on SMIE benchmark.</b> Top-1 accuracy of zero-shot skeleton-based action
+                            recognition methods. Each split is
+                            denoted as X/Y, where X represents the number of seen classes and Y the number of unseen
+                            classes.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ablation Studies. -->
+<head>
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+</head>
+<body>
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Ablation Studies</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/ablation3.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Left.</b> Effect of loss function design. <br>
+                            <b>Right.</b> Impact of total timesteps \( T \).
+                        </p>
+                    </div>
+            </div>
+        </div>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/graph.PNG"><br>
+                    <div class="content has-text-justified">
+                        <p>
+                            <b>Impact of timestep \( t_{\text{test}} \) and noise \( \epsilon_{\text{test}} \) in
+                                inference.</b> Our TDSM shows consistently outperforming the state-of-the-art methods regardless of noise levels.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <a target="_blank" rel="noopener noreferrer" class="icon-link"
+               href="https://arxiv.org/abs/2411.10745">
+                <i class="fas fa-file-pdf"></i>
+            </a>
+            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab"
+               class="external-link" disabled>
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        <div class="columns is-centered">
+            <div class="column is-8">
+                <div class="content">
+                    <p>
+                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
+                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> that
+                        kindly open sourced the template of this website.
+                        Please visit our <a target="_blank" rel="noopener noreferrer"
+                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
+                        researches.
+                    </p>
+                </div>
+            </div>
+            <a href="https://mapmyvisitors.com/web/1bwmk" title="Visit tracker"><img
+                    src="https://mapmyvisitors.com/map.png?d=IUq-qeoK8htQ5yBMPYD3ANBQGDxRWPSR6_LFXNUDPk4&cl=ffffff"/></a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
