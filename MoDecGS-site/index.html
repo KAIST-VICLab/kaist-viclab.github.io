@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="MoDec-GS">
+  <meta name="keywords" content="3DGS, monocular video">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MoDec-GS</title>
+  <style>
+    @keyframes shake {
+      0% {transform: translateX(0);}
+      10%, 90% {transform: translateX(-5px);}
+      20%, 80% {transform: translateX(5px);}
+      30%, 50%, 70% {transform: translateX(-5px);}
+      40%, 60% {transform: translateX(5px);}
+      100% {transform: translateX(0);}
+    }
+
+    #blur {
+      /* font-size: 60px; */
+      color: rgb(52,144,197);
+      filter: blur(3x);
+      -webkit-filter: blur(2.5px);
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+    #shake {
+      /* font-size: 60px; */
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+    .blink {
+    animation: blink 1s infinite;
+   }
+  </style>
+
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HR3PWVQLH2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-HR3PWVQLH2');
+  </script>
+
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" type="image/png" href="static\image\Dec_icon.png"/>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/video_comparison.js"></script>
+  <meta name="google-site-verification" content="A0klGQrvE700CCYkyp6HAD-IRIHSk2Wmq6lLwgbWnfA" />
+</head>
+<body>
+
+</nav>
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-widescreen">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <div class="title is-2 publication-title"><h1 style="display: inline; clear:none;"> <font color="#FFBF00"><b>Mo</b></font><font color="#04B404"><b>Dec</b></font><img src="./static/image/dec_icon3.gif" width="36"><b>-GS</b>: Global-to-Local <font color="#FFBF00"><b>Mo</b></font>tion <font color="#04B404"><b>Dec</b></font>omposition and Temporal Interval Adjustment for Compact Dynamic 3D Gaussian Splatting</h1></div>
+          
+          <div class="is-size-5 publication-authors">
+            <span class="author-block blink shake" style="color:#000000; font-size: 1.5em; font-weight: bold;  margin-bottom: 20px;">CVPR 2025</span>
+          </div>
+          
+          <div class="is-size-5 publication-authors">
+            <!-- <span class="author-block">This page is under reconstruction</span> -->
+            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <!--<span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Sangwoon Kwak</a><sup> 1,2</sup>&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="joonsookim@etri.re.kr">Joonsoo Kim</a><sup> 1</sup>&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="jyj0120@etri.re.kr">Jun Young Jeong</a><sup> 1</sup>&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="wscheong@etri.re.kr">Won-Sik Cheong</a><sup> 1</sup>&nbsp;&nbsp;&nbsp;</span>      
+              <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/ozbro/">Jihyong Oh</a><sup>† 3</sup>&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a><sup>† 2</sup>
+            </span>
+          </div> -->
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Sangwoon Kwak</a><sup><img src="./static/image/etri_aff.png" width="20">,<img src="./static/image/kaist_aff.png" width="25"></sup>&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="mailto:joonsookim@etri.re.kr">Joonsoo Kim</a><sup><img src="./static/image/etri_aff.png" width="20"></sup>&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="mailto:jyj0120@etri.re.kr">Jun Young Jeong</a><sup><img src="./static/image/etri_aff.png" width="20"></sup>&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="mailto:wscheong@etri.re.kr">Won-Sik Cheong</a><sup><img src="./static/image/etri_aff.png" width="20"></sup>&nbsp;&nbsp;</span>      
+              <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/ozbro/">Jihyong Oh</a><sup>†<img src="./static/image/cau_aff.png" width="20"></sup>&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a><sup>† <img src="./static/image/kaist_aff.png" width="25"></sup>
+            </span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"> <sup>†</sup>Co-corresponding authors</span>
+            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup><img src="./static/image/etri_aff.png" width="20"></sup>ETRI, South Korea</span> &nbsp;&nbsp; 
+
+            <span class="author-block"><sup><img src="./static/image/kaist_aff.png" width="25"></sup>KAIST, South Korea</span> &nbsp;&nbsp; 
+
+            <span class="author-block"><sup><img src="./static/image/cau_aff.png" width="20"></sup>Chung-Ang University, South Korea</span>
+          </div>
+          
+          
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. 
+              <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              -->
+              <!-- arXiv Link. -->
+              <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2501.03714"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+            <!-- Video Link. -->
+            <span class="link-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://youtu.be/5L6gzc5-cw8"
+                class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                    <i class="fab fa-youtube"></i>
+                </span>
+                <span>Video</span>
+              </a>
+            </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href=" "
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (To be released)</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3 no-bottom">NVS Visual Comparison with SOTA methods</h2>
+    <div class="column is-full">
+    We compare our method with the state-of-the-art methods SC-GS [<span style="color: blue;">20</span>], 
+    4DGS [<span style="color: blue;">54</span>], Deformable 3DGS [<span style="color: blue;">57</span>] on monocular video sequences. We provide quantitative performance along with the novel view rendering results: PSNR<a href="#top">&uarr; </a>, SSIM<a href="#top">&uarr; </a>, 
+    LPIPS<a href="#bottom">&uarr; </a>, and storage size<a href="#bottom">&darr; </a>. 
+    The proposed method shows <span style="color: red;">superior quantitative and qualitative quality performance</span> than SOTA methods 
+    even with <span style="color: red;">compact model size</span>.<br><br>
+    
+    <div class="video-container" id="videoContainer" align="center">
+      <video class="video" id="viz_input" loop muted autoplay src="./static/video/cut_lemon_final.mp4" onloadeddata="initVideo()"></video>
+      <canvas height=0 class="videoMerge" id="viz_inputMerge"></canvas>
+    </div>
+    <div class="video-select">
+      <a class="video-item" onclick="changeVideo('./static/video/cut_lemon_final.mp4')"><img src="./static/image/cut-lemon_thumbnail.png"></a>
+      <a class="video-item" onclick="changeVideo('./static/video/torchocolate_final.mp4')"><img src="./static/image/torchocolate_thumbnail.png"></a>
+      <a class="video-item" onclick="changeVideo('./static/video/peel-banana_final.mp4')"><img src="./static/image/peel-banana_thumbnail.png"></a>
+      <a class="video-item" onclick="changeVideo('./static/video/aleks_final.mp4')"><img src="./static/image/aleks_thumbnail.png"></a>
+    </div>
+  </div>
+</section>
+<script>
+bulmaCarousel.attach('#results-carousel', {
+  slidesToShow: 2,
+  loop: true,
+  pagination: false,
+});
+</script>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <div class="column is-full">
+      <h2 class="title is-3">TL;DR</h2>
+      <div class="content has-text-justified tldr-background">
+        We propose <strong style="color: navy;">MoDec-GS</strong>, a memory-efficient dynamic 3D Gaussian Splatting (3DGS) framework for novel view reconstruction in complex real-world scenarios.
+        Its core is the <strong style="color: navy;">Global-to-Local Motion Decomposition (GLMD)</strong> method, which captures dynamic motions using Global and Local Canonical Scaffolds with coarse-to-fine adjustments.
+        <strong style="color: navy;">Temporal Interval Adjustment (TIA)</strong> further optimizes temporal segment assignments. Experiments show that <strong style="color: red;">MoDec-GS reduces model size by 70% on average</strong> compared to state-of-the-art methods while maintaining or improving rendering quality.
+      </div>
+    </div>
+  </div>
+  <!--/ Abstract. -->
+</section>
+
+<section class="section" align="center">
+  <div class="container is-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+
+              <div class="image-container">
+                <img src="./static/image/result_graph.png" alt="Result Graph" class="result-graph">
+              </div>
+              <div class="content has-text-justified">
+                <strong style="color: black;">Performance visualization graph.</strong>The x-axis represents rendering speed (FPS)↑, and the y-axis indicates PSNR↑. Each framework is depicted as a bubble, with the size of the bubble representing the model storage size.
+              
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="section" align="center">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">Method Overview</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <image src="./static/image/Method overview.png" class="img-responsive" alt="Fig1"><br>
+        <div class="content has-text-justified">
+          <strong style="color: black;">Overview of MoDec-GS.</strong> To effectively train dynamic 3D Gaussians with complex motion, we introduce 
+           Global-to-Local Motion Decomposition (GLMD). We first train a Global Canonical Scaffold-GS (Global CS) with entire frames, 
+and apply a Global Anchor Deformation (GAD) to Local Canonical Scaffold-GS (Local CS) dedicated to represent its corresponding 
+temporal segment. Next, to finely adjust the remaining local motion, we apply Local Gaussian Deformation (LGD) which 
+explicitly deforms the reconstructed 3D Gaussians with a shared hexplane. During the training, Temporal Interval Adjustment 
+(TIA) is performed, optimizing the temporal interval into a non-uniform interval that adopts to the scene’s level of motion.
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <!-- Abstract. -->
+    <div class="column is-full">
+      <h2 class="title is-3">Abstract</h2>
+      <div class="content has-text-justified tldr-background">
+        3D Gaussian Splatting (3DGS) has made significant strides in scene representation and neural rendering, 
+        with intense efforts focused on adapting it for dynamic scenes. Despite delivering remarkable rendering quality and speed, 
+        existing methods struggle with storage demands and representing complex real-world motions. To tackle these issues,
+         we propose MoDecGS, a memory-efficient Gaussian splatting framework designed for reconstructing novel views in challenging 
+         scenarios with complex motions. We introduce GlobaltoLocal Motion Decomposition (GLMD) to effectively capture dynamic motions
+          in a coarse-to-fine manner. This approach leverages Global Canonical Scaffolds (Global CS) and Local Canonical Scaffolds (Local CS), 
+          extending static Scaffold representation to dynamic video reconstruction. For Global CS, we propose Global Anchor Deformation (GAD) 
+          to efficiently represent global dynamics along complex motions, by directly deforming the implicit Scaffold attributes
+           which are anchor position, offset, and local context features. Next, we finely adjust local motions via the Local Gaussian 
+           Deformation (LGD) of Local CS explicitly. Additionally, we introduce Temporal Interval Adjustment (TIA) to automatically control 
+           the temporal coverage of each Local CS during training, allowing MoDecGS to find optimal interval assignments based 
+           on the specified number of temporal segments. Extensive evaluations demonstrate that MoDecGS achieves an average 
+           70% reduction in model size over stateoftheart methods for dynamic 3D Gaussians from realworld dynamic videos while
+            maintaining or even improving rendering quality.
+      </div>
+    </div>
+  </div>
+  <!--/ Abstract. -->
+</section>
+
+
+
+
+
+
+<section class="section" align="center">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">2-stage Deformation</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+
+        <image src="./static/image/GLMD3.png" class="img-responsive" alt="Fig1"><br>
+        <div class="content has-text-justified">
+
+          <strong style="color: black;">Concept and Effect of 2-stage Deformation.</strong> For representing a complex motion of 3D Gaussians, a global movement 
+          over time intervals can be more efficiently handled through deformation 
+          of anchor itself. In contrast, subtle motions of individual 
+          3D Gaussians within a time interval can be effectively addressed 
+          by explicit deformation of each Gaussian.
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" align="center">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">Temporal Interval Adjustment</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <div class="image-container">
+          <img src="./static/image/val_TIA.png" class="img-responsive tia-image" alt="Fig1"><br>
+        </div>
+        <div class="content has-text-justified">
+          <strong style="color: black;">TIA effectiveness.</strong> During the training process, temporal intervals are appropriately adapted to the degree of motion in the scene through TIA. 
+          It has been validated that the accumulated normalized optical flow magnitude are re-balanced by TIA, which leads to re-balance the degree of motion covered by each interval.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section" align="center">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">Quantitative Results</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <image src="./static/image/quantitative_results1-1.png" class="img-responsive" alt="quantitative_results"><br>
+        <div class="content has-text-justified">
+          <strong style="color: black;">Quantitative results comparison of novel view synthesis</strong> on Dycheck-iPhone [<span style="color: blue;">16</span>] and HyperNeRF [<span style="color: blue;">45</span>] monocular datasets. 
+            All results were locally re-generated in our environment and averaged across all sequences of the dataset. 
+            Red and blue denote the best and second best performances, respectively. For iPhone dataset, the masked metrics are calculated using the masks provided the authors. 
+        <br><br>
+
+            <image src="./static/image/quantitative_results2-1.png" class="img-responsive" alt="quantitative_results2"><br>
+            
+              Performance comparison with a NeRF-extension framework, including training and rendering speed. Averaged over 
+              536×960 HyperNeRF’s vrig datasets [<span style="color: blue;">43</span>]. The performance numbers of [<span style="color: blue;">11, 18, 22, 44, 45</span>] are sourced from [<span style="color: blue;">54</span>].  
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+    <section class="section" align="center">
+      <div class="container is-widescreen">
+        <h2 class="title is-3">Demo Video</h2>
+        <div class="video-container" align="center">
+          <iframe width="1080" height="640" src="https://www.youtube.com/embed/5L6gzc5-cw8?si=0_M_El9ZI9ykChOd" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="BibTeX">
+      <div class="container is-widescreen content">
+        <h2 class="title">BibTeX</h2>
+        <pre><code>@misc{kwak2025modecgsglobaltolocalmotiondecomposition,
+  title={MoDec-GS: Global-to-Local Motion Decomposition and Temporal Interval Adjustment for Compact Dynamic 3D Gaussian Splatting}, 
+  author={Sangwoon Kwak and Joonsoo Kim and Jun Young Jeong and Won-Sik Cheong and Jihyong Oh and Munchurl Kim},
+  year={2025},
+  eprint={2501.03714},
+  archivePrefix={arXiv},
+}</code></pre>
+      </div>
+    </section>
+
+
+<footer class="footer">
+  <div class="container">
+    <!-- <div class="content has-text-centered">
+      <a target="_blank" rel="noopener noreferrer" class="icon-link"
+         href="">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>-->
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a target="_blank" rel="noopener noreferrer" href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>  that kindly open sourced the template of this website. 
+            Please visit our <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting researches
+          </p>
+        </div>
+      </div>
+      <a href="https://mapmyvisitors.com/web/1bxcb"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=P54yP9sTH-y82krx7hQX7QwHpWO6PZDIOzFFYepwHwU&cl=ffffff" /></a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
