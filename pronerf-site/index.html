@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Learning Efficient Projection-Aware Ray Sampling for Fine-Grained Implicit Neural Radiance Fields.">
+  <meta name="keywords" content="ProNeRF, NeRF, Real-time rendering">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProNeRF: Learning Efficient Projection-Aware Ray Sampling for Fine-Grained Implicit Neural Radiance Fields</title>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W0Q5T08GM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-0W0Q5T08GM');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" sizes="192x192" href="https://static.wixstatic.com/media/5b1cac_bf65d6c23fe140c2a756f72a791051c0.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/5b1cac_bf65d6c23fe140c2a756f72a791051c0.png" type="image/png"/>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/video_comparison.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-widescreen">
+      <div class="columns is-centered" style="width: 100%;">
+        <div class="column has-text-centered">
+          <div class="title is-1 publication-title"> <h1>ProNeRF: Learning Efficient Projection-Aware Ray Sampling for Fine-Grained Implicit Neural Radiance Fields</h1></div>
+          <h1 style="font-size:1.5rem"> IEEE Access</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello</a><sup>*</sup>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a href="https://www.viclab.kaist.ac.kr/">Minh-Quan Viet Bui</a><sup>*</sup>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="author-block">
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>*</sup>Co-first authors (equal contribution)</span>
+            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">KAIST, South Korea</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2312.08136.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2312.08136"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                   <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Supp</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/KAIST-VICLab/pronerf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-spiral_fern">
+          <video poster="" id="spiral_fern" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_fern.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_flower">
+          <video poster="" id="spiral_flower" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_flower.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_fortress">
+          <video poster="" id="spiral_fortress" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_fortress.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_horns">
+          <video poster="" id="spiral_horns" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_horns.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_leaves">
+          <video poster="" id="spiral_leaves" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_leaves.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_orchids">
+          <video poster="" id="spiral_orchids" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_orchids.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_room">
+          <video poster="" id="spiral_room" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_room.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_trex">
+          <video poster="" id="spiral_trex" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_trex.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-spiral_chair">
+          <video poster="" id="spiral_chair" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_chair.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_drums">
+          <video poster="" id="spiral_drums" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_drums.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_ficus">
+          <video poster="" id="spiral_ficus" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_ficus.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_hotdog">
+          <video poster="" id="spiral_hotdog" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_hotdog.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_lego">
+          <video poster="" id="spiral_lego" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_lego.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_materials">
+          <video poster="" id="spiral_materials" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_materials.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_mic">
+          <video poster="" id="spiral_mic" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_mic.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-spiral_ship">
+          <video poster="" id="spiral_ship" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/spiral_ship.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Recent advances in neural rendering have shown that, albeit slow, implicit compact models can learn a scene's geometries and view-dependent appearances from multiple views. 
+            To maintain such a small memory footprint but achieve faster inference times, recent works have adopted `sampler' networks that adaptively sample a small subset of points along each ray in the implicit neural radiance fields. 
+            Although these methods achieve up to a 10x reduction in rendering time, they still suffer from considerable quality degradation compared to the vanilla NeRF.  
+          </p>
+          <p>
+            In contrast, we propose ProNeRF, which provides an optimal trade-off between memory footprint (similar to NeRF), speed (faster than HyperReel), and quality (better than K-Planes). 
+            ProNeRF is equipped with a novel projection-aware sampling (PAS) network together with a new training strategy for ray exploration and exploitation, allowing for efficient fine-grained particle sampling.
+          </p>
+            Our ProNeRF yields state-of-the-art metrics, being 15-23x faster with 0.65dB higher PSNR than NeRF and yielding 0.95dB higher PSNR than the best published sampler-based method, HyperReel. 
+            Our exploration and exploitation training strategy allows ProNeRF to learn the full scenes' color and density distributions while also learning efficient ray sampling focused on the highest-density regions.
+            We provide extensive experimental results that support the effectiveness of our method on the widely adopted forward-facing and 360 datasets, LLFF and Blender, respectively. 
+          <p>
+
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">Framework Architecture</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <image src="./static/images/full_pipeline_2.png" class="img-responsive" alt="full_pipeline_2"><br>
+        <div class="content has-text-justified">
+          <p>
+            <b>A conceptual illustration of our fast and high-quality projection-aware sampling of neural radiance fields (ProNeRF).</b> The reference views are available during training and testing. The target view is drawn for illustrative purposes only.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">SOTA Comparison: Novel View Synthesis on LLFF Dataset</h2>
+
+    <div class="content has-text-justified">
+      <p>
+        We provide extensive experimental results on the LLFF and Blender datasets to show the effectiveness of our method in comparison with recent SOTA methods. 
+        Also, we present a comprehensive ablation study that supports our design choices and main contributions. More results are shown in <i>Supplemental</i>.
+
+        We evaluate the rendering quality of our method by three widely used metrics: Peak Signal-to-Noise Ratio (PSNR), Structural Similarity (SSIM) and Learned Perceptual Image Patch Similarity (LPIPS) . 
+        When it comes to SSIM, there are two common implementations available, one from <i>Tensorflow</i> (used in the reported metrics from NeRF, MobileNeRF, and IBRnet), 
+        and another from <i>sci-kit image</i> (employed in ENeRF, RSeN, NLF). 
+        We denoted the metrics from <i>Tensorflow</i> and <i>sci-kit image</i> as SSIM_t and SSIM_s, respectively. 
+        Similarly, for LPIPS, we can choose between two backbone options, namely AlexNet and VGG. 
+        We present our SSIM and LPIPS results across all available choices to ensure a fair and comprehensive evaluation of our method's performance.
+      </p>
+    </div>
+    <div class="columns is-centered">      
+      <div class="column">
+        <div class="columns is-centered">
+          <div class="column content" style="width: 45%; margin-right: 15%;">
+            <img src="./static/images/quantitative.JPG" alt="Graph for perfomance evaluation">
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="columns is-centered">
+          <div class="column content has-text-justified">
+            <img src="./static/images/tradeoff_graph.png" alt="Graph for quality evaluation"> 
+            <p style="margin:0;display:inline;"> <b>Performance trade-off of neural rendering (memory, speed, quality) on the LLFF dataset.</b> Our ProNeRF yields the best performance profiling (memory, speed, quality) trade-off.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content has-text-centered">
+      <image src="./static/images/qualitative.PNG" class="img-responsive" alt="DDNeRF_Architecture_v21"></image>
+      <p style="margin:0;display:inline;"> <b>Qualitative comparisons for the LLFF dataset.</b> Zoom in for better visualization.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <!-- Animation. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Visual Comparison on LLFF</h2>
+        <!-- Deblurring. -->
+        <h3 class="title is-4">
+          
+        </h3>
+        <div class="row" style="display: flex; margin-bottom: 2%">
+          <div class="col-md-4" style="width: 50%;">
+              <video class="video" id="spiral_fern_compare" loop playsinline autoplay muted src="./static/videos/spiral_fern_compare.mp4" onplay="resizeAndPlay(this)" ></video>
+              <canvas height=0 class="videoMerge" id="spiral_fern_compareMerge"></canvas>
+          </div>
+          <div class="col-md-4" style="width: 50%; margin-left: 2%;">
+              <video class="video" id="spiral_horns_compare" loop playsinline autoplay muted src="./static/videos/spiral_horns_compare.mp4" onplay="resizeAndPlay(this)" ></video>
+              <canvas height=0 class="videoMerge" id="spiral_horns_compareMerge"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!--/ Animation. -->
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <!-- Animation. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Visual Comparison on Blender</h2>
+        <!-- Deblurring. -->
+        <h3 class="title is-4">
+          
+        </h3>
+        <div class="row" style="display: flex; margin-bottom: 2%">
+          <div class="col-md-4" style="width: 50%;">
+              <video class="video" id="spiral_ship_compare" loop playsinline autoplay muted src="./static/videos/spiral_ship_compare.mp4" onplay="resizeAndPlay(this)"></video>
+              <canvas height=0 class="videoMerge" id="spiral_ship_compareMerge"></canvas>
+          </div>
+          <div class="col-md-4" style="width: 50%; margin-left: 2%;">
+              <video class="video" id="spiral_lego_compare" loop playsinline autoplay muted src="./static/videos/spiral_lego_compare.mp4" onplay="resizeAndPlay(this)"></video>
+              <canvas height=0 class="videoMerge" id="spiral_lego_compareMerge"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!--/ Animation. -->
+</section>
+
+<section class="section" id="acknowledgement">
+  <div class="container is-widescreen">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Acknowledgements</h2>
+  
+        <div class="content has-text-justified">
+          <p>
+            This work was supported by IITP grant funded by the Korea government (MSIT) (No. RS2022-00144444, Deep Learning Based Visual Representational Learning and Rendering of Static and Dynamic Scenes).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-widescreen content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@ARTICLE{10504815,
+      author={Bello, Juan Luis Gonzalez and Bui, Minh-Quan Viet and Kim, Munchurl},
+      journal={IEEE Access}, 
+      title={ProNeRF: Learning Efficient Projection-Aware Ray Sampling for Fine-Grained Implicit Neural Radiance Fields}, 
+      year={2024},
+      volume={12},
+      number={},
+      pages={56799-56814},
+      keywords={Rendering (computer graphics);Three-dimensional displays;Training;Image color analysis;Geometry;Pipelines;Neural radiance field;3D reconstruction;neural radiance field;neural rendering;view synthesis;ray sampling},
+      doi={10.1109/ACCESS.2024.3390753}}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="./static/pronerf.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>  that kindly open sourced the template of this website. 
+            Please visit our <a href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting researches
+          </p>
+        </div>
+      </div>
+      <a href="https://mapmyvisitors.com/web/1bvn1"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=zEjFldBWJRu-21uo1L40ohlXiVSaI-2CF49MHgBiCRk&cl=ffffff" /></a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

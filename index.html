@@ -81,8 +81,8 @@
           <span class="papertitle">SplineGS: Robust Motion-Adaptive Spline for Real-Time Dynamic 3D Gaussians from Monocular Video</span>
         </a>
         <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Jongmin Park</a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui</a>, 
+        <a href="https://www.viclab.kaist.ac.kr/">Jongmin Park*</a>,
+        <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui*</a>, 
         <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello </a>,
         <a href="https://www.viclab.kaist.ac.kr/"> Jaeho Moon </a>, 
         <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
@@ -92,10 +92,93 @@
         <br>
         <a href="https://kaist-viclab.github.io/splinegs-site">project page</a>
         /
-        <a href="https://arxiv.org/abs/2412.09982v2">arXiv</a>
+        <a href="https://arxiv.org/abs/2412.09982">arXiv</a>
         <p></p>
         <p>
           COLMAP-free dynamic 3D Gaussian Splatting (3DGS) framework for high-quality reconstruction and fast rendering from monocular videos.
+        </p>
+      </td>
+    </tr>
+
+    <tr onmouseout="dyblurf_stop()" onmouseover="dyblurf_start()">
+      <td style="padding:16px;width:20%;vertical-align:middle">
+        <div class="one">
+          <div class="two" id='dyblurf_image'><video  width=100% muted autoplay loop>
+          <source src="images/dyblurf.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+          </video></div>
+          <img src='images/dyblurf.jpg' width=100%>
+        </div>
+        <script type="text/javascript">
+          function dyblurf_start() {
+            document.getElementById('dyblurf_image').style.opacity = "1";
+          }
+
+          function dyblurf_stop() {
+            document.getElementById('dyblurf_image').style.opacity = "0";
+          }
+          dyblurf_stop()
+        </script>
+      </td>
+      <td style="padding:8px;width:80%;vertical-align:middle">
+        <a href="https://kaist-viclab.github.io/dyblurf-site">
+          <span class="papertitle">DyBluRF: Dynamic Deblurring Neural Radiance Fields for Blurry Monocular Video</span>
+        </a>
+        <br>
+        <a href="https://www.viclab.kaist.ac.kr/">Minh-Quan Viet Bui*</a>,
+        <a href="https://www.viclab.kaist.ac.kr/"> Jongmin Park* </a>, 
+        <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
+        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+        <br>
+        <em>arXiv</em>, 2023
+        <br>
+        <a href="https://kaist-viclab.github.io/dyblurf-site">project page</a>
+        /
+        <a href="https://arxiv.org/abs/2312.13528">arXiv</a>
+        <p></p>
+        <p>
+          Dynamic deblurring NeRF framework for reconstructing dynamic scenes from blurry monocular video.
+        </p>
+      </td>
+    </tr>
+
+    <tr onmouseout="pronerf_stop()" onmouseover="pronerf_start()">
+      <td style="padding:16px;width:20%;vertical-align:middle">
+        <div class="one">
+          <div class="two" id='pronerf_image'><video  width=100% muted autoplay loop>
+          <source src="images/pronerf.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+          </video></div>
+          <img src='images/pronerf.jpg' width=100%>
+        </div>
+        <script type="text/javascript">
+          function pronerf_start() {
+            document.getElementById('pronerf_image').style.opacity = "1";
+          }
+
+          function pronerf_stop() {
+            document.getElementById('pronerf_image').style.opacity = "0";
+          }
+          pronerf_stop()
+        </script>
+      </td>
+      <td style="padding:8px;width:80%;vertical-align:middle">
+        <a href="https://kaist-viclab.github.io/pronerf-site">
+          <span class="papertitle">ProNeRF: Learning Efficient Projection-Aware Ray Sampling for Fine-Grained Implicit Neural Radiance Fields</span>
+        </a>
+        <br>
+        <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello*</a>,
+        <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui* </a>, 
+        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+        <br>
+        <em>IEEE Access</em>
+        <br>
+        <a href="https://kaist-viclab.github.io/pronerf-site">project page</a>
+        /
+        <a href="https://arxiv.org/abs/2312.08136">arXiv</a>
+        <p></p>
+        <p>
+          Efficient NeRF framework for fine-grained 3D scene reconstruction with few sampling points via projection-aware ray sampling.
         </p>
       </td>
     </tr>
