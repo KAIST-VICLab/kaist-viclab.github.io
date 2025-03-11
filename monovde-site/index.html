@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Novel View Synthesis with View-Dependent Effects from a Single Image.">
+  <meta name="keywords" content="Single View NVS, View-Dependent Effects, NeRF">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Novel View Synthesis with View-Dependent Effects from a Single Image</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6FW4BXH1YH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-6FW4BXH1YH');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" sizes="192x192" href="https://static.wixstatic.com/media/5b1cac_bf65d6c23fe140c2a756f72a791051c0.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/5b1cac_bf65d6c23fe140c2a756f72a791051c0.png" type="image/png"/>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/video_comparison.js"></script>
+</head>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://sites.google.com/view/juan-luis-gb/home">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://kaist-viclab.github.io/pronerf-site/">
+            ProNeRF
+          </a>
+          <a class="navbar-item" href="https://kaist-viclab.github.io/dyblurf-site/">
+            DyBluRF
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Novel View Synthesis with View-Dependent Effects from a Single Image</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://sites.google.com/view/juan-luis-gb/home">Juan Luis Gonzalez Bello</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a><sup>1</sup>,</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Korea Advanced Institute of Science and Technology (KAIST),</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper (to be released)</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2312.08071"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video (Comming soon)</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (to be released)</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/Fig1-video.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        By explicitly modeling view-dependent effects (VDE) from a single image, our NVSVDE-Net renders more realistic
+        views with clean geometries.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="row" style="display: flex; margin-bottom: 2%">
+        <div class="col-md-4" style="width: 33%;">
+            <video class="video" id="spiral_1_compare" loop playsinline autoplay muted src="./static/videos/Fig7-video_part2.mp4" onplay="resizeAndPlay(this)" ></video>
+            <canvas height=0 class="videoMerge" id="spiral_1_compareMerge" style="height: 250px;"></canvas>
+        </div>
+        <div class="col-md-4" style="width: 33%; margin-left: 2%;">
+            <video class="video" id="spiral_2_compare" loop playsinline autoplay muted src="./static/videos/Fig7-video_part4.mp4" onplay="resizeAndPlay(this)" ></video>
+            <canvas height=0 class="videoMerge" id="spiral_2_compareMerge" style="height: 250px;"></canvas>
+        </div>
+        <div class="col-md-4" style="width: 33%; margin-left: 2%;">
+            <video class="video" id="spiral_3_compare" loop playsinline autoplay muted src="./static/videos/Fig7-video_part3.mp4" onplay="resizeAndPlay(this)" ></video>
+            <canvas height=0 class="videoMerge" id="spiral_3_compareMerge" style="height: 250px;"></canvas>
+        </div>
+      </div>
+    </div>
+    <h2 class="subtitle has-text-centered">
+      Our NVSVDE-Net is the <i>first</i> single-view NVS method to be trained in a completely self-supervised manner.
+      Neither depths nor pose annotations are required, while the other methods rely on given depths and/or camera poses,
+    </h2>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            In this paper, we firstly consider view-dependent effects into single image-based novel
+            view synthesis (NVS) problems.
+          </p>
+          <p>
+            For this, we propose to exploit the camera motion priors in NVS to model view-dependent appearance
+            or effects (VDE) as the negative disparity in the scene. By recognizing specularities `follow' the
+            camera motion, we infuse VDEs into the input images by aggregating input pixel colors along the
+            negative depth region of the epipolar lines. Also, we propose a `relaxed volumetric rendering'
+            approximation that allows computing the densities in a single pass, improving efficiency for NVS
+            from single images.
+            Our method can learn single-image NVS from image sequences only, which is a
+            completely self-supervised learning method, for the first time requiring neither depth nor camera
+            pose annotations.
+          </p>
+          <p>
+            We present extensive experiment results and show that our proposed method can learn NVS with VDEs,
+            outperforming the SOTA single-view NVS methods on the RealEstate10k and MannequinChallenge datasets.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+<!--    <div class="columns is-centered has-text-centered">-->
+<!--      <div class="column is-four-fifths">-->
+<!--        <h2 class="title is-3">Video</h2>-->
+<!--        <div class="publication-video">-->
+<!--          <iframe src=""-->
+<!--                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/VDE-video.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        We <i>firstly</i> propose a single view NVS method with VDEs.
+        By recognizing camera motion priors and negative disparities govern view-dependent appearance at the input view,
+        we can model VDEs as the negative disparities in the scene induced by the target camera motion.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+
+    <!-- Method and Results. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <!-- Method. -->
+        <h2 class="title is-3">Proposed Single-View NVS Method</h2>
+        <h3 class="title is-3">Modeling View-Dependent Effects (VDE)</h3>
+        <div class="content has-text-justified">
+          We observe a strong prior in (view-dependent effects) VDEs, VDEs `follow' the camera motion (no disparities).
+        </div>
+        <img id="projections" height="100%" src="./static/images/Projections.jpg">
+        <h2 class="subtitle has-text-centered">
+          (a) We synthesize target VDEs (black dots) induced on the input view <i>I</i> by re-sampling <i>I</i>
+          along the negative depth region of the epipolar line (green dots). In contrast, 3D geometry does present
+          disparities between views (blue dots).
+          (b) VDEs present disparities
+          relative to their reflective surfaces in the opposite direction than the projection of the reflective
+          surface itself.
+          (c) and (d) VDE disparity due to novel camera poses is proportional to the
+          reflective surface disparity. The closer the reflective surface, the larger the VDE disparity.
+        </h2>
+        <br/>
+        <br/>
+
+        <h3 class="title is-3">Overall Network Architecture</h3>
+        <div class="content has-text-justified">
+          <p>
+            The proposed NVSVDE-Net models VDEs at the input view as the negative scene disparities under
+            the target camera motion <i>R</i><sub>c</sub> | <b><i>t</i></b><sub>c</sub>.
+            Novel views are estimated in two stages.
+            Firstly with coarse fixed ray samples <i>t</i><sub>i</sub>, then with refined adaptive sampling distances
+            <i>t</i><sup>*</sup><sub>k</sub>.
+          </p>
+        </div>
+        <img id="arch" height="100%" src="./static/images/overall_arch.jpg">
+        <br/>
+        <br/>
+        <br/>
+        <!--/ Method. -->
+
+        <!-- Results on RE10k. -->
+        <h2 class="title is-3">Results on RealEstate10k</h2>
+        <div class="content has-text-justified">
+          <p>
+            Our results on the RealEstate10k dataset (RE10k).
+          </p>
+        </div>
+        <video id="re10_res" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/RE10K_results.mp4" type="video/mp4">
+        </video>
+        <br/>
+        <br/>
+        <br/>
+        <!--/ Results on RE10k. -->
+
+        <!-- Results on MC. -->
+        <h2 class="title is-3">Results on the MannequinChallenge Dataset</h2>
+        <div class="content has-text-justified">
+          <p>
+            Our results on the MannequinChallenge dataset (MC).
+          </p>
+        </div>
+        <video id="MC_res" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/MC_results.mp4" type="video/mp4">
+        </video>
+        <br/>
+        <br/>
+        <br/>
+        <!--/ Results on MC. -->
+
+        <!-- Extreme NVS. -->
+        <h2 class="title is-3">Extreme NVS</h2>
+        <div class="content has-text-justified">
+          <p>
+            We trained our NVSVDE-Net to render views that are at most 16 frames apart from the single-image input.
+            In this experiment, we render views equivalent to 40 frames apart from the input view.
+            Despite the inherent challenges associated with extreme Novel View Synthesis, our method consistently
+            produces realistic views, albeit with certain observable artifacts, as anticipated in any single-view NVS framework.
+          </p>
+        </div>
+        <video id="ext_nvs" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/Extreme_NVS.mp4" type="video/mp4">
+        </video>
+        <br/>
+        <!--/ Extreme NVS. -->
+
+      </div>
+    </div>
+
+    <!-- Concurrent Work. -->
+<!--    <div class="columns is-centered">-->
+<!--      <div class="column is-full-width">-->
+<!--        <h2 class="title is-3">Related Links</h2>-->
+
+<!--        <div class="content has-text-justified">-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+    <!--/ Concurrent Work. -->
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>
+      @misc{bello2023novel,
+        title={Novel View Synthesis with View-Dependent Effects from a Single Image},
+        author={Juan Luis Gonzalez Bello and Munchurl Kim},
+        year={2023},
+        eprint={2312.08071},
+        archivePrefix={arXiv},
+        primaryClass={cs.CV}
+      }</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="./static/videos/nerfies_paper.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> that kindly
+            open sourced their website template.
+            Please visit our <a href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting research.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

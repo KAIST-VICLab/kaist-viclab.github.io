@@ -561,6 +561,46 @@
       </td>
     </tr>
 
+    <tr onmouseout="monovde_stop()" onmouseover="monovde_start()">
+      <td style="padding:16px;width:20%;vertical-align:middle">
+        <div class="one">
+          <div class="two" id='monovde_image'><video  width=100% muted autoplay loop>
+          <source src="images/monovde.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+          </video></div>
+          <img src='images/monovde.png' width=100%>
+        </div>
+        <script type="text/javascript">
+          function monovde_start() {
+            document.getElementById('monovde_image').style.opacity = "1";
+          }
+
+          function monovde_stop() {
+            document.getElementById('monovde_image').style.opacity = "0";
+          }
+          monovde_stop()
+        </script>
+      </td>
+      <td style="padding:8px;width:80%;vertical-align:middle">
+        <a href="https://kaist-viclab.github.io/monovde-site/">
+          <span class="papertitle">Novel View Synthesis with View-Dependent Effects from a Single Image</span>
+        </a>
+        <br>
+        <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello </a>,
+        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+        <br>
+        <em>CVPR</em>, 2024
+        <br>
+        <a href="https://kaist-viclab.github.io/monovde-site/">project page</a>
+        /
+        <a href="https://arxiv.org/abs/2312.08071">arXiv</a>
+        <p></p>
+        <p>
+          TBD.
+        </p>
+      </td>
+    </tr>
+
     <tr onmouseout="dyblurf_stop()" onmouseover="dyblurf_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
