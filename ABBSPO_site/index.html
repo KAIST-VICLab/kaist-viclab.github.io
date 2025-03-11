@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Weakly supervised Oriented Object Detection.">
+  <meta name="keywords" content="Object Detection, Oriented Object Detection, Remote Sensing, Weakly supervised oriented object detection, ABBSPO, OOD">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ABBSPO: Adaptive Bounding Box Scaling and Symmetric Prior based Orientation Prediction for Detecting Aerial Image Objects</title>
+  <style>
+    @keyframes shake {
+      0% {transform: translateX(0);}
+      10%, 90% {transform: translateX(-5px);}
+      20%, 80% {transform: translateX(5px);}
+      30%, 50%, 70% {transform: translateX(-5px);}
+      40%, 60% {transform: translateX(5px);}
+      100% {transform: translateX(0);}
+    }
+
+    #blur {
+      /* font-size: 60px; */
+      color: rgb(52,144,197);
+      filter: blur(3x);
+      -webkit-filter: blur(2.5px);
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+    #shake {
+      /* font-size: 60px; */
+      animation: shake 1s infinite;
+      display: inline-block;;
+      clear: none;
+    }
+  </style>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HR3PWVQLH2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HR3PWVQLH2');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  
+    <!-- MathJax -->
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [["$", "$"], ["\\(", "\\)"]],
+    displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] },
+  messageStyle: "none"
+  });
+  </script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/video_comparison.js"></script>
+  
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+  
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="./images/logo.svg"> -->
+  <link rel="icon" sizes="256x256" href="./static/image/globe.png" type="image/png"/>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <!-- Vendor Stylesheets -->
+  <!--=================js==========================-->
+  <link rel="stylesheet" href="./static/css/tab_gallery.css">
+  <link rel="stylesheet" href="./static/css/juxtapose.css">
+  <!-- <script src="./static/js/index.js"></script> -->
+  <!-- <link rel="stylesheet" href="./menlo"> -->
+  <link rel="stylesheet" href="./static/css/image_card_fader.css">
+  <link rel="stylesheet" href="./static/css/image_card_slider.css">  
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <div class="title is-2 publication-title">
+            <h1 style="display: inline; clear: none;">
+              <font color="#d91421"><b>A</b></font><font color="#008000"><b>B</b></font><font color="#008000"><b>B</b></font><font color="#00BFFF"><b>S</b></font><font color="#14d963"><b>P</b></font><font color="##1421d9"><b>O</b></font>:
+              <font color="#d91421"><b>A</b></font>daptive
+              <font color="#008000"><b>B</b></font>ounding
+              <font color="#008000"><b>B</b></font>ox
+              <font color="#00BFFF"><b>S</b></font>caling and 
+              <font color="#00BFFF"><b>S</b></font>ymmetric 
+              <font color="#14d963"><b>P</b></font>rior based
+              <font color="##1421d9"><b>O</b></font>rientation Prediction for Detection Aerial Image Objects
+            </h1>
+          </div>  <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://github.com/Woojin52">Woojin Lee</a><sup>* 1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://github.com/hmnc0415">Hyugjae Chang</a><sup>* 1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jaehomoon">Jaeho Moon</a><sup> 1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/knuairlab">Jaehyup Lee</a><sup>† 2</sup>
+            </span>
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a><sup>† 1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"> <sup>*</sup>Co-first authors (equal contribution)</span>
+            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"> <sup>†</sup>Co-corresponding authors</span>
+            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Korea Advanced Institute of Science and Technology, South Korea</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>2</sup> Kyungpook National University, South Korea</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <!-- <a target="_blank" rel="noopener noreferrer" href="https://openaccess.thecvf.com/content/CVPR2024/html/Youk_FMA-Net_Flow-Guided_Dynamic_Filtering_and_Iterative_Feature_Refinement_with_Multi-Attention_CVPR_2024_paper.html" -->
+                <a target="_blank" rel="noopener noreferrer" href="https://xxxx.html"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <!-- <a target="_blank" rel="noopener noreferrer" href="http://arxiv.org/abs/2401.03707" -->
+                <a target="_blank" rel="noopener noreferrer" href="http://xxxx"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!--=================Teasers==========================-->
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+      <!-- The expanding image container -->
+      <div class="tab_container">
+        <!-- Close the image -->
+        <!-- <span onclick="this.parentElement.style.display='none'" class="closebtn">&times;</span> -->
+        <!-- Expanded image -->
+        <div id="juxtapose-embed" data-startingposition="30%" data-animate="true" class="juxtapose"
+          style="height: 800px; width: 800px;">
+          <div class="jx-slider">
+            <div class="jx-handle " style="left: 50%;">
+              <div class="jx-arrow jx-left"></div>
+              <div class="jx-control">
+                <div class="jx-controller" tabindex="0" role="slider" aria-valuenow="50" aria-valuemin="0"
+                  aria-valuemax="100"></div>
+              </div>
+              <div class="jx-arrow jx-right"></div>
+            </div>
+            <div class="jx-image jx-left " style="width: 50%;"><img src="./src/UDC_1.png" alt="">
+              <div class="jx-label" tabindex="0">UDC images</div>
+            </div>
+            <div class="jx-image jx-right " style="width: 50%;"><img src="./src/AF_1.png" alt="">
+              <div class="jx-label" tabindex="0">AlignFormer results</div>
+            </div><a href="https://juxtapose.knightlab.com" target="_blank" rel="noopener" class="jx-knightlab">
+              <div class="knightlab-logo"></div><span class="juxtapose-name">JuxtaposeJS</span>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <div id="juxtapose-hidden"></div>
+        </div>
+
+        <!-- Image text -->
+        <div id="imgtext"></div>
+      </div>
+
+      <!-- The grid: four columns -->
+      <div class="tab_row">
+        <div class="tab_column">
+          <img src="./image/11765_raw.jpg" onclick="tab_gallery_click('11765');">
+        </div>
+        <div class="tab_column">
+          <img src="./image/P0396_raw.jpg" onclick="tab_gallery_click('P0396');">
+        </div>
+        <div class="tab_column">
+          <img src="./image/2430_raw.jpg" onclick="tab_gallery_click('2430');">
+        </div>
+        <div class="tab_column">
+          <img src="./image/P0590_raw.jpg" onclick="tab_gallery_click('P0590');">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+bulmaCarousel.attach('#results-carousel', {
+  slidesToShow: 2,
+  loop: true,
+  pagination: false,
+});
+</script>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Weakly supervised Oriented Object Detection (WS-OOD) has gained attention as a cost-effective alternative to fully supervised methods, providing efficiency and high accuracy.
+            Among weakly supervised approaches, horizontal bounding box (HBox) supervised OOD stands out for its ability to directly leverage existing HBox annotations while achieving the highest accuracy under weak supervision settings. 
+            This paper introduces adaptive bounding box scaling and symmetry-prior-based orientation prediction, called ABBSPO that is a framework for WS-OOD. 
+            Our ABBSPO addresses the limitations of previous HBox-supervised OOD methods, which compare ground truth (GT) HBoxes directly with predicted RBoxes' minimum circumscribed rectangles, often leading to inaccuracies. 
+            To overcome this, we propose: (i) Adaptive Bounding Box Scaling (ABBS) that appropriately scales the GT HBoxes to optimize for the size of each predicted RBox, ensuring more accurate prediction for RBoxes' scales; and (ii) a Symmetric Prior Angle (SPA) loss that uses the inherent symmetry of aerial objects for self-supervised learning, addressing the issue in previous methods where learning fails if they consistently make incorrect predictions for all three augmented views (original, rotated, and flipped). 
+            Extensive experimental results demonstrate that our ABBSPO achieves state-of-the-art results, outperforming existing methods.
+          </p>
+          <p>
+
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/G6qqJXztJDM"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3"> Overall Pipeline</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <image src="./image/overall pipeline.png" 
+        class="img-responsive" 
+        alt="DDNeRF_Architecture_v21"
+        style="width: 75%; height: auto;"><br>
+        <div class="content has-text-justified">
+          <p>
+            Our ABBSPO leverages weakly supervised learning from HBox annotations to accurately predict RBoxes. 
+            The framework incorporates the Orientation Learning Branch (OLB) for precise angle estimation, using the Symmetric Prior Angle (SPA) loss, and the Scale Learning Branch (SLB) for optimal scale adjustment via the Adaptive Bounding Box Scaling (ABBS) module. 
+            The framework supports both C-HBox and T-HBox ground truths, ensuring robust and accurate predictions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-widescreen">
+    <h2 class="title is-3">Quantitative Results on DIOR-R test datasets.</h2>
+    <div class="columns is-centered has-text-centered is-multiline">
+      <div class="column is-full">
+        <image src="./image/DIOR.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
+        <div class="content has-text-justified">
+          <p>
+            Quantitative results of each category on the DIOR-R test dataset for RBox-supervised ($\text{S}_R$), Image-supervised ($\text{S}_I$), Point-supervised ($\text{S}_P$) and HBox-supervised ($\text{S}_H$) methods. 
+            The 3-$\text{AP}_{50}$ represents the mean $\text{AP}_{50}$ scores for three complex shaped objects categories: ‘airplane’ (APL), ‘expressway service area’ (ESA), and ‘overpass’ (OP). 
+            The notation † indicates models whose results are reported in the PointOBB paper.
+          </p>
+        </div>
+      </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-widescreen">
+      <h2 class="title is-3">Quantitative Results on DOTA-v1.0 validation datasets.</h2>
+      <div class="columns is-centered has-text-centered is-multiline">
+        <div class="column is-full">
+          <image src="./image/DOTA.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
+          <div class="content has-text-justified">
+            <p>
+              Quantitative results of each category on the DOTA-v1.0 validation dataset for ($\text{S}_R$),($\text{S}_I$),($\text{S}_P$), and ($\text{S}_H$) methods. The 3-$\text{AP}_{50}$ represents the mean $\text{AP}_{50}$ scores for three complex shaped objects categories: plane (PL), swimming pool (SP), and helicopter (HC). 
+              All the methods are re-trained using only train dataset for fair comparison.
+            </p>
+          </div>
+        </div>
+    </section>
+
+  <section class="section">
+    <div class="container is-widescreen">
+      <h2 class="title is-3">Qualitative Results on DIOR and DOTA-v1.0 datasets.</h2>
+      <!-- <div class="columns is-centered has-text-centered"> -->
+      <div class="columns is-centered has-text-centered is-multiline">
+        <div class="column is-full">
+          <image src="./image/diordota.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
+          <div class="content has-text-justified">
+            <p>
+              Rotated FCOS was trained only with GT RBoxes, while H2RBox, H2RBox-v2 and our ABBSPO were trained with GT T-HBoxes (1st row) and GT C-HBoxes (2nd row)
+            </p>
+          </div>
+        </div>
+        <div class="column is-full">
+          <image src="./image/diordota2.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
+          <div class="content has-text-justified">
+            <p>
+              Additional qualitative results on DIOR and DOTA-v1.0 datasets.
+            </p>
+          </div>
+        </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-widescreen">
+        <h2 class="title is-3">Qualitative results on SIMD and NWPU VHR-10 datasets.</h2>
+        <!-- <div class="columns is-centered has-text-centered"> -->
+        <div class="columns is-centered has-text-centered is-multiline">
+          <div class="column is-full">
+            <image src="./image/simdnwpu.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
+          </div>
+      </section>
+
+<!-- <section class="section"> -->
+  <!-- <div class="container is-widescreen"> -->
+    <!-- Concurrent Work. -->
+    <!-- <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Acknowledgement</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            This work was supported by the Institute of Information & communications Technology Planning & Evaluation (IITP) grant funded by the Korea government (MSIT): No. 2021-0-00087, Development of high-quality conversion technology for SD/HD low-quality media and No. RS2022-00144444, Deep Learning Based Visual Representational Learning and Rendering of Static and Dynamic Scenes.
+          </p>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Concurrent Work. -->
+  <!-- </div>
+</section> -->
+
+<!-- <section class="section" id="BibTeX">
+  <div class="container is-widescreen content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{ABBSPO,
+      title={ABBSPO: Adaptive Bounding Box Scaling and Symmetric Prior based Orientation Prediction for Detecting Aerial Image Objects}, 
+      author={Woojin Lee and Hyugjae Chang and Jaeho Moon and Jaehyup Lee and Munchurl Kim},
+      journal={arXiv preprint arXiv:2312.13528},
+      year={2024}
+    }</code></pre>
+  </div>
+</section> -->
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a target="_blank" rel="noopener noreferrer" class="icon-link"
+         href="">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a target="_blank" rel="noopener noreferrer" href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>  that kindly open sourced the template of this website.
+            Please visit our <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting researches
+          </p>
+        </div>
+      </div>
+      <a href="https://mapmyvisitors.com/web/1bx0c"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=CvMTMHAaE26zdid-IC6cW4pYtPFbxAIUvD1MDAZOGLc&cl=ffffff" /></a>
+  </div>
+</footer>
+
+
+<!-- Image Slider Javascripts -->
+<!--=================Functions==========================-->
+<script src="./static/js/juxtapose.js"></script>
+
+<script>
+  var slider;
+  let origImages = [
+    { "src": "./image/11765_raw.jpg", "label": "HBox annotations image", },
+    { "src": "./image/11765_ours.jpg", "label": "ABBSPO results", }
+  ];
+  let origOptions = {
+    "makeResponsive": true,
+    "showLabels": true,
+    "mode": "horizontal",
+    "showCredits": true,
+    "animate": true,
+    "startingPosition": "50"
+  };
+
+  const juxtaposeSelector = "#juxtapose-embed";
+  const transientSelector = "#juxtapose-hidden";
+
+
+  function tab_gallery_click(name) {
+    // Get the expanded image
+    let inputImage = {
+      label: "HBox annotations image",
+    };
+    let outputImage = {
+      label: "ABBSPO results",
+    };
+
+    inputImage.src = "./image/".concat(name, "_raw", ".jpg")
+    outputImage.src = "./image/".concat(name, "_ours", ".jpg")
+
+    let images = [inputImage, outputImage];
+    let options = slider.options;
+    options.callback = function (obj) {
+      var newNode = document.getElementById(obj.selector.substring(1));
+      var oldNode = document.getElementById(juxtaposeSelector.substring(1));
+      console.log(obj.selector.substring(1));
+      console.log(newNode.children[0]);
+      oldNode.replaceChild(newNode.children[0], oldNode.children[0]);
+      // newNode.removeChild(newNode.children[0]);
+
+    };
+
+    slider = new juxtapose.JXSlider(transientSelector, images, options);
+  };
+
+  (function () {
+    slider = new juxtapose.JXSlider(
+      juxtaposeSelector, origImages, origOptions);
+    // document.getElementById("left-button").onclick = replaceLeft;
+    // document.getElementById("right-button").onclick = replaceRight;
+
+  })();
+  // Get the image text
+  var imgText = document.getElementById("imgtext");
+  // Use the same src in the expanded image as the image being clicked on from the grid
+  // expandImg.src = imgs.src;
+  // Use the value of the alt attribute of the clickable image as text inside the expanded image
+  imgText.innerHTML = name;
+  // Show the container element (hidden with CSS)
+  // expandImg.parentElement.style.display = "block";
+
+  $(".flip-card").click(function () {
+    console.log("fading in")
+    div_back = $(this).children().children()[1]
+    div_front = $(this).children().children()[0]
+    // console.log($(this).children("div.flip-card-back"))
+    console.log(div_back)
+    $(div_front).addClass("out");
+    $(div_front).removeClass("in");
+
+    $(div_back).addClass("in");
+    $(div_back).removeClass("out");
+
+  });
+
+  $(".flip-card").mouseleave(function () {
+    console.log("fading in")
+    div_back = $(this).children().children()[1]
+    div_front = $(this).children().children()[0]
+    // console.log($(this).children("div.flip-card-back"))
+    console.log(div_back)
+    $(div_front).addClass("in");
+    $(div_front).removeClass("out");
+
+    $(div_back).addClass("out");
+    $(div_back).removeClass("in");
+
+  });
+</script>
+
+
+</body>
+</html>
