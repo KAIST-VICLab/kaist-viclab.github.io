@@ -3,9 +3,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <title>KAIST VICLaB</title>
+    <title>KAIST VICLab</title>
 
-    <meta name="author" content="KAIST VICLaB">
+    <meta name="author" content="KAIST VICLab">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheet.css">
     
@@ -19,7 +19,7 @@
             <tr style="padding:0px">
               <td style="padding:2.5%;width:63%;vertical-align:middle">
                 <p class="name" style="text-align: center;">
-                  KAIST VICLaB
+                  KAIST VICLab
                 </p>
                 <p>Academic website of <a href="https://www.viclab.kaist.ac.kr/">KAIST VICLab</a>, under the advisory of Prof.<a href="https://scholar.google.com/citations?user=bGXte_4AAAAJ&hl=vi&oi=ao/">Munchurl Kim</a>, Korea Advanced Institute of Science & Technology (KAIST), Korea.
                 </p>
@@ -46,7 +46,7 @@
                   Our recent intensive works focus on Computer Vision research
                 </p>
                 <p><font color="red">[1] in the fields of natural image and video restoration: </font> (1) super-resolution, (2) frame interpolation, (3) SDR-to-HDR inverse tone mapping, (4) image in-painting, (5) depth estimation, (6) image deraining, (7) image dehazing, (8) video motion debluring; (9) generative restoration of old photos,</p>
-                <p><font color="red">[2] in the fields of 3D image/video reconstruction:</font> (1) optical flow estimation, (2) camera pose estimation, (3) dynamic neural radiance field (NeRF) and Gaussian splatting learning of video for novel view synthesis;</p>
+                <p><font color="red">[2] in the fields of 3D image/video reconstruction:</font> (1) depth estimation, (2) optical flow estimation, (3) camera pose estimation, (4) dynamic neural radiance field (NeRF) and Gaussian splatting learning of video for novel view synthesis;</p>
                 <p><font color="red">[3] in the fields of satellite images:</font> (1) PAN sharpening, super-resolution and cloud removal of Electro-Optical (EO) images, (2) super-resolution, detection and classification of Synthetic Aperture Radar (SAR) image targets, (3) SAR-to-EO image-to-image translation learning, etc.  </p>
                 <p>Some papers are <span class="highlight">highlighted</span>.</p>
                 
@@ -96,6 +96,49 @@
         <p></p>
         <p>
           COLMAP-free dynamic 3D Gaussian Splatting (3DGS) framework for high-quality reconstruction and fast rendering from monocular videos.
+        </p>
+      </td>
+    </tr>
+
+    <tr onmouseout="fgto_stop()" onmouseover="fgto_start()">
+      <td style="padding:16px;width:20%;vertical-align:middle">
+        <div class="one">
+          <div class="two" id='fgto_image'><video  width=100% muted autoplay loop>
+          <source src="images/fgto.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+          </video></div>
+          <img src='images/fgto.png' width=100%>
+        </div>
+        <script type="text/javascript">
+          function fgto_start() {
+            document.getElementById('fgto_image').style.opacity = "1";
+          }
+
+          function fgto_stop() {
+            document.getElementById('fgto_image').style.opacity = "0";
+          }
+          fgto_stop()
+        </script>
+      </td>
+      <td style="padding:8px;width:80%;vertical-align:middle">
+        <a href="https://kaist-viclab.github.io/From_Ground_To_Objects_site">
+          <span class="papertitle">From-Ground-To-Objects:
+            Coarse-to-Fine Self-supervised Monocular Depth Estimation of Dynamic Objects with Ground Contact Prior</span>
+        </a>
+        <br>
+        <a href="https://www.viclab.kaist.ac.kr/">Jaeho Moon</a>,
+        <a href="https://www.viclab.kaist.ac.kr/">  Juan Luis Gonzalez Bello </a>, 
+        <a href="https://sites.google.com/view/ozbro/"> Byeongjun Kwon</a>,
+        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+        <br>
+        <em>CVPR</em>, 2024
+        <br>
+        <a href="https://kaist-viclab.github.io/From_Ground_To_Objects_site">project page</a>
+        /
+        <a href="https://arxiv.org/abs/2312.10118">arXiv</a>
+        <p></p>
+        <p>
+          Solving dynamic object problems in self-supervised depth estimation using Ground Contacting Prior.
         </p>
       </td>
     </tr>
