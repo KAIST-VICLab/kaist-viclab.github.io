@@ -140,3 +140,59 @@ span.highlight {
     display: inline-block;
     border-radius: 10px;
 }
+
+.filter-container {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.filter-container label {
+  font-size: 1.2em;
+  margin-right: 10px;
+}
+
+.filter-container select {
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease;
+}
+
+.filter-container select:hover {
+  background-color: #e9e9e9;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .filter-container {
+    margin: 10px 0;
+  }
+
+  .filter-container label {
+    font-size: 1em;
+    margin-right: 5px;
+  }
+
+  .filter-container select {
+    padding: 8px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-container {
+    margin: 5px 0;
+  }
+
+  .filter-container label {
+    font-size: 0.9em;
+    margin-right: 5px;
+  }
+
+  .filter-container select {
+    padding: 6px;
+    font-size: 0.8em;
+  }
+}

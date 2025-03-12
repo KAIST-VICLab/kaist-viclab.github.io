@@ -55,8 +55,19 @@
           </tbody></table>
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
 
+    <!-- Year filter dropdown -->
+    <div class="filter-container">
+      <label for="yearFilter">Filter by Year:</label>
+      <select id="yearFilter" onchange="filterByYear()">
+        <option value="all">All</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <!-- Add more years as needed -->
+      </select>
+    </div>
 
-    <tr onmouseout="splinegs_stop()" onmouseover="splinegs_start()">
+    <tr data-year="2025" onmouseout="splinegs_stop()" onmouseover="splinegs_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='splinegs_image'><video  width=100% muted autoplay loop>
@@ -100,7 +111,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="abbspo_stop()" onmouseover="abbspo_start()">
+    <tr data-year="2025" onmouseout="abbspo_stop()" onmouseover="abbspo_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='abbspo_image'><video  width=100% muted autoplay loop>
@@ -143,7 +154,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="bim_stop()" onmouseover="bim_start()">
+    <tr data-year="2025" onmouseout="bim_stop()" onmouseover="bim_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='bim_image'><video  width=100% muted autoplay loop>
@@ -184,7 +195,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="ukd_stop()" onmouseover="ukd_start()">
+    <tr data-year="2025" onmouseout="ukd_stop()" onmouseover="ukd_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='ukd_image'><video  width=100% muted autoplay loop>
@@ -226,7 +237,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="modecgs_stop()" onmouseover="modecgs_start()">
+    <tr data-year="2025" onmouseout="modecgs_stop()" onmouseover="modecgs_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='modecgs_image'><video  width=100% muted autoplay loop>
@@ -270,7 +281,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="mive_stop()" onmouseover="mive_start()">
+    <tr data-year="2024" onmouseout="mive_stop()" onmouseover="mive_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='mive_image'><video  width=100% muted autoplay loop>
@@ -313,7 +324,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="dakd_stop()" onmouseover="dakd_start()">
+    <tr data-year="2024" onmouseout="dakd_stop()" onmouseover="dakd_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='dakd_image'><video  width=100% muted autoplay loop>
@@ -356,7 +367,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="cdiffset_stop()" onmouseover="cdiffset_start()">
+    <tr data-year="2024" onmouseout="cdiffset_stop()" onmouseover="cdiffset_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='cdiffset_image'><video  width=100% muted autoplay loop>
@@ -397,7 +408,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
+    <tr data-year="2024" onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='tdsm_image'><video  width=100% muted autoplay loop>
@@ -437,7 +448,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="skate_stop()" onmouseover="skate_start()">
+    <tr data-year="2024" onmouseout="skate_stop()" onmouseover="skate_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='skate_image'><video  width=100% muted autoplay loop>
@@ -477,7 +488,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="fmanet_stop()" onmouseover="fmanet_start()">
+    <tr data-year="2024" onmouseout="fmanet_stop()" onmouseover="fmanet_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='fmanet_image'><video  width=100% muted autoplay loop>
@@ -518,7 +529,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="fgto_stop()" onmouseover="fgto_start()">
+    <tr data-year="2024" onmouseout="fgto_stop()" onmouseover="fgto_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='fgto_image'><video  width=100% muted autoplay loop>
@@ -561,7 +572,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="monovde_stop()" onmouseover="monovde_start()">
+    <tr data-year="2024" onmouseout="monovde_stop()" onmouseover="monovde_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='monovde_image'><video  width=100% muted autoplay loop>
@@ -601,7 +612,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="dyblurf_stop()" onmouseover="dyblurf_start()">
+    <tr data-year="2023" onmouseout="dyblurf_stop()" onmouseover="dyblurf_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='dyblurf_image'><video  width=100% muted autoplay loop>
@@ -643,7 +654,7 @@
       </td>
     </tr>
 
-    <tr onmouseout="pronerf_stop()" onmouseover="pronerf_start()">
+    <tr data-year="2023" onmouseout="pronerf_stop()" onmouseover="pronerf_start()">
       <td style="padding:16px;width:20%;vertical-align:middle">
         <div class="one">
           <div class="two" id='pronerf_image'><video  width=100% muted autoplay loop>
@@ -699,5 +710,21 @@
         </td>
       </tr>
     </table>
+
+    <script>
+      function filterByYear() {
+        var selectedYear = document.getElementById('yearFilter').value;
+        var rows = document.querySelectorAll('tr[data-year]');
+  
+        rows.forEach(function(row) {
+          if (selectedYear === 'all' || row.getAttribute('data-year') === selectedYear) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      }
+    </script>
+
   </body>
 </html>
