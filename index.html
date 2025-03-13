@@ -55,645 +55,645 @@
           </tbody></table>
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
 
-    <!-- Year filter dropdown -->
-    <div class="filter-container">
-      <label for="yearFilter">Filter by Year:</label>
-      <select id="yearFilter" onchange="filterByYear()">
-        <option value="all">All</option>
-        <option value="2025">2025</option>
-        <option value="2024">2024</option>
-        <option value="2023">2023</option>
-        <!-- Add more years as needed -->
-      </select>
-    </div>
+          <!-- Year filter dropdown -->
+          <div class="filter-container">
+            <label for="yearFilter">Filter by Year:</label>
+            <select id="yearFilter" onchange="filterByYear()">
+              <option value="all">All</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <!-- Add more years as needed -->
+            </select>
+          </div>
 
-    <tr data-year="2025" onmouseout="splinegs_stop()" onmouseover="splinegs_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='splinegs_image'><video  width=100% muted autoplay loop>
-          <source src="images/splinegs.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/splinegs.png' width=100%>
-        </div>
-        <script type="text/javascript">
-          function splinegs_start() {
-            document.getElementById('splinegs_image').style.opacity = "1";
-          }
+          <tr data-year="2025" onmouseout="splinegs_stop()" onmouseover="splinegs_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='splinegs_image'><video  width=100% muted autoplay loop>
+                <source src="images/splinegs.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/splinegs.png' width=100%>
+              </div>
+              <script type="text/javascript">
+                function splinegs_start() {
+                  document.getElementById('splinegs_image').style.opacity = "1";
+                }
 
-          function splinegs_stop() {
-            document.getElementById('splinegs_image').style.opacity = "0";
-          }
-          splinegs_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/splinegs-site">
-          <span class="papertitle">SplineGS: Robust Motion-Adaptive Spline for Real-Time Dynamic 3D Gaussians from Monocular Video</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Jongmin Park*</a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui*</a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello </a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Jaeho Moon </a>, 
-        <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2025
-        <br>
-        <a href="https://kaist-viclab.github.io/splinegs-site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2412.09982">arXiv</a>
-        <p></p>
-        <p>
-          COLMAP-free dynamic 3D Gaussian Splatting (3DGS) framework for high-quality reconstruction and fast rendering from monocular videos.
-        </p>
-      </td>
-    </tr>
+                function splinegs_stop() {
+                  document.getElementById('splinegs_image').style.opacity = "0";
+                }
+                splinegs_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/splinegs-site">
+                <span class="papertitle">SplineGS: Robust Motion-Adaptive Spline for Real-Time Dynamic 3D Gaussians from Monocular Video</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Jongmin Park*</a>,
+              <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui*</a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello </a>,
+              <a href="https://www.viclab.kaist.ac.kr/"> Jaeho Moon </a>, 
+              <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/splinegs-site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2412.09982">arXiv</a>
+              <p></p>
+              <p>
+                COLMAP-free dynamic 3D Gaussian Splatting (3DGS) framework for high-quality reconstruction and fast rendering from monocular videos.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2025" onmouseout="abbspo_stop()" onmouseover="abbspo_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='abbspo_image'><video  width=100% muted autoplay loop>
-          <source src="images/abbspo.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/abbspo.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function abbspo_start() {
-            document.getElementById('abbspo_image').style.opacity = "1";
-          }
+          <tr data-year="2025" onmouseout="abbspo_stop()" onmouseover="abbspo_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='abbspo_image'><video  width=100% muted autoplay loop>
+                <source src="images/abbspo.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/abbspo.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function abbspo_start() {
+                  document.getElementById('abbspo_image').style.opacity = "1";
+                }
 
-          function abbspo_stop() {
-            document.getElementById('abbspo_image').style.opacity = "0";
-          }
-          abbspo_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/ABBSPO_site">
-          <span class="papertitle">ABBSPO: Adaptive Bounding Box Scaling and Symmetric Prior based Orientation Prediction for Detection Aerial Image Objects</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Woojin Lee*</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">  Hyugjae Chang*</a>, 
-        <a href="https://www.viclab.kaist.ac.kr/"> Jaeho Moon </a>,
-        <a href="https://www.viclab.kaist.ac.kr/">  Jaehyup Lee </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2025
-        <br>
-        <a href="https://kaist-viclab.github.io/ABBSPO_site">project page</a>
-        /
-        <a href="">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function abbspo_stop() {
+                  document.getElementById('abbspo_image').style.opacity = "0";
+                }
+                abbspo_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/ABBSPO_site">
+                <span class="papertitle">ABBSPO: Adaptive Bounding Box Scaling and Symmetric Prior based Orientation Prediction for Detection Aerial Image Objects</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Woojin Lee*</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">  Hyugjae Chang*</a>, 
+              <a href="https://www.viclab.kaist.ac.kr/"> Jaeho Moon </a>,
+              <a href="https://www.viclab.kaist.ac.kr/">  Jaehyup Lee </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/ABBSPO_site">project page</a>
+              /
+              <a href="">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2025" onmouseout="bim_stop()" onmouseover="bim_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='bim_image'><video  width=100% muted autoplay loop>
-          <source src="images/bim.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/bim.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function bim_start() {
-            document.getElementById('bim_image').style.opacity = "1";
-          }
+          <tr data-year="2025" onmouseout="bim_stop()" onmouseover="bim_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='bim_image'><video  width=100% muted autoplay loop>
+                <source src="images/bim.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/bim.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function bim_start() {
+                  document.getElementById('bim_image').style.opacity = "1";
+                }
 
-          function bim_stop() {
-            document.getElementById('bim_image').style.opacity = "0";
-          }
-          bim_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/BiM-VFI_site">
-          <span class="papertitle">BiM-VFI: Bidirectional Motion Fields-Guided Frame Interpolation for Video with Non-uniform Motions</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Wonyong Seo</a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Jihyong Oh </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2025
-        <br>
-        <a href="https://kaist-viclab.github.io/BiM-VFI_site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2412.11365">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function bim_stop() {
+                  document.getElementById('bim_image').style.opacity = "0";
+                }
+                bim_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/BiM-VFI_site">
+                <span class="papertitle">BiM-VFI: Bidirectional Motion Fields-Guided Frame Interpolation for Video with Non-uniform Motions</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Wonyong Seo</a>,
+              <a href="https://www.viclab.kaist.ac.kr/"> Jihyong Oh </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/BiM-VFI_site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2412.11365">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2025" onmouseout="ukd_stop()" onmouseover="ukd_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='ukd_image'><video  width=100% muted autoplay loop>
-          <source src="images/ukd.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/ukd.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function ukd_start() {
-            document.getElementById('ukd_image').style.opacity = "1";
-          }
+          <tr data-year="2025" onmouseout="ukd_stop()" onmouseover="ukd_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='ukd_image'><video  width=100% muted autoplay loop>
+                <source src="images/ukd.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/ukd.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function ukd_start() {
+                  document.getElementById('ukd_image').style.opacity = "1";
+                }
 
-          function ukd_stop() {
-            document.getElementById('ukd_image').style.opacity = "0";
-          }
-          ukd_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/">
-          <span class="papertitle">U-Know-Diff-PAN: Uncertainty-aware Knowledge Distillation Diffusion Framework with Details Enhancement for PAN-Sharpening</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Sungpyo Kim</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">  Jeonghyeok Do </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">   Jaehyup Lee </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2025
-        <br>
-        <a href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2412.06243">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function ukd_stop() {
+                  document.getElementById('ukd_image').style.opacity = "0";
+                }
+                ukd_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/">
+                <span class="papertitle">U-Know-Diff-PAN: Uncertainty-aware Knowledge Distillation Diffusion Framework with Details Enhancement for PAN-Sharpening</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Sungpyo Kim</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">  Jeonghyeok Do </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">   Jaehyup Lee </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2412.06243">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2025" onmouseout="modecgs_stop()" onmouseover="modecgs_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='modecgs_image'><video  width=100% muted autoplay loop>
-          <source src="images/modecgs.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/modecgs.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function modecgs_start() {
-            document.getElementById('modecgs_image').style.opacity = "1";
-          }
+          <tr data-year="2025" onmouseout="modecgs_stop()" onmouseover="modecgs_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='modecgs_image'><video  width=100% muted autoplay loop>
+                <source src="images/modecgs.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/modecgs.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function modecgs_start() {
+                  document.getElementById('modecgs_image').style.opacity = "1";
+                }
 
-          function modecgs_stop() {
-            document.getElementById('modecgs_image').style.opacity = "0";
-          }
-          modecgs_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/MoDecGS-site">
-          <span class="papertitle">MoDec-GS: Global-to-Local Motion Decomposition and Temporal Interval Adjustment for Compact Dynamic 3D Gaussian Splatting</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Sangwoon Kwak</a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Joonsoo Kim</a>, 
-        <a href="https://www.viclab.kaist.ac.kr/"> Jun Young Jeong </a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Won-Sik Cheong </a>, 
-        <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2025
-        <br>
-        <a href="https://kaist-viclab.github.io/MoDecGS-site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2501.03714">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function modecgs_stop() {
+                  document.getElementById('modecgs_image').style.opacity = "0";
+                }
+                modecgs_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/MoDecGS-site">
+                <span class="papertitle">MoDec-GS: Global-to-Local Motion Decomposition and Temporal Interval Adjustment for Compact Dynamic 3D Gaussian Splatting</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Sangwoon Kwak</a>,
+              <a href="https://www.viclab.kaist.ac.kr/"> Joonsoo Kim</a>, 
+              <a href="https://www.viclab.kaist.ac.kr/"> Jun Young Jeong </a>,
+              <a href="https://www.viclab.kaist.ac.kr/"> Won-Sik Cheong </a>, 
+              <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/MoDecGS-site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2501.03714">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="mive_stop()" onmouseover="mive_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='mive_image'><video  width=100% muted autoplay loop>
-          <source src="images/mive.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/mive.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function mive_start() {
-            document.getElementById('mive_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="mive_stop()" onmouseover="mive_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='mive_image'><video  width=100% muted autoplay loop>
+                <source src="images/mive.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/mive.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function mive_start() {
+                  document.getElementById('mive_image').style.opacity = "1";
+                }
 
-          function mive_stop() {
-            document.getElementById('mive_image').style.opacity = "0";
-          }
-          mive_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/mive-site">
-          <span class="papertitle">MIVE: New Design and Benchmark for Multi-Instance Video Editing</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Samuel Teodoro*</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">   Agus Gunawan* </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">   Soo Ye Kim </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">    Jihyong Oh </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>arXiv</em>, 2024
-        <br>
-        <a href="https://kaist-viclab.github.io/mive-site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2412.12877">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function mive_stop() {
+                  document.getElementById('mive_image').style.opacity = "0";
+                }
+                mive_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/mive-site">
+                <span class="papertitle">MIVE: New Design and Benchmark for Multi-Instance Video Editing</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Samuel Teodoro*</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">   Agus Gunawan* </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">   Soo Ye Kim </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">    Jihyong Oh </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>arXiv</em>, 2024
+              <br>
+              <a href="https://kaist-viclab.github.io/mive-site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2412.12877">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="dakd_stop()" onmouseover="dakd_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='dakd_image'><video  width=100% muted autoplay loop>
-          <source src="images/dakd.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/dakd.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function dakd_start() {
-            document.getElementById('dakd_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="dakd_stop()" onmouseover="dakd_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='dakd_image'><video  width=100% muted autoplay loop>
+                <source src="images/dakd.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/dakd.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function dakd_start() {
+                  document.getElementById('dakd_image').style.opacity = "1";
+                }
 
-          function dakd_stop() {
-            document.getElementById('dakd_image').style.opacity = "0";
-          }
-          dakd_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/DAKD-site">
-          <span class="papertitle">DAKD: Data Augmentation and Knowledge Distillation using Diffusion Models for SAR Oil Spill Segmentation</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Jaeho Moon*</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">    Jeonghwan Yun* </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">   Jaehyun Kim* </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">    Jaehyup Lee </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>arXiv</em>, 2024
-        <br>
-        <a href="https://kaist-viclab.github.io/DAKD-site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2412.08116">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function dakd_stop() {
+                  document.getElementById('dakd_image').style.opacity = "0";
+                }
+                dakd_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/DAKD-site">
+                <span class="papertitle">DAKD: Data Augmentation and Knowledge Distillation using Diffusion Models for SAR Oil Spill Segmentation</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Jaeho Moon*</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">    Jeonghwan Yun* </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">   Jaehyun Kim* </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">    Jaehyup Lee </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>arXiv</em>, 2024
+              <br>
+              <a href="https://kaist-viclab.github.io/DAKD-site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2412.08116">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="cdiffset_stop()" onmouseover="cdiffset_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='cdiffset_image'><video  width=100% muted autoplay loop>
-          <source src="images/cdiffset.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/cdiffset.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function cdiffset_start() {
-            document.getElementById('cdiffset_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="cdiffset_stop()" onmouseover="cdiffset_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='cdiffset_image'><video  width=100% muted autoplay loop>
+                <source src="images/cdiffset.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/cdiffset.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function cdiffset_start() {
+                  document.getElementById('cdiffset_image').style.opacity = "1";
+                }
 
-          function cdiffset_stop() {
-            document.getElementById('cdiffset_image').style.opacity = "0";
-          }
-          cdiffset_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/C-DiffSET_site">
-          <span class="papertitle">C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object Generation</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Jeonghyeok Do</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">    Jaehyup Lee</a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>arXiv</em>, 2024
-        <br>
-        <a href="https://kaist-viclab.github.io/C-DiffSET_site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2411.10788">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function cdiffset_stop() {
+                  document.getElementById('cdiffset_image').style.opacity = "0";
+                }
+                cdiffset_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/C-DiffSET_site">
+                <span class="papertitle">C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object Generation</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Jeonghyeok Do</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">    Jaehyup Lee</a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>arXiv</em>, 2024
+              <br>
+              <a href="https://kaist-viclab.github.io/C-DiffSET_site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2411.10788">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='tdsm_image'><video  width=100% muted autoplay loop>
-          <source src="images/tdsm.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/tdsm.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function tdsm_start() {
-            document.getElementById('tdsm_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='tdsm_image'><video  width=100% muted autoplay loop>
+                <source src="images/tdsm.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/tdsm.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function tdsm_start() {
+                  document.getElementById('tdsm_image').style.opacity = "1";
+                }
 
-          function tdsm_stop() {
-            document.getElementById('tdsm_image').style.opacity = "0";
-          }
-          tdsm_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/TDSM_site">
-          <span class="papertitle">TDSM: Triplet Diffusion for Skeleton-Text Matching in Zero-Shot Action Recognition</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Jeonghyeok Do</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>arXiv</em>, 2024
-        <br>
-        <a href="https://kaist-viclab.github.io/TDSM_site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2411.10745">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function tdsm_stop() {
+                  document.getElementById('tdsm_image').style.opacity = "0";
+                }
+                tdsm_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/TDSM_site">
+                <span class="papertitle">TDSM: Triplet Diffusion for Skeleton-Text Matching in Zero-Shot Action Recognition</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Jeonghyeok Do</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>arXiv</em>, 2024
+              <br>
+              <a href="https://kaist-viclab.github.io/TDSM_site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2411.10745">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="skate_stop()" onmouseover="skate_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='skate_image'><video  width=100% muted autoplay loop>
-          <source src="images/skate.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/skate.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function skate_start() {
-            document.getElementById('skate_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="skate_stop()" onmouseover="skate_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='skate_image'><video  width=100% muted autoplay loop>
+                <source src="images/skate.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/skate.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function skate_start() {
+                  document.getElementById('skate_image').style.opacity = "1";
+                }
 
-          function skate_stop() {
-            document.getElementById('skate_image').style.opacity = "0";
-          }
-          skate_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/SkateFormer_site/">
-          <span class="papertitle">SkateFormer: Skeletal-Temporal Transformer for Human Action Recognition</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Jeonghyeok Do</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>ECCV</em>, 2024
-        <br>
-        <a href="https://kaist-viclab.github.io/SkateFormer_site/">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2403.09508">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function skate_stop() {
+                  document.getElementById('skate_image').style.opacity = "0";
+                }
+                skate_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/SkateFormer_site/">
+                <span class="papertitle">SkateFormer: Skeletal-Temporal Transformer for Human Action Recognition</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Jeonghyeok Do</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>ECCV</em>, 2024
+              <br>
+              <a href="https://kaist-viclab.github.io/SkateFormer_site/">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2403.09508">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="fmanet_stop()" onmouseover="fmanet_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='fmanet_image'><video  width=100% muted autoplay loop>
-          <source src="images/fmanet.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/fmanet.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function fmanet_start() {
-            document.getElementById('fmanet_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="fmanet_stop()" onmouseover="fmanet_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='fmanet_image'><video  width=100% muted autoplay loop>
+                <source src="images/fmanet.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/fmanet.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function fmanet_start() {
+                  document.getElementById('fmanet_image').style.opacity = "1";
+                }
 
-          function fmanet_stop() {
-            document.getElementById('fmanet_image').style.opacity = "0";
-          }
-          fmanet_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/fmanet-site/">
-          <span class="papertitle">FMA-Net: Flow-Guided Dynamic Filtering and Iterative Feature Refinement with Multi-Attention for Joint Video Super-Resolution and Deblurring</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Geunhyuk Youk </a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Jihyong Oh </a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2024 &nbsp <font color="red"><strong>(Oral Presentation)</strong></font>
-        <br>
-        <a href="https://kaist-viclab.github.io/fmanet-site/">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2401.03707">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function fmanet_stop() {
+                  document.getElementById('fmanet_image').style.opacity = "0";
+                }
+                fmanet_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/fmanet-site/">
+                <span class="papertitle">FMA-Net: Flow-Guided Dynamic Filtering and Iterative Feature Refinement with Multi-Attention for Joint Video Super-Resolution and Deblurring</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Geunhyuk Youk </a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Jihyong Oh </a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2024 &nbsp <font color="red"><strong>(Oral Presentation)</strong></font>
+              <br>
+              <a href="https://kaist-viclab.github.io/fmanet-site/">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2401.03707">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="fgto_stop()" onmouseover="fgto_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='fgto_image'><video  width=100% muted autoplay loop>
-          <source src="images/fgto.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/fgto.png' width=100%>
-        </div>
-        <script type="text/javascript">
-          function fgto_start() {
-            document.getElementById('fgto_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="fgto_stop()" onmouseover="fgto_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='fgto_image'><video  width=100% muted autoplay loop>
+                <source src="images/fgto.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/fgto.png' width=100%>
+              </div>
+              <script type="text/javascript">
+                function fgto_start() {
+                  document.getElementById('fgto_image').style.opacity = "1";
+                }
 
-          function fgto_stop() {
-            document.getElementById('fgto_image').style.opacity = "0";
-          }
-          fgto_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/From_Ground_To_Objects_site">
-          <span class="papertitle">From-Ground-To-Objects:
-            Coarse-to-Fine Self-supervised Monocular Depth Estimation of Dynamic Objects with Ground Contact Prior</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Jaeho Moon</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">  Juan Luis Gonzalez Bello </a>, 
-        <a href="https://sites.google.com/view/ozbro/"> Byeongjun Kwon</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2024
-        <br>
-        <a href="https://kaist-viclab.github.io/From_Ground_To_Objects_site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2312.10118">arXiv</a>
-        <p></p>
-        <p>
-          Solving dynamic object problems in self-supervised depth estimation using Ground Contacting Prior.
-        </p>
-      </td>
-    </tr>
+                function fgto_stop() {
+                  document.getElementById('fgto_image').style.opacity = "0";
+                }
+                fgto_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/From_Ground_To_Objects_site">
+                <span class="papertitle">From-Ground-To-Objects:
+                  Coarse-to-Fine Self-supervised Monocular Depth Estimation of Dynamic Objects with Ground Contact Prior</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Jaeho Moon</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">  Juan Luis Gonzalez Bello </a>, 
+              <a href="https://sites.google.com/view/ozbro/"> Byeongjun Kwon</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2024
+              <br>
+              <a href="https://kaist-viclab.github.io/From_Ground_To_Objects_site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2312.10118">arXiv</a>
+              <p></p>
+              <p>
+                Solving dynamic object problems in self-supervised depth estimation using Ground Contacting Prior.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2024" onmouseout="monovde_stop()" onmouseover="monovde_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='monovde_image'><video  width=100% muted autoplay loop>
-          <source src="images/monovde.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/monovde.png' width=100% onerror="this.src='images/none.jpg'">
-        </div>
-        <script type="text/javascript">
-          function monovde_start() {
-            document.getElementById('monovde_image').style.opacity = "1";
-          }
+          <tr data-year="2024" onmouseout="monovde_stop()" onmouseover="monovde_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='monovde_image'><video  width=100% muted autoplay loop>
+                <source src="images/monovde.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/monovde.png' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function monovde_start() {
+                  document.getElementById('monovde_image').style.opacity = "1";
+                }
 
-          function monovde_stop() {
-            document.getElementById('monovde_image').style.opacity = "0";
-          }
-          monovde_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/monovde-site/">
-          <span class="papertitle">Novel View Synthesis with View-Dependent Effects from a Single Image</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello </a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>CVPR</em>, 2024
-        <br>
-        <a href="https://kaist-viclab.github.io/monovde-site/">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2312.08071">arXiv</a>
-        <p></p>
-        <p>
-          TBD.
-        </p>
-      </td>
-    </tr>
+                function monovde_stop() {
+                  document.getElementById('monovde_image').style.opacity = "0";
+                }
+                monovde_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/monovde-site/">
+                <span class="papertitle">Novel View Synthesis with View-Dependent Effects from a Single Image</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello </a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>CVPR</em>, 2024
+              <br>
+              <a href="https://kaist-viclab.github.io/monovde-site/">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2312.08071">arXiv</a>
+              <p></p>
+              <p>
+                TBD.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2023" onmouseout="dyblurf_stop()" onmouseover="dyblurf_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='dyblurf_image'><video  width=100% muted autoplay loop>
-          <source src="images/dyblurf.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/dyblurf.jpg' width=100%>
-        </div>
-        <script type="text/javascript">
-          function dyblurf_start() {
-            document.getElementById('dyblurf_image').style.opacity = "1";
-          }
+          <tr data-year="2023" onmouseout="dyblurf_stop()" onmouseover="dyblurf_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='dyblurf_image'><video  width=100% muted autoplay loop>
+                <source src="images/dyblurf.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/dyblurf.jpg' width=100%>
+              </div>
+              <script type="text/javascript">
+                function dyblurf_start() {
+                  document.getElementById('dyblurf_image').style.opacity = "1";
+                }
 
-          function dyblurf_stop() {
-            document.getElementById('dyblurf_image').style.opacity = "0";
-          }
-          dyblurf_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/dyblurf-site">
-          <span class="papertitle">DyBluRF: Dynamic Deblurring Neural Radiance Fields for Blurry Monocular Video</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Minh-Quan Viet Bui*</a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Jongmin Park* </a>, 
-        <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>arXiv</em>, 2023
-        <br>
-        <a href="https://kaist-viclab.github.io/dyblurf-site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2312.13528">arXiv</a>
-        <p></p>
-        <p>
-          Dynamic deblurring NeRF framework for reconstructing dynamic scenes from blurry monocular video.
-        </p>
-      </td>
-    </tr>
+                function dyblurf_stop() {
+                  document.getElementById('dyblurf_image').style.opacity = "0";
+                }
+                dyblurf_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/dyblurf-site">
+                <span class="papertitle">DyBluRF: Dynamic Deblurring Neural Radiance Fields for Blurry Monocular Video</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Minh-Quan Viet Bui*</a>,
+              <a href="https://www.viclab.kaist.ac.kr/"> Jongmin Park* </a>, 
+              <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>arXiv</em>, 2023
+              <br>
+              <a href="https://kaist-viclab.github.io/dyblurf-site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2312.13528">arXiv</a>
+              <p></p>
+              <p>
+                Dynamic deblurring NeRF framework for reconstructing dynamic scenes from blurry monocular video.
+              </p>
+            </td>
+          </tr>
 
-    <tr data-year="2023" onmouseout="pronerf_stop()" onmouseover="pronerf_start()">
-      <td style="padding:16px;width:20%;vertical-align:middle">
-        <div class="one">
-          <div class="two" id='pronerf_image'><video  width=100% muted autoplay loop>
-          <source src="images/pronerf.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-          </video></div>
-          <img src='images/pronerf.jpg' width=100%>
-        </div>
-        <script type="text/javascript">
-          function pronerf_start() {
-            document.getElementById('pronerf_image').style.opacity = "1";
-          }
+          <tr data-year="2023" onmouseout="pronerf_stop()" onmouseover="pronerf_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='pronerf_image'><video  width=100% muted autoplay loop>
+                <source src="images/pronerf.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/pronerf.jpg' width=100%>
+              </div>
+              <script type="text/javascript">
+                function pronerf_start() {
+                  document.getElementById('pronerf_image').style.opacity = "1";
+                }
 
-          function pronerf_stop() {
-            document.getElementById('pronerf_image').style.opacity = "0";
-          }
-          pronerf_stop()
-        </script>
-      </td>
-      <td style="padding:8px;width:80%;vertical-align:middle">
-        <a href="https://kaist-viclab.github.io/pronerf-site">
-          <span class="papertitle">ProNeRF: Learning Efficient Projection-Aware Ray Sampling for Fine-Grained Implicit Neural Radiance Fields</span>
-        </a>
-        <br>
-        <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello*</a>,
-        <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui* </a>, 
-        <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-        <br>
-        <em>IEEE Access</em>
-        <br>
-        <a href="https://kaist-viclab.github.io/pronerf-site">project page</a>
-        /
-        <a href="https://arxiv.org/abs/2312.08136">arXiv</a>
-        <p></p>
-        <p>
-          Efficient NeRF framework for fine-grained 3D scene reconstruction with few sampling points via projection-aware ray sampling.
-        </p>
-      </td>
-    </tr>
+                function pronerf_stop() {
+                  document.getElementById('pronerf_image').style.opacity = "0";
+                }
+                pronerf_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/pronerf-site">
+                <span class="papertitle">ProNeRF: Learning Efficient Projection-Aware Ray Sampling for Fine-Grained Implicit Neural Radiance Fields</span>
+              </a>
+              <br>
+              <a href="https://www.viclab.kaist.ac.kr/">Juan Luis Gonzalez Bello*</a>,
+              <a href="https://www.viclab.kaist.ac.kr/"> Minh-Quan Viet Bui* </a>, 
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>IEEE Access</em>
+              <br>
+              <a href="https://kaist-viclab.github.io/pronerf-site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2312.08136">arXiv</a>
+              <p></p>
+              <p>
+                Efficient NeRF framework for fine-grained 3D scene reconstruction with few sampling points via projection-aware ray sampling.
+              </p>
+            </td>
+          </tr>
 
 
           
