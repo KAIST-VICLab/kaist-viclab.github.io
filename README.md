@@ -1,1 +1,1 @@
-This is the source code to VICLaB's public academic website: https://kaist-viclab.github.io/.
+This is the source code to VICLAB's public academic website: https://kaist-viclab.github.io/.
