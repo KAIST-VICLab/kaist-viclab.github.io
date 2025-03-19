@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="description"
-          content="Data Augmentation and Knowledge Distillation using Diffusion Models for SAR Oil Spill Segmentation">
+          content="Diffusion-based Data Augmentation and Knowledge Distillation with Generated Soft Labels Solving Data Scarcity Problems of SAR Oil Spill Segmentation">
     <meta name="keywords" content="DAKD, Remote Sensing, SAR, Segmentation, Diffusion, Data Augmentation, Knowledge Distillation">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>DAKD: Data Augmentation and Knowledge Distillation using Diffusion Models for SAR Oil Spill Segmentation</title>
+    <title>Diffusion-based Data Augmentation and Knowledge Distillation with Generated Soft Labels Solving Data Scarcity Problems of SAR Oil Spill Segmentation</title>
     <style>
         @keyframes shake {
           0% {transform: translateX(0);}
@@ -114,12 +114,8 @@
                 <div class="column has-text-centered">
                     <div class="title is-2 publication-title">
                         <h1 style="display: inline; clear:none; line-height: 1.5; vertical-align: middle;">
-                        <img src="./static/image/batman.png" width="50", height="50" style="vertical-align: top;">
-                        <font color="#000000"><b>DA</b></font><font color="#FFD700"><b>KD</b></font>:
-                        <font color="#000000"><b>D</b></font>ata 
-                        <font color="#000000"><b>A</b></font>ugmentation and 
-                        <font color="#FFD700"><b>K</b></font>nowledge 
-                        <font color="#FFD700"><b>D</b></font>istillation using Diffusion Models for SAR Oil Spill Segmentation
+                        <!-- <img src="./static/image/batman.png" width="50", height="50" style="vertical-align: top;"> -->
+                        Diffusion-based Data Augmentation and Knowledge Distillation with Generated Soft Labels Solving Data Scarcity Problems of SAR Oil Spill Segmentation
                         </h1>
                     </div>
                     <!-- <div class="is-size-5 publication-authors" style="margin-bottom: 20px;"> -->
@@ -182,7 +178,7 @@
 
                             <!-- Code Link. -->
                 <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/DAKD"
+                <a target="_blank" rel="noopener noreferrer" href=""
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -212,15 +208,13 @@
         <div class="columns is-centered has-text-centered">
             <div class="column is-full">
                 <!-- <h2 class="title is-3">Overall Framework</h2> -->
-                <!-- <image src="./static/image/figure_1.png" style="width: 70%; height: auto; display: block; margin: 0 auto;"><br> -->
-                <video controls autoplay loop muted>
+                <image src="./static/image/figure_1.png" style="width: 70%; height: auto; display: block; margin: 0 auto;"><br>
+                <!-- <video controls autoplay loop muted>
                     <source src="./static/video/Overall Pipeline_video.mp4" type="video/mp4">
-                </video>
+                </video> -->
                 <div class="content has-text-justified" style="margin-bottom: 40px;">
                     <p>
-                        <b>Overview of our Data Augmentation and Knowledge
-                            Distillation (DAKD) pipeline. The diffusion-based SAR-JointNet
-                            learns to generate SAR images and their soft labels for data augmentation and knowledge distillation to our student SAROSS-Net.
+                        <b>Overview of our Data Augmentation and Knowledge Transfer (DAKTer) strategy.
                     </p>
                 </div>
             </div>
@@ -236,18 +230,19 @@
                 <h2 class="title is-3">Abstract</h2>
                 <div class="content has-text-justified" style="margin-bottom: 40px;">
                     <p>
-                        Oil spills in the ocean pose severe environmental risks, making early detection essential. 
-Synthetic aperture radar (SAR) based oil spill segmentation offers robust monitoring under various conditions but faces challenges due to the limited labeled data and inherent speckle noise in SAR imagery.
-To address these issues, we propose (i) a diffusion-based Data Augmentation and Knowledge Distillation (DAKD) pipeline and (ii) a novel SAR oil spill segmentation network, called SAROSS-Net. 
+                        Oil spills pose severe environmental risks, making early detection crucial for effective response and mitigation.
+                        As Synthetic Aperture Radar (SAR) images operate under all-weather conditions, SAR-based oil spill segmentation enables fast and robust monitoring.
+                        However, when using deep learning models, SAR oil spill segmentation often struggles in training due to the scarcity of labeled data.
                     </p>
                     <p>
-                        In our DAKD pipeline, we present a diffusion-based SAR-JointNet that learns to generate realistic SAR images and their labels for segmentation, by effectively modeling joint distribution with balancing two modalities. 
-The DAKD pipeline augments the training dataset and distills knowledge from SAR-JointNet by utilizing generated soft labels (pixel-wise probability maps) to supervise our SAROSS-Net.
-The SAROSS-Net is designed to selectively transfer high-frequency features from noisy SAR images, by employing novel Context-Aware Feature Transfer blocks along skip connections.
+                        To address this limitation, we propose a diffusion-based data augmentation with knowledge transfer (DAKTer) strategy. 
+                        Our DAKTer strategy enables a diffusion model to generate SAR oil spill images along with soft label pairs, which offer richer class probability distributions than segmentation masks (i.e. hard labels).
+                        Also, for reliable joint generation of high-quality SAR images and well-aligned soft labels, we introduce an SNR-based balancing factor aligning the noise corruption process of both modalilties in diffusion models.
+                        By leveraging the generated SAR images and soft labels, a student segmentation model can learn robust feature representations without teacher models trained for the same task, improving its ability to segment oil spill regions.
                     </p>
                     <p>
-                        We demonstrate our SAR-JointNet can generate realistic SAR images and well-aligned segmentation labels, providing the augmented data to train SAROSS-Net with enhanced generalizability. 
-Our SAROSS-Net trained with the DAKD pipeline significantly outperforms existing SAR oil spill segmentation methods with large margins.
+                        Extensive experiments demonstrate that our DAKTer strategy effectively transfers the knowledge of per-pixel class probabilities to the student segmentation model to distinguish the oil spill regions from other look-alike regions in the SAR images. 
+                        Our DAKTer strategy boosts various segmentation models to achieve superior performance with large margins compared to other generative data augmentation methods.
                     </p>
                 </div>
             </div>
@@ -255,42 +250,16 @@ Our SAROSS-Net trained with the DAKD pipeline significantly outperforms existing
     </div>
 </section>
 
-<!-- Network Architecture. -->
 
 <section class="section">
     <div class="container is-max-desktop">
-        <h2 class="title is-3">Network Architecture</h2>
-        <div class="columns is-centered has-text-centered">
-            <!-- 첫 번째 이미지 -->
-            <div class="column">
-                <image src="./static/image/network_architecture.png" style="width: 100%; height: auto; display: block; margin: 0 auto;"><br>
-            </div>
-            <!-- 두 번째 이미지 -->
-            <div class="column">
-                <image src="./static/image/saross_net.png" style="width: 100%; height: auto; display: block; margin: 0 auto;"><br>
-            </div>
-        </div>
-        <!-- 통합 설명 -->
-        <div class="content has-text-justified" style="margin-top: 20px;">
-            <p>
-                <b>Network Architecture:</b> The left figure shows the overall architecture of our SAR-JointNet, which is designed for joint modality fusion and SAR image generation. 
-                The right figure illustrates the SAR Oil Spill Segmentation Network (SAROSS-Net), optimized for precise oil spill segmentation tasks using SAR images.
-            </p>
-        </div>
-    </div>
-</section>
-
-<!-- Discussion. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Quantitative comparison of generated SAR images</h2>
+        <h2 class="title is-3">Quantitative Comparison</h2>
         <div class="columns is-centered has-text-centered">
             <div class="column is-full">
-                <image class="responsive-image" src="./static/image/table_jointnet.PNG" ><br>
+                <image class="responsive-image" src="./static/image/table_main.png" style="width: 100%; max-width: 1200px; height: auto;" ><br>
                 <div class="content has-text-justified" style="margin-bottom: 40px;">
                     <p>
-                        Quantiity comparison of generated SAR images between
-                        our SAR-JointNet and other diffusion-based generative models such as DDPM and Joint-Net.
+                        Quantitative comparison of the qualitiy of generated SAR images and segmentation performance improvement against other generative data augmentation methods.
                     </p>
                 </div>
             </div>
@@ -299,45 +268,15 @@ Our SAROSS-Net trained with the DAKD pipeline significantly outperforms existing
 </section>
 
 
-
-<!-- Performance Comparison. -->
 <section class="section">
     <div class="container is-max-desktop">
-        <h2 class="title is-3">Quantitative comparison of segmentation model</h2>
-
+        <h2 class="title is-3">Qaultitative Comparison of Generation Results</h2>
         <div class="columns is-centered has-text-centered">
             <div class="column is-full">
-                <image class="responsive-image" src="./static/image/table_SAROSS1.PNG"><br>
-            </div>
-        </div>
-
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image class="responsive-image" src="./static/image/table_SAROSS2.PNG"><br>
-            </div>
-        </div>
-
-        <div class="content has-text-justified" style="margin-top: 20px;">
-            <p>
-                <b>TOP:</b> Oil spill segmentation performance comparison on OSD
-                dataset and SOS dataset (ALOS & Sentinel-1A satellites) with other segmentation model such as CBD-Net, DeepLabV3+, and Segformer.  <br>
-                <b>BOTTOM:</b> Oil spill segmentation performance comparison on OSD
-                dataset showing IoU (%) for 5 classes and mIoU (%) with other segmentation model such as CBD-Net, DeepLabV3+, and Segformer.
-            </p>
-        </div>
-    </div>
-</section>
-
-
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Generation result in SAR images</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image class="responsive-image" src="./static/image/multiclass_gen.png"><br>
+                <image class="responsive-image" src="./static/image/multiclass_gen.png" style="width: 100%; max-width: 1200px; height: auto;" ><br>
                 <div class="content has-text-justified" style="margin-bottom: 40px;">
                     <p>
-                      Joint generation results: Qualitative comparison of SAR images and corresponding segmentation masks generated by: (a) DDPM, (b) JointNet, and (c) SAR-JointNet (ours) to the samples from (d) the Original OSD dataset
+                        Data generation results: Qualitative comparison of SAR images and corresponding segmentation masks generated by (a) SemGAN, (b) DDPM, (c) SatSynth, and (d) Our DAKTer, compared to (e) samples from the original OSD dataset
                     </p>
                 </div>
             </div>
@@ -345,78 +284,12 @@ Our SAROSS-Net trained with the DAKD pipeline significantly outperforms existing
     </div>
 </section>
 
-<!-- generation -->
-<!-- <section class="hero is-small">
-    <div class="hero-body">
-      <div class="container is-max-desktop has-text-centered">
 
-        <div class="tab_container">
-
-          <div id="juxtapose-embed" data-startingposition="30%" data-animate="true" class="juxtapose"
-            style="height: 800px; width: 800px;">
-            <div class="jx-slider">
-              <div class="jx-handle " style="left: 50%;">
-                <div class="jx-arrow jx-left"></div>
-                <div class="jx-control">
-                  <div class="jx-controller" tabindex="0" role="slider" aria-valuenow="50" aria-valuemin="0"
-                    aria-valuemax="100"></div>
-                </div>
-                <div class="jx-arrow jx-right"></div>
-              </div>
-              <div class="jx-image jx-left " style="width: 50%;"><img src="./static/image/project page/osd/sat/1.jpg" alt="">
-                <div class="jx-label" tabindex="0">UDC images</div>
-              </div>
-              <div class="jx-image jx-right " style="width: 50%;"><img src="./static/image/project page/osd/seg/1.png" alt="">
-                <div class="jx-label" tabindex="0">AlignFormer results</div>
-              </div><a href="https://juxtapose.knightlab.com" target="_blank" rel="noopener" class="jx-knightlab">
-                <div class="knightlab-logo"></div><span class="juxtapose-name">JuxtaposeJS</span>
-              </a>
-            </div>
-          </div>
-  
-          <div>
-            <div id="juxtapose-hidden"></div>
-          </div>
-  
-
-          <div id="imgtext"></div>
-        </div>
-  
-
-        <div class="tab_row">
-          <div class="tab_column">
-            <img src="./static/image/project page/osd/sat/2.jpg" onclick="tab_gallery_click('2');">
-          </div>
-          <div class="tab_column">
-            <img src="./static/image/project page/osd/sat/3.jpg" onclick="tab_gallery_click('3');">
-          </div>
-          <div class="tab_column">
-            <img src="./static/image/project page/osd/sat/4.jpg" onclick="tab_gallery_click('4');">
-          </div>
-          <div class="tab_column">
-            <img src="./static/image/project page/osd/sat/5.jpg" onclick="tab_gallery_click('5');">
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <script>
-  bulmaCarousel.attach('#results-carousel', {
-    slidesToShow: 2,
-    loop: true,
-    pagination: false,
-  });
-  </script> -->
-
-<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
-
-<!-- 13개의 샘플 슬라이더 반복 -->
+<!--
 <section class="section">
     <div class="container is-max-desktop">
-        <h1 class="title is-3">Qualitative Comparison of SAR images segmentation</h1>
+        <h1 class="title is-3">Qualitative Comparison of SAR Oil Spill Segmentation</h1>
         <div class="slider-layout">
-            <!-- 왼쪽 고정 카테고리 영역 -->
             <div class="categories", id="slider-categories">
                 <ul>
                     <li>Satellite Image</li>
@@ -427,15 +300,12 @@ Our SAROSS-Net trained with the DAKD pipeline significantly outperforms existing
                     <li>Ground Truth</li>
                 </ul>
             </div>
-            <!-- 오른쪽 슬라이더 영역 -->
             <div class="slider-container">
                 <div class="slider-wrapper" id="slider-wrapper"></div>
-                <!-- 네비게이션 버튼 -->
                 <button class="prev">&lt;</button>
                 <button class="next">&gt;</button>
             </div>
         </div>
-        <!-- 공통 설명 -->
         <div class="description">
             <p>
                 Qualitative comparison of segmentation results on the OSD dataset. Each row shows a SAR input, four segmentation
@@ -444,13 +314,29 @@ results by CBD-Net, SegFormer, DeepLabV3+ and our SAROSS-Net, and a ground truth
         </div>
     </div>
 </section>
-
+-->
 <style>
     body {
         font-family: Arial, sans-serif;
         background-color: #f9f9f9;
         margin: 0;
         padding: 0;
+    }
+
+    .content p {
+        font-size: 1rem; /* Default size for desktop */
+    }
+
+    @media (max-width: 480px) {
+        .content p {
+            font-size: 0.7rem; /* Even smaller text for phones */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .title {
+            font-size: 1rem; /* Even smaller title for phones */
+        }
     }
 
     .slider-layout {
@@ -687,7 +573,7 @@ results by CBD-Net, SegFormer, DeepLabV3+ and our SAROSS-Net, and a ground truth
                     </p>
                 </div>
             </div>
-            <a href="https://mapmyvisitors.com/web/1bx5z" title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=i7CqXEC2_UZnbnTZo-oYv-ClKqSd8rkS3Oq00DNA7gs&cl=ffffff"></a>
+            <a href="https://mapmyvisitors.com/web/1bxv7"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=8f39wntsKU906BAbpLynKVjP41DQFXk-UMU8cGEPz0c&cl=ffffff" /></a>
         </div>
     </div>
 </footer>
