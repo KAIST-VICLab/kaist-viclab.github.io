@@ -4,3 +4,6 @@
 [submodule "From_Ground_To_Objects_site"]
 	path = From_Ground_To_Objects_site
 	url = https://github.com/pmjames16/From_Ground_To_Objects_site.git
+[submodule "DAKTer-site"]
+	path = DAKTer-site
+	url = https://github.com/pmjames16/DAKTer-site.git
