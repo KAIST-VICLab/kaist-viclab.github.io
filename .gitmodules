@@ -1,0 +1,3 @@
+[submodule "splinegs-site"]
+	path = splinegs-site
+	url = https://github.com/quan5609/splinegs-site.git
