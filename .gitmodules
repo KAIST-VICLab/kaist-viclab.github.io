@@ -7,6 +7,6 @@
 [submodule "DAKTer-site"]
 	path = DAKTer-site
 	url = https://github.com/pmjames16/DAKTer-site.git
-[submodule "primedit-ste"]
-	path = primedit-ste
+[submodule "primedit-site"]
+	path = primedit-site
 	url = https://github.com/sateodoro/primedit-site.git
