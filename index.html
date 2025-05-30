@@ -67,6 +67,49 @@
             </select>
           </div>
 
+          <tr data-year="2025" onmouseout="pancrafter_stop()" onmouseover="pancrafter_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='pancrafter_image'><video  width=100% muted autoplay loop>
+                <source src="images/pancrafter.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/pancrafter.PNG' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function pancrafter_start() {
+                  document.getElementById('pancrafter_image').style.opacity = "1";
+                }
+
+                function pancrafter_stop() {
+                  document.getElementById('pancrafter_image').style.opacity = "0";
+                }
+                tdsm_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/PAN-Crafter_site">
+                <span class="papertitle">PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening</span>
+              </a>
+              <br>
+              <a href="https://sites.google.com/view/jeonghyeokdo/">Jeonghyeok Do</a>,
+              <a href="https://github.com/KAIST-VICLab/">Sungpyo Kim</a>,
+              <a href="https://sites.google.com/view/geunhyukyouk/">Geunhyuk Youk</a>,
+              <a href="https://sites.google.com/view/jaehyup-lee/">Jaehyup Lee</a>,
+              <a href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ/">Munchurl Kim</a>
+              <br>
+              <em>arXiv</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/PAN-Crafter_site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2505.23367">arXiv</a>
+              <p></p>
+              <p>
+                PAN-Crafter propose Modality-Adaptive Reconstruction (MARs), a unified reconstruction framework that enables robust learning from misaligned PAN-MS image pairs by dynamically generating both HRMS and PAN images.
+              </p>
+            </td>
+          </tr>
+
           <tr data-year="2025" onmouseout="splinegs_stop()" onmouseover="splinegs_start()">
             <td style="padding:16px;width:20%;vertical-align:middle">
               <div class="one">
