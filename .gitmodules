@@ -1,0 +1,19 @@
+
+[submodule "splinegs-site"]
+	path = splinegs-site
+	url = https://github.com/quan5609/splinegs-site.git
+[submodule "From_Ground_To_Objects_site"]
+	path = From_Ground_To_Objects_site
+	url = https://github.com/pmjames16/From_Ground_To_Objects_site.git
+[submodule "DAKTer-site"]
+	path = DAKTer-site
+	url = https://github.com/pmjames16/DAKTer-site.git
+[submodule "mobgs-site"]
+	path = mobgs-site
+	url = https://github.com/quan5609/mobgs-site.git
+[submodule "primedit-site"]
+	path = primedit-site
+	url = https://github.com/sateodoro/primedit-site.git
+[submodule "One-Look-is-Enough_site"]
+	path = One-Look-is-Enough_site
+	url = https://github.com/Byeongjun1022/One-Look-is-Enough_site.git
