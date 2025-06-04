@@ -227,3 +227,9 @@ mark.blue {
 .section {
   padding: 1.5rem 1.5rem;
 }
+
+.small-gray-text {
+  text-align: center;
+  font-size: 0.9em;
+  color: gray;
+}
