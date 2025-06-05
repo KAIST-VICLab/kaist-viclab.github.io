@@ -17,3 +17,6 @@
 [submodule "One-Look-is-Enough_site"]
 	path = One-Look-is-Enough_site
 	url = https://github.com/Byeongjun1022/One-Look-is-Enough_site.git
+[submodule "moblurf-site"]
+	path = moblurf-site
+	url = https://github.com/quan5609/moblurf-site.git
