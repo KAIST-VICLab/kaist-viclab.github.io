@@ -20,3 +20,6 @@
 [submodule "moblurf-site"]
 	path = moblurf-site
 	url = https://github.com/quan5609/moblurf-site.git
+[submodule "COMPASS-site"]
+	path = COMPASS-site
+	url = https://github.com/KAIST-VICLab/compass-site
