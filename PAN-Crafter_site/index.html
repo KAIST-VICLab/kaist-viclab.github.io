@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description"
+          content="PAN-Sharpening (PS).">
+    <meta name="keywords"
+          content="PAN-Sharpening (PS), Modality-Adaptive Reconstruction (MARs), Cross-Modality Alignment-Aware Attention (CM3A)">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="./static/css/twentytwenty.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <link rel="icon" sizes="256x256" href="./static/image/mars.png" type="image/png"/>
+
+    <script src="./static/js/jquery-3.2.1.min.js"></script>
+    <script src="./static/js/jquery.event.move.js"></script>
+    <script src="./static/js/jquery.twentytwenty.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/fontawesome.all.min.js"></script>
+
+</head>
+<body>
+
+<style>
+    .pan-gradient {
+        background: linear-gradient(90deg, #E63946, #FF8C00, #8B4513);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: bold;
+        display: inline-block;
+    }
+</style>
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                    <div class="title is-2 publication-title">
+                        <h1 style="display: inline; clear:none;">
+                            <img src="./static/image/mars.png" width="50" height="50">
+                            <span class="pan-gradient"><b>PAN</b></span><b>-Crafter</b>: Learning Modality-Consistent
+                            Alignment for PAN-Sharpening
+                        </h1>
+                    </div>
+
+                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
+            <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo">Jeonghyeok Do</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        </span>
+                        <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer"
+                 href="https://github.com/KAIST-VICLab">Sungpyo Kim</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        </span>
+                        <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/geunhyukyouk">Geunhyuk Youk</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        </span>
+                        <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer"
+                 href="https://sites.google.com/view/jaehyup-lee">Jaehyup Lee</a><sup>2†</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        </span>
+                        <span class="author-block">
+              <a target="_blank" rel="noopener noreferrer"
+                 href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ">Munchurl Kim</a><sup>1†</sup>
+            </span>
+                    </div>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block"> <sup>†</sup>Co-corresponding authors</span>
+                    </div>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block"><sup>1</sup>Korea Advanced Institute of Science and Technology, South Korea</span>
+                    </div>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block"><sup>2</sup>Kyungpook National University, South Korea</span>
+                    </div>
+	                <div class="is-size-4 publication-authors">
+                        <span class="author-block", style="color:#346dc2">ICCV 2025</span>
+                    </div>
+                    <div class="column has-text-centered">
+                        <div class="publication-links">
+                            <!-- PDF Link. -->
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2505.23367"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2505.23367"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+                            <!-- Code Link. -->
+                            <span class="link-block">
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/PAN-Crafter"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-3">(Unseen) WV2 Full-Resolution PS Results </h2>
+        </div>
+    </div>
+</section>
+
+<section class="hero is-light is-small mt-4">
+    <div class="hero-body">
+        <div class="container">
+            <div id="results-carousel-horizontal" class="carousel results-carousel">
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/lrms_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/ours_0.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/canconv_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/ours_0.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/lrms_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/ours_1.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/canconv_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/ours_1.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/lrms_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/ours_2.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/canconv_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv2/ours_2.png">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-3">WV3 Full-Resolution PS Results</h2>
+        </div>
+    </div>
+</section>
+
+<section class="hero is-light is-small mt-4">
+    <div class="hero-body">
+        <div class="container">
+            <div id="results-carousel-horizontal" class="carousel results-carousel">
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/lrms_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/ours_0.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/canconv_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/ours_0.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/lrms_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/ours_1.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/canconv_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/ours_1.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/lrms_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/ours_2.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/canconv_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/wv3/ours_2.png">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-3">QB Full-Resolution PS Results</h2>
+        </div>
+    </div>
+</section>
+
+<section class="hero is-light is-small mt-4">
+    <div class="hero-body">
+        <div class="container">
+            <div id="results-carousel-horizontal" class="carousel results-carousel">
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/lrms_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/ours_0.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/canconv_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/ours_0.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/lrms_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/ours_1.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/canconv_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/ours_1.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/lrms_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/ours_2.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/canconv_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/qb/ours_2.png">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-3">GF2 Full-Resolution PS Results</h2>
+        </div>
+    </div>
+</section>
+
+<section class="hero is-light is-small mt-4">
+    <div class="hero-body">
+        <div class="container">
+            <div id="results-carousel-horizontal" class="carousel results-carousel">
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/lrms_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/ours_0.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/canconv_0.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/ours_0.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/lrms_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/ours_1.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/canconv_1.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/ours_1.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="twoitem">
+                    <div class="twentytwenty-container twentytwenty-container-top">
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/lrms_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/ours_2.png">
+                        </div>
+                    </div>
+                    <div class="twentytwenty-container twentytwenty-container-bottom">
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/canconv_2.png">
+                        </div>
+                        <div class="cmpcontent">
+                            <img src="./static/image/gf2/ours_2.png">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Abstract. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <h2 class="title is-3">Abstract</h2>
+                <div class="content has-text-justified" style="margin-bottom: 40px;">
+                    <p>
+                        We propose <b>Modality-Adaptive Reconstruction (MARs)</b>, a unified reconstruction framework that enables robust learning from <em>misaligned PAN-MS</em> image pairs by dynamically generating both HRMS and PAN images.
+                    </p>
+                    <p>
+                        We introduce <b>Cross-Modality Alignment-Aware Attention (CM3A)</b>, a novel <em>alignment mechanism</em> that adaptively refines textures and structures between PAN and MS images, improving spatial-spectral consistency.
+                    </p>
+                    <p>
+                        We achieve state-of-the-art (SOTA) performance across <em>multiple benchmark datasets</em> and show strong robustness on <em>unseen satellite datasets</em>, demonstrating the effectiveness of our PAN-Crafter in handling real-world cross-modality misalignment.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Motivation. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Motivation of PAN-Crafter</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/motiv.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Example of PAN, LRMS, and their overlayed visualization.</b> PAN images typically have four times the spatial resolution of MS images, necessitating up-sampling on the MS images before fusion. However, this up-sampling step introduces interpolation artifacts and spatial shifts, further <em>amplifying alignment discrepancies</em>.<br>
+                            <b>(a)</b> High-resolution PAN image.<br>
+                            <b>(b)</b> Low-resolution multi-spectral image.<br>
+                            <b>(c)</b> Overlay of PAN and LRMS images to highlight differences.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Overview of PAN-Crafter. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Overview of PAN-Crafter</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/framework.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Overview of the proposed PAN-Crafter architecture.</b> The network processes input PAN and LRMS images leveraging <em>Modality-Adaptive Reconstruction (MARs) mode</em>, which enables adaptive generation of HRMS and PAN outputs. By leveraging spatial structures and spectral fidelity of PAN and MS images, MARs ensures high-frequency details are preserved while minimizing spectral distortion. The architecture follows an encoder-decoder design, incorporating residual blocks and <em>cross-modality alignment-aware attention (CM3A)</em> at multiple scales to mitigate modality misalignment while preserving spectral and structural fidelity of MS and PAN images, respectively.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- CM3A. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Cross-Modality Alignment-Aware Attention (CM3A)</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/CM3A.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Cross-Modality Alignment-Aware Attention (CM3A).</b> Cross-Modality Alignment-Aware Attention (CM3A) enables bidirectional alignment by transferring MS texture to PAN structure during <em>HRMS reconstruction</em> and PAN structure to MS texture during <em>PAN back-reconstruction</em>. This mechanism not only mitigates cross-modality misalignment but also ensures structural and spectral fidelity in the reconstructed images.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Performance Evaluation. -->
+<section class="section">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3">Quantitative Evaluation</h2>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/result1.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Quantitative comparison of deep learning-based PS methods on the WV3 dataset.</b> Our PAN-Crafter consistently outperforms existing approaches across most evaluation metrics while maintaining low memory consumption and fast inference time.
+                        </p>
+                    </div>
+            </div>
+        </div>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/result2.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Quantitative comparison of deep learning-based PS methods on the GF2 and QB datasets.</b> Our PAN-Crafter surpasses diffusion-based models (PanDiff and TMDiff) in both full- and reduced-resolution datasets, demonstrating that our CM3A module effectively handles local misalignment without the computational burden of iterative diffusion process.
+                        </p>
+                    </div>
+            </div>
+        </div>
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full">
+                <image src="./static/image/result3.PNG"><br>
+                    <div class="content has-text-justified" style="margin-bottom: 40px;">
+                        <p>
+                            <b>Left.</b> Quantitative comparison of deep learning-based PS methods on the <em>unseen</em> WV2 satellite dataset.<br>
+                            <b>Right.</b> Ablation studies on CM3A and MARs on the WV3 dataset.
+                        </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(window).on('load', function () {
+        bulmaCarousel.attach('#results-carousel-horizontal', {
+            slidesToScroll: 1,
+            slidesToShow: 3,
+            loop: true,
+            autoplay: true,
+        });
+
+        bulmaCarousel.attach('#results-carousel-vertical', {
+            slidesToScroll: 1,
+            slidesToShow: 5,
+            loop: true,
+            autoplay: true,
+        });
+
+        bulmaCarousel.attach('#results-carousel-testimonials', {
+            slidesToScroll: 1,
+            slidesToShow: 3,
+            loop: true,
+            autoplay: true,
+            breakpoints: [
+                {
+                    changePoint: 50 + 260 * 2,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    loop: true,
+                    autoplay: true,
+                },
+                {
+                    changePoint: 50 + 260 * 3,
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                    loop: true,
+                    autoplay: true,
+                },
+                {
+                    changePoint: 50 + 260 * 4,
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    loop: true,
+                    autoplay: true,
+                }
+            ],
+        });
+
+        $(".twentytwenty-container-top").twentytwenty({
+            before_label: 'LRMS',
+            after_label: 'Ours',
+            default_offset_pct: 0.75,
+        });
+
+        $(".twentytwenty-container-bottom").twentytwenty({
+            before_label: 'CANConv',
+            after_label: 'Ours',
+            default_offset_pct: 0.5,
+        });
+
+        $('.results-carousel').css({
+            'max-height': '2000px',
+            'visibility': 'visible'
+        });
+    });
+
+</script>
+
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <a target="_blank" rel="noopener noreferrer" class="icon-link"
+               href="https://arxiv.org/pdf/2505.23367">
+                <i class="fas fa-file-pdf"></i>
+            </a>
+            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab"
+               class="external-link" disabled>
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        <div class="columns is-centered">
+            <div class="column is-8">
+                <div class="content">
+                    <p>
+                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
+                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> and
+                        <a target="_blank" rel="noopener noreferrer"
+                           href="https://github.com/marigoldmonodepth/marigoldmonodepth.github.io/tree/main">Marigold</a>
+                        that
+                        kindly open sourced the template of this website. Website template licensed under
+                        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+                            CC-BY-SA-4.0
+                        </a>.
+                        Please visit our <a target="_blank" rel="noopener noreferrer"
+                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
+                        researches.
+                    </p>
+                </div>
+            </div>
+            <a href="https://mapmyvisitors.com/web/1byco"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=yGzGH4sFlZ0XCkEPWMZb99nOU0SZ2MeGj1reg3Q0daA&cl=ffffff" /></a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

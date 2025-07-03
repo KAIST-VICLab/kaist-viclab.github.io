@@ -37,7 +37,6 @@
    }
   </style>
 
-
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HR3PWVQLH2"></script>
   <script>
@@ -133,9 +132,9 @@
           
           <div class="column has-text-centered">
             <div class="publication-links">
-              <!-- PDF Link. 
+              <!-- PDF Link. -->
               <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href=""
+                <a target="_blank" rel="noopener noreferrer" href="https://openaccess.thecvf.com/content/CVPR2025/papers/Kwak_MoDec-GS_Global-to-Local_Motion_Decomposition_and_Temporal_Interval_Adjustment_for_Compact_CVPR_2025_paper.pdf"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -143,7 +142,6 @@
                   <span>Paper</span>
                 </a>
               </span>
-              -->
               <!-- arXiv Link. -->
               <span class="link-block">
                 <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2501.03714"
@@ -166,12 +164,12 @@
             </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href=" "
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/skwak-kaist/MoDec-GS"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
                   </span>
-                  <span>Code (To be released)</span>
+                  <span>Code</span>
                   </a>
               </span>
             </div>
@@ -187,8 +185,8 @@
   <div class="container is-widescreen">
     <h2 class="title is-3 no-bottom">NVS Visual Comparison with SOTA methods</h2>
     <div class="column is-full">
-    We compare our method with the state-of-the-art methods SC-GS [<span style="color: blue;">20</span>], 
-    4DGS [<span style="color: blue;">54</span>], Deformable 3DGS [<span style="color: blue;">57</span>] on monocular video sequences. We provide quantitative performance along with the novel view rendering results: PSNR<a href="#top">&uarr; </a>, SSIM<a href="#top">&uarr; </a>, 
+    We compare our method with the state-of-the-art methods SC-GS [<span style="color: blue;">21</span>], 
+    4DGS [<span style="color: blue;">60</span>], Deformable 3DGS [<span style="color: blue;">63</span>] on monocular video sequences. We provide quantitative performance along with the novel view rendering results: PSNR<a href="#top">&uarr; </a>, SSIM<a href="#top">&uarr; </a>, 
     LPIPS<a href="#bottom">&uarr; </a>, and storage size<a href="#bottom">&darr; </a>. 
     The proposed method shows <span style="color: red;">superior quantitative and qualitative quality performance</span> than SOTA methods 
     even with <span style="color: red;">compact model size</span>.<br><br>
@@ -345,7 +343,7 @@ explicitly deforms the reconstructed 3D Gaussians with a shared hexplane. During
       <div class="column is-full">
         <image src="./static/image/quantitative_results1-1.png" class="img-responsive" alt="quantitative_results"><br>
         <div class="content has-text-justified">
-          <strong style="color: black;">Quantitative results comparison of novel view synthesis</strong> on Dycheck-iPhone [<span style="color: blue;">16</span>] and HyperNeRF [<span style="color: blue;">45</span>] monocular datasets. 
+          <strong style="color: black;">Quantitative results comparison of novel view synthesis</strong> on Dycheck-iPhone [<span style="color: blue;">16</span>] and HyperNeRF [<span style="color: blue;">49</span>] monocular datasets. 
             All results were locally re-generated in our environment and averaged across all sequences of the dataset. 
             Red and blue denote the best and second best performances, respectively. For iPhone dataset, the masked metrics are calculated using the masks provided the authors. 
         <br><br>
@@ -353,7 +351,7 @@ explicitly deforms the reconstructed 3D Gaussians with a shared hexplane. During
             <image src="./static/image/quantitative_results2-1.png" class="img-responsive" alt="quantitative_results2"><br>
             
               Performance comparison with a NeRF-extension framework, including training and rendering speed. Averaged over 
-              536×960 HyperNeRF’s vrig datasets [<span style="color: blue;">43</span>]. The performance numbers of [<span style="color: blue;">11, 18, 22, 44, 45</span>] are sourced from [<span style="color: blue;">54</span>].  
+              536×960 HyperNeRF’s vrig datasets [<span style="color: blue;">49</span>]. The performance numbers of [<span style="color: blue;">11, 15, 19, 26, 48, 49</span>] are sourced from [<span style="color: blue;">60</span>].  
         </div>
       </div>
     </div>
@@ -372,16 +370,16 @@ explicitly deforms the reconstructed 3D Gaussians with a shared hexplane. During
     <section class="section" id="BibTeX">
       <div class="container is-widescreen content">
         <h2 class="title">BibTeX</h2>
-        <pre><code>@misc{kwak2025modecgsglobaltolocalmotiondecomposition,
+        <pre><code>
+  @InProceedings{kwak2025modecgs,
   title={MoDec-GS: Global-to-Local Motion Decomposition and Temporal Interval Adjustment for Compact Dynamic 3D Gaussian Splatting}, 
   author={Sangwoon Kwak and Joonsoo Kim and Jun Young Jeong and Won-Sik Cheong and Jihyong Oh and Munchurl Kim},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   year={2025},
-  eprint={2501.03714},
-  archivePrefix={arXiv},
-}</code></pre>
+  }
+</code></pre>
       </div>
     </section>
-
 
 <footer class="footer">
   <div class="container">
