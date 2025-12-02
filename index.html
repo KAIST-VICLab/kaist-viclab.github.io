@@ -67,6 +67,46 @@
             </select>
           </div>
 
+          <tr data-year="2025" onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='tdsm_image'><video  width=100% muted autoplay loop>
+                <source src="images/tdsm.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/tdsm.PNG' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function tdsm_start() {
+                  document.getElementById('tdsm_image').style.opacity = "1";
+                }
+
+                function tdsm_stop() {
+                  document.getElementById('tdsm_image').style.opacity = "0";
+                }
+                tdsm_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/TDSM_site">
+                <span class="papertitle">Bridging the Skeleton-Text Modality Gap: Diffusion-Powered Modality Alignment for Zero-shot Skeleton-based Action Recognition</span>
+              </a>
+              <br>
+              <a href="https://sites.google.com/view/jeonghyeokdo/">Jeonghyeok Do</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>ICCV</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/TDSM_site">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2411.10745">arXiv</a>
+              <p></p>
+              <p>
+                TDSM introduces the first framework to apply diffusion models and to implicitly align the skeleton features with text prompts (action labels) by fully taking the advantage of excellent text-image correspondence learning in generative diffusion process, thus being able to learn fused discriminative features in a unified latent space.
+              </p>
+            </td>
+          </tr>
+
           <tr data-year="2025" onmouseout="pancrafter_stop()" onmouseover="pancrafter_start()">
             <td style="padding:16px;width:20%;vertical-align:middle">
               <div class="one">
@@ -98,7 +138,7 @@
               <a href="https://sites.google.com/view/jaehyup-lee/">Jaehyup Lee</a>,
               <a href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ/">Munchurl Kim</a>
               <br>
-              <em>arXiv</em>, 2025
+              <em>ICCV</em>, 2025
               <br>
               <a href="https://kaist-viclab.github.io/PAN-Crafter_site">project page</a>
               /
@@ -447,46 +487,6 @@
               <p></p>
               <p>
                  C-DiffSET proposes the first framework to fine-tune a pretrained LDM for SET tasks, effectively leveraging their learned representations to overcome the scarcity of SAR-EO image pairs.
-              </p>
-            </td>
-          </tr>
-
-          <tr data-year="2024" onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
-            <td style="padding:16px;width:20%;vertical-align:middle">
-              <div class="one">
-                <div class="two" id='tdsm_image'><video  width=100% muted autoplay loop>
-                <source src="images/tdsm.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-                </video></div>
-                <img src='images/tdsm.PNG' width=100% onerror="this.src='images/none.jpg'">
-              </div>
-              <script type="text/javascript">
-                function tdsm_start() {
-                  document.getElementById('tdsm_image').style.opacity = "1";
-                }
-
-                function tdsm_stop() {
-                  document.getElementById('tdsm_image').style.opacity = "0";
-                }
-                tdsm_stop()
-              </script>
-            </td>
-            <td style="padding:8px;width:80%;vertical-align:middle">
-              <a href="https://kaist-viclab.github.io/TDSM_site">
-                <span class="papertitle">TDSM: Triplet Diffusion for Skeleton-Text Matching in Zero-Shot Action Recognition</span>
-              </a>
-              <br>
-              <a href="https://sites.google.com/view/jeonghyeokdo/">Jeonghyeok Do</a>,
-              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
-              <br>
-              <em>arXiv</em>, 2024
-              <br>
-              <a href="https://kaist-viclab.github.io/TDSM_site">project page</a>
-              /
-              <a href="https://arxiv.org/abs/2411.10745">arXiv</a>
-              <p></p>
-              <p>
-                TDSM introduces the first framework to apply diffusion models and to implicitly align the skeleton features with text prompts (action labels) by fully taking the advantage of excellent text-image correspondence learning in generative diffusion process, thus being able to learn fused discriminative features in a unified latent space.
               </p>
             </td>
           </tr>
