@@ -67,6 +67,48 @@
             </select>
           </div>
 
+          <tr data-year="2025" onmouseout="fmanetpp_stop()" onmouseover="fmanetpp_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='fmanetpp_image'>
+                  <video width=100% muted autoplay loop>
+                    <source src="images/fmanetpp.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <img src='images/fmanetpp.jpg' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function fmanetpp_start() {
+                  document.getElementById('fmanetpp_image').style.opacity = "1";
+                }
+
+                function fmanetpp_stop() {
+                  document.getElementById('fmanetpp_image').style.opacity = "0";
+                }
+                fmanetpp_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/fmanetpp_site">
+                <span class="papertitle">FMA-Net++: Motion- and Exposure-Aware Real-World Joint Video Super-Resolution and Deblurring</span>
+              </a>
+              <br>
+              <a href="https://sites.google.com/view/geunhyukyouk/">Geunhyuk Youk</a>,
+              <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>arXiv preprint</em>, 2026
+              <br>
+              <a href="https://kaist-viclab.github.io/fmanetpp_site">project page</a>
+              /
+              <a href="#">arXiv</a> <p></p>
+              <p>
+                We present FMA-Net++, a framework for joint video super-resolution and deblurring that explicitly models motion and dynamic exposure.
+              </p>
+            </td>
+          </tr>
+
           <tr data-year="2025" onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
             <td style="padding:16px;width:20%;vertical-align:middle">
               <div class="one">
