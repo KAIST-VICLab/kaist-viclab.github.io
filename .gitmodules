@@ -23,3 +23,6 @@
 [submodule "COMPASS-site"]
 	path = COMPASS-site
 	url = https://github.com/KAIST-VICLab/compass-site
+[submodule "fmanetpp_site"]
+	path = fmanetpp_site
+	url = https://github.com/GeunhyukYouk/fmanetpp_site.git
