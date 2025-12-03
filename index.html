@@ -71,7 +71,7 @@
             <td style="padding:16px;width:20%;vertical-align:middle">
               <div class="one">
                 <div class="two" id='fmanetpp_image'>
-                  <video width=100% muted autoplay loop>
+                  <video width=100% muted loop id="fmanetpp_video">
                     <source src="images/fmanetpp.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                   </video>
@@ -81,12 +81,16 @@
               <script type="text/javascript">
                 function fmanetpp_start() {
                   document.getElementById('fmanetpp_image').style.opacity = "1";
+                  document.getElementById('fmanetpp_video').play();
                 }
 
                 function fmanetpp_stop() {
                   document.getElementById('fmanetpp_image').style.opacity = "0";
+                  var vid = document.getElementById('fmanetpp_video');
+                  vid.pause();
+                  vid.currentTime = 0;
                 }
-                fmanetpp_stop()
+                fmanetpp_stop();
               </script>
             </td>
             <td style="padding:8px;width:80%;vertical-align:middle">
@@ -98,7 +102,7 @@
               <a href="https://sites.google.com/view/ozbro/">Jihyong Oh</a>,
               <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
               <br>
-              <em>arXiv preprint</em>, 2026
+              <em>arXiv preprint</em>, 2025
               <br>
               <a href="https://kaist-viclab.github.io/fmanetpp_site">project page</a>
               /
@@ -598,7 +602,7 @@
                 <span class="papertitle">FMA-Net: Flow-Guided Dynamic Filtering and Iterative Feature Refinement with Multi-Attention for Joint Video Super-Resolution and Deblurring</span>
               </a>
               <br>
-              <a href="https://www.viclab.kaist.ac.kr/">Geunhyuk Youk </a>,
+              <a href="https://sites.google.com/view/geunhyukyouk/">Geunhyuk Youk </a>,
               <a href="https://www.viclab.kaist.ac.kr/">Jihyong Oh </a>,
               <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
               <br>
@@ -609,7 +613,7 @@
               <a href="https://arxiv.org/abs/2401.03707">arXiv</a>
               <p></p>
               <p>
-                TBD.
+                We present FMA-Net, a framework for joint video super-resolution and deblurring.
               </p>
             </td>
           </tr>
