@@ -113,6 +113,46 @@
             </td>
           </tr>
 
+          <tr data-year="2025" onmouseout="onelook_stop()" onmouseover="onelook_start()">
+            <td style="padding:16px;width:20%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='onelook_image'><video  width=100% muted autoplay loop>
+                <source src="images/onelook.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/onelook.PNG' width=100% onerror="this.src='images/none.jpg'">
+              </div>
+              <script type="text/javascript">
+                function onelook_start() {
+                  document.getElementById('onelook_image').style.opacity = "1";
+                }
+
+                function onelook_stop() {
+                  document.getElementById('onelook_image').style.opacity = "0";
+                }
+                onelook_stop()
+              </script>
+            </td>
+            <td style="padding:8px;width:80%;vertical-align:middle">
+              <a href="https://kaist-viclab.github.io/One-Look-is-Enough_site/">
+                <span class="papertitle">One Look is Enough: Seamless Patchwise Refinement for Zero-Shot Monocular Depth Estimation on High-Resolution Images</span>
+              </a>
+              <br>
+              <a href="https://byeongjun1022.github.io//">Byeongjun Kwon</a>,
+              <a href="https://www.viclab.kaist.ac.kr/">Munchurl Kim</a>
+              <br>
+              <em>ICCV</em>, 2025
+              <br>
+              <a href="https://kaist-viclab.github.io/One-Look-is-Enough_site/">project page</a>
+              /
+              <a href="https://arxiv.org/abs/2503.22351">arXiv</a>
+              <p></p>
+              <p>
+              </p>
+                We present One Look is Enough, a framework for zero-shot monocular depth estimation on high-resolution images that utilizes Grouped Patch Consistency Training and Bias Free Masking to achieve seamless patchwise refinement with high efficiency.
+            </td>
+          </tr>
+
           <tr data-year="2025" onmouseout="tdsm_stop()" onmouseover="tdsm_start()">
             <td style="padding:16px;width:20%;vertical-align:middle">
               <div class="one">
