@@ -26,3 +26,6 @@
 [submodule "fmanetpp_site"]
 	path = fmanetpp_site
 	url = https://github.com/GeunhyukYouk/fmanetpp_site.git
+[submodule "ecosplat-site"]
+	path = ecosplat-site
+	url = https://github.com/quan5609/ecosplat-site.git
