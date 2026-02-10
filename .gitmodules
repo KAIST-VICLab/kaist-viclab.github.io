@@ -29,3 +29,6 @@
 [submodule "ecosplat-site"]
 	path = ecosplat-site
 	url = https://github.com/quan5609/ecosplat-site.git
+[submodule "omnitext-site"]
+	path = omnitext-site
+	url = https://github.com/agusgun/omnitext-site
