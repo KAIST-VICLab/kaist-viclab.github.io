@@ -32,6 +32,7 @@
 [submodule "omnitext-site"]
 	path = omnitext-site
 	url = https://github.com/agusgun/omnitext-site
-[submodule "bim-vfi-site"]
+
+[submodule "bimvfi-site"]
 	path = bimvfi-site
 	url = https://github.com/wonozlo/BiM-VFI_site
