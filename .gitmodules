@@ -36,3 +36,6 @@
 [submodule "bimvfi-site"]
 	path = bimvfi-site
 	url = https://github.com/wonozlo/BiM-VFI_site
+[submodule "PropFly_site"]
+	path = PropFly_site
+	url = https://github.com/pmjames16/PropFly_site.git
