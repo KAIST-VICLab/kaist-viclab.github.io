@@ -29,3 +29,12 @@
 [submodule "ecosplat-site"]
 	path = ecosplat-site
 	url = https://github.com/quan5609/ecosplat-site.git
+[submodule "omnitext-site"]
+	path = omnitext-site
+	url = https://github.com/agusgun/omnitext-site
+[submodule "BiM-VFI_site"]
+	path = BiM-VFI_site
+	url = https://github.com/wonozlo/BiM-VFI_site
+[submodule "PropFly_site"]
+	path = PropFly_site
+	url = https://github.com/pmjames16/PropFly_site.git
