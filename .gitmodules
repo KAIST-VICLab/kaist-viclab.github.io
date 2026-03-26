@@ -38,3 +38,6 @@
 [submodule "PropFly_site"]
 	path = PropFly_site
 	url = https://github.com/pmjames16/PropFly_site.git
+[submodule "airsplat-site"]
+	path = airsplat-site
+	url = https://github.com/pmjames16/airsplat-site.git
