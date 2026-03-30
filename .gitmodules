@@ -41,3 +41,6 @@
 [submodule "airsplat-site"]
 	path = airsplat-site
 	url = https://github.com/pmjames16/airsplat-site.git
+[submodule "aasplat-site"]
+	path = aasplat-site
+	url = git@github.com:starsong98/aasplat-site.git
