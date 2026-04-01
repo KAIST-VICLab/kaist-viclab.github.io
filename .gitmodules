@@ -44,3 +44,6 @@
 [submodule "aasplat-site"]
 	path = aasplat-site
 	url = git@github.com:starsong98/aasplat-site.git
+[submodule "motiongrounder-site"]
+	path = motiongrounder-site
+	url = https://github.com/sateodoro/motiongrounder-site.git
