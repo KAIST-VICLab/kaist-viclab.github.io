@@ -47,3 +47,6 @@
 [submodule "motiongrounder-site"]
 	path = motiongrounder-site
 	url = https://github.com/sateodoro/motiongrounder-site.git
+[submodule "webspline-site"]
+	path = webspline-site
+	url = https://github.com/ImJongminPark/webspline-site.git
