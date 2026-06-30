@@ -50,3 +50,6 @@
 [submodule "webspline-site"]
 	path = webspline-site
 	url = https://github.com/ImJongminPark/webspline-site.git
+[submodule "AVSR-Diff"]
+	path = AVSR-Diff
+	url = https://github.com/GeunhyukYouk/avsr-diff-site.git
