@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation</title>
+<meta name="description" content="GeoCore-9B is a 9-billion-parameter generative foundation model for Earth Observation, trained from scratch exclusively on EO data.">
+<meta property="og:title" content="GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation">
+<meta property="og:description" content="A 9B generative foundation model for Earth Observation, trained from scratch on EO data with text and geospatial metadata conditioning.">
+<meta property="og:image" content="static/images/text.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f6f7f9;
+    --border: #e3e6ea;
+    --text: #16191d;
+    --muted: #5b6470;
+    --accent: #1a6d5a;
+    --accent-soft: #e8f2ef;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1113; --surface: #171b1f; --border: #2a3036;
+      --text: #e8ebee; --muted: #9aa5b1; --accent: #5fd1b0; --accent-soft: #16302a;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff; --surface: #f6f7f9; --border: #e3e6ea;
+    --text: #16191d; --muted: #5b6470; --accent: #1a6d5a; --accent-soft: #e8f2ef;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1113; --surface: #171b1f; --border: #2a3036;
+    --text: #e8ebee; --muted: #9aa5b1; --accent: #5fd1b0; --accent-soft: #16302a;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .narrow { max-width: 860px; }
+
+  header { padding: 72px 0 44px; text-align: center; border-bottom: 1px solid var(--border); }
+  h1 {
+    font-size: clamp(1.9rem, 4.2vw, 3rem); line-height: 1.18;
+    letter-spacing: -0.02em; margin: 0 0 6px; font-weight: 700;
+  }
+  .subtitle {
+    font-size: clamp(1rem, 2vw, 1.2rem); color: var(--muted);
+    margin: 0 0 28px; font-weight: 400;
+  }
+  .authors { font-size: 1.06rem; margin: 0 0 6px; }
+  .authors a { color: var(--text); border-bottom: 1px solid var(--border); }
+  .authors a:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+  .affil { color: var(--muted); font-size: 0.95rem; margin: 0 0 28px; }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 17px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); font-size: 0.92rem; font-weight: 500;
+    transition: border-color .15s, color .15s;
+  }
+  .badge:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+  .badge svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+
+  section { padding: 58px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 1.6rem; letter-spacing: -0.01em; margin: 0 0 8px; font-weight: 650; }
+  .lede { color: var(--muted); margin: 0 0 28px; max-width: 76ch; }
+  p { margin: 0 0 16px; }
+
+  .abstract { max-width: 78ch; margin: 0 auto; font-size: 1.04rem; }
+
+  figure { margin: 0; }
+  figure img { width: 100%; border-radius: 10px; border: 1px solid var(--border); background: #fff; }
+  figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 10px; }
+
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px; margin-top: 8px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 1.02rem; font-weight: 620; }
+  .card p { margin: 0; font-size: 0.94rem; color: var(--muted); }
+
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.94rem; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  button.pill {
+    font: inherit; font-size: 0.9rem; padding: 7px 15px;
+    border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  button.pill:hover { border-color: var(--accent); }
+  button.pill[aria-pressed="true"] {
+    background: var(--accent-soft); border-color: var(--accent);
+    color: var(--accent); font-weight: 600;
+  }
+
+  .strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .strip img { border-radius: 8px; border: 1px solid var(--border); }
+
+  .geo-row {
+    display: grid; grid-template-columns: 150px repeat(3, 1fr);
+    gap: 12px; align-items: center; margin-bottom: 12px;
+  }
+  .geo-label { font-size: 0.92rem; }
+  .geo-label strong { display: block; font-weight: 600; }
+  .geo-label span { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; }
+  .geo-row img { border-radius: 8px; border: 1px solid var(--border); width: 100%; }
+  @media (max-width: 640px) {
+    .geo-row { grid-template-columns: 1fr 1fr 1fr; }
+    .geo-label { grid-column: 1 / -1; }
+  }
+
+  pre {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px; overflow-x: auto;
+    font-family: var(--mono); font-size: 0.86rem; line-height: 1.55; margin: 0;
+  }
+
+  footer { padding: 40px 0 64px; color: var(--muted); font-size: 0.88rem; text-align: center; }
+
+  .note {
+    font-size: 0.88rem; color: var(--muted);
+    border-left: 3px solid var(--border); padding-left: 14px; margin-top: 22px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>GeoCore-9B</h1>
+    <p class="subtitle">Towards Geo-Aware Generative Foundation Models in Earth Observation</p>
+
+    <p class="authors">
+      <a href="https://jeonghyeokdo.github.io/">Jeonghyeok Do</a> &nbsp;·&nbsp;
+      <a href="https://scholar.google.com/citations?user=bGXte_4AAAAJ&hl=en">Munchurl Kim</a>
+    </p>
+    <p class="affil">Korea Advanced Institute of Science and Technology (KAIST)</p>
+
+    <nav class="badges">
+      <a class="badge" href="https://github.com/KAIST-VICLab/GeoCore-9B">
+        <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.36-2.53-.49-2.7-.94-.09-.24-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.19c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg>
+        Code
+      </a>
+      <a class="badge" href="https://huggingface.co/JeonghyeokDo/GeoCore-9B">
+        <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/></svg>
+        Model weights
+      </a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <figure>
+      <img src="static/images/text.jpg"
+           alt="Qualitative comparison of text-conditioned generation against prior methods">
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 style="text-align:center">Abstract</h2>
+    <div class="abstract">
+      <p>
+        Existing generative models for earth observation (EO) predominantly rely on fine-tuning natural
+        image priors, which limits their scalability and introduces perspective biases that conflict with
+        geospatial constraints. To address this, we introduce <strong>GeoCore-9B</strong>, a 9-billion-parameter
+        generative foundation model, which is the first of its scale to be trained from scratch exclusively
+        on EO data. Unlike previous EO foundation models, GeoCore-9B is built upon a Flow Matching-based
+        Diffusion Transformer (DiT) and natively conditions generation on text descriptions and continuous
+        geospatial metadata, including ground sample distances, latitudes, and longitudes. To overcome the
+        convergence and spatial disorientation challenges of training at this scale, we propose a
+        <strong>Geospatial Semantic Alignment</strong> loss. This objective distills structural Earth surface
+        priors (e.g., terrain and urban areas) from a frozen specialist teacher network, constraining the
+        diffusion latent trajectory during training without adding inference overhead. Pre-trained on the
+        global-scale Git-10M dataset, GeoCore-9B demonstrates strong downstream versatility.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Method</h2>
+    <p class="lede">
+      A Flow Matching DiT trained from scratch on EO imagery, conditioned jointly on language and physical
+      geography.
+    </p>
+
+    <figure style="margin-bottom:34px">
+      <img src="static/images/framework.png" alt="Overview of the GeoCore-9B architecture">
+    </figure>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Geospatial Semantic Alignment</h3>
+        <p>
+          Intermediate DiT tokens at block <em>k</em>&nbsp;=&nbsp;8 are projected into the feature space of a
+          frozen DINOv3-Sat teacher and aligned with its dense structural representations, weighted by
+          &mu;&nbsp;=&nbsp;0.5. Both the teacher and the projection head exist only during training, so
+          inference cost is unchanged.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Metadata conditioning</h3>
+        <p>
+          Ground sample distance, latitude and longitude are each encoded as sinusoidal features and
+          projected by separate MLPs. Their sum joins the timestep and pooled text embeddings to modulate
+          the DiT through AdaLN.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Learnable null embeddings</h3>
+        <p>
+          Missing metadata is not zeroed. Each field has its own learned null embedding, which also
+          implements classifier-free guidance dropout, so every condition remains optional at sampling time.
+        </p>
+      </div>
+    </div>
+
+    <div class="table-scroll" style="margin-top:34px">
+      <table>
+        <tbody>
+          <tr><th>Parameters</th><td>9.24&nbsp;B</td></tr>
+          <tr><th>Backbone</th><td>Flow Matching DiT &mdash; 8 double-stream + 24 single-stream blocks, hidden 4096, 32 heads</td></tr>
+          <tr><th>Conditioning</th><td>CLIP + T5 text embeddings, GSD, latitude, longitude</td></tr>
+          <tr><th>Pre-training</th><td>Git-10M, 300K steps, global batch 1024, AdamW lr 1e-4, bf16, DeepSpeed ZeRO-2</td></tr>
+          <tr><th>Hardware</th><td>8&times; NVIDIA B200, ~15 days</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Text-conditioned generation</h2>
+    <p class="lede">
+      Given a text description, GeoCore-9B produces orthographic satellite imagery that follows the prompt
+      while keeping the scene layout physically plausible.
+    </p>
+    <figure>
+      <img src="static/images/text2.jpg"
+           alt="Additional qualitative comparison of text-conditioned generation">
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Ground sample distance control</h2>
+    <p class="lede">
+      Holding the prompt fixed while varying the GSD condition. Visual granularity adapts to the requested
+      physical scale, from fine structural detail at 1&nbsp;m to broad land-cover patterns at 32&nbsp;m.
+    </p>
+
+    <div class="controls" id="gsd-controls" role="group" aria-label="Select GSD comparison figure"></div>
+    <figure>
+      <img id="gsd-img" src="static/images/gsd.jpg"
+           alt="Qualitative comparison across varying ground sample distances">
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Generation from coordinates alone</h2>
+    <p class="lede">
+      With no text prompt at all, conditioned only on latitude and longitude. GeoCore-9B recovers the land
+      cover characteristic of each location, indicating that geography is encoded directly rather than
+      inferred from language.
+    </p>
+    <figure>
+      <img src="static/images/latlon.jpg"
+           alt="Text-free generation guided solely by latitude and longitude">
+    </figure>
+
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Effect of the GSA loss</h2>
+    <p class="lede">
+      Removing the Geospatial Semantic Alignment objective degrades structural fidelity &mdash; buildings,
+      road networks and terrain lose coherent geometry.
+    </p>
+    <figure>
+      <img src="static/images/ablation.jpg" alt="Ablation study on the Geospatial Semantic Alignment loss">
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Getting started</h2>
+    <p class="lede">Weights and code are public. Sampling takes a prompt plus optional geospatial metadata.</p>
+<pre><code>git clone https://github.com/KAIST-VICLab/GeoCore-9B
+cd GeoCore-9B &amp;&amp; pip install -r requirements.txt
+
+python inference.py \
+    --ckpt /path/to/GeoCore-9B --vae /path/to/ae.safetensors \
+    --prompt "A satellite view of a highly dense urban city with towering skyscrapers" \
+    --lon 126.97 --lat 37.56 --res 0.0 \
+    --num-samples 4 --out samples/</code></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>BibTeX</h2>
+<pre><code>@article{do2026geocore,
+  title   = {GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation},
+  author  = {Do, Jeonghyeok and Kim, Munchurl},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      Website template inspired by <a href="https://nerfies.github.io/">Nerfies</a>.
+      Source available on <a href="https://github.com/KAIST-VICLab/kaist-viclab.github.io">GitHub</a>.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var gsdFigs = [
+    { file: 'gsd.jpg',  label: 'Farmland · Commercial' },
+    { file: 'gsd2.jpg', label: 'Commercial · Industrial' },
+    { file: 'gsd3.jpg', label: 'Lakeside · Residential' },
+    { file: 'gsd4.jpg', label: 'Mountain · Sea ice' }
+  ];
+  var controls = document.getElementById('gsd-controls');
+  var gsdImg = document.getElementById('gsd-img');
+
+  gsdFigs.forEach(function (fig, i) {
+    var b = document.createElement('button');
+    b.className = 'pill';
+    b.type = 'button';
+    b.textContent = fig.label;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', function () {
+      gsdImg.src = 'static/images/' + fig.file;
+      Array.prototype.forEach.call(controls.children, function (c) {
+        c.setAttribute('aria-pressed', 'false');
+      });
+      b.setAttribute('aria-pressed', 'true');
+    });
+    controls.appendChild(b);
+  });
+
+})();
+</script>
+
+</body>
+</html>
