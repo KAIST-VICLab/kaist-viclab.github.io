@@ -1,4 +1,4 @@
-## Less is More: Decoder-Free Masked Modeling for Efficient Skeleton Representation Learning
+## Less is More: Compact-Token Masked Feature Learning for Skeleton Representation Learning
 
 ---
 ### Project Page
