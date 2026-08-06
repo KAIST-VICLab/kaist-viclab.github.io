@@ -148,8 +148,12 @@
         <article class="code"><header><div><span>Quick start</span><h3>Generate from text and geo metadata.</h3></div><button class="copy" data-copy-target="#quick-start" aria-label="Copy inference command">Copy</button></header><pre><code id="quick-start">git clone https://github.com/KAIST-VICLab/GeoCore-9B
 cd GeoCore-9B &amp;&amp; pip install -r requirements.txt
 
+# frozen Flux.2 autoencoder, Apache-2.0 copy (not the FLUX.2-dev one)
+huggingface-cli download black-forest-labs/FLUX.2-klein-base-4B \
+    vae/diffusion_pytorch_model.safetensors --local-dir FLUX.2-klein-base-4B
+
 python inference.py \
-    --ckpt /path/to/GeoCore-9B --vae /path/to/ae.safetensors \
+    --ckpt /path/to/GeoCore-9B --vae FLUX.2-klein-base-4B/vae/diffusion_pytorch_model.safetensors \
     --prompt "A satellite view of a highly dense urban city with towering skyscrapers" \
     --lon 126.97 --lat 37.56 --res 0.0 \
     --num-samples 4 --out samples/</code></pre></article>
