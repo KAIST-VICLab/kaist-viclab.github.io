@@ -1,0 +1,98 @@
+{
+  "stems": {
+    "qxs-saropt": [
+      "13306",
+      "13688",
+      "15477",
+      "17400",
+      "18522",
+      "2569",
+      "5078",
+      "5208",
+      "5297",
+      "5815",
+      "5856",
+      "825"
+    ],
+    "sar2opt": [
+      "1_2880_2160",
+      "1_3120_1200",
+      "1_3600_1200",
+      "1_3600_720",
+      "2_4800_2880",
+      "2_5760_0",
+      "2_6480_480",
+      "3_2400_0",
+      "5_960_480",
+      "6_2400_960",
+      "6_2880_3600",
+      "7_1440_1440"
+    ]
+  },
+  "tiers": {
+    "qxs-saropt/slider": {
+      "scenes": 6,
+      "methods": [
+        "sar",
+        "cdiffset",
+        "reflowset",
+        "gt"
+      ]
+    },
+    "qxs-saropt/strip": {
+      "scenes": 12,
+      "methods": [
+        "sar",
+        "pix2pix",
+        "cyclegan",
+        "p2phd",
+        "spade",
+        "ddpm",
+        "sd21ft",
+        "bbdm",
+        "controlnet",
+        "hidiff",
+        "resshift",
+        "stegogan",
+        "conddiff",
+        "cbbdm",
+        "e3diff",
+        "cdiffset",
+        "reflowset",
+        "gt"
+      ]
+    },
+    "sar2opt/slider": {
+      "scenes": 6,
+      "methods": [
+        "sar",
+        "cdiffset",
+        "reflowset",
+        "gt"
+      ]
+    },
+    "sar2opt/strip": {
+      "scenes": 12,
+      "methods": [
+        "sar",
+        "pix2pix",
+        "cyclegan",
+        "p2phd",
+        "spade",
+        "ddpm",
+        "sd21ft",
+        "bbdm",
+        "controlnet",
+        "hidiff",
+        "resshift",
+        "stegogan",
+        "conddiff",
+        "cbbdm",
+        "e3diff",
+        "cdiffset",
+        "reflowset",
+        "gt"
+      ]
+    }
+  }
+}
