@@ -25,6 +25,7 @@ button,summary{font:inherit} :focus-visible{outline:3px solid var(--red);outline
 
 .hero{padding-top:clamp(58px,7vw,102px)}.hero-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.72fr);min-height:470px;align-items:end;gap:clamp(70px,9vw,150px)}
 .eyebrow,.micro,.section-tag,.resource-links span,.code header span,.ack>span{color:var(--red);font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.venue{display:inline-block;margin-bottom:26px;padding:10px 17px 9px;border:2px solid var(--red);color:var(--red);font-size:clamp(18px,1.5vw,22px);font-weight:700;letter-spacing:.04em;line-height:1}
 .hero h1{max-width:980px;margin-top:15px;color:var(--forest);font-family:var(--serif);font-size:clamp(60px,7.2vw,108px);font-weight:400;letter-spacing:-.055em;line-height:.91}
 .deck{max-width:780px;margin-top:29px;font-size:clamp(19px,1.55vw,24px);line-height:1.4}
 .authors{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:17px;color:var(--forest-dark);font-size:14px;font-weight:700}.authors i{font-style:normal}.authors a:hover{color:var(--red)}
