@@ -1,857 +1,707 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="description"
-          content="SOfA: the first sensor-unified generalist foundation model for skeleton representation learning.">
-    <meta name="keywords"
-          content="Skeleton foundation model, Sensor-unified representation, Canonical Joint Slots, Semantic Joint Embedding, Self-supervised learning">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>One for All: Generalist Foundation Model for Cross-Sensor Skeleton Representation Learning</title>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
-    <link rel="stylesheet" href="./static/css/bulma.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-    <link rel="stylesheet" href="./static/css/index.css">
-    <link rel="stylesheet" href="./static/css/sofa.css">
-    <link rel="icon" sizes="256x256" href="./static/image/banner.png" type="image/png"/>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script defer src="./static/js/fontawesome.all.min.js"></script>
-    <script src="./static/js/bulma-carousel.min.js"></script>
-    <script src="./static/js/bulma-slider.min.js"></script>
-    <script src="./static/js/index.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SOfA · One for All: Generalist Foundation Model for Cross-Sensor Skeleton Representation Learning</title>
+  <meta name="description" content="SOfA (Skeleton One for All) is the first generalist foundation model for sensor-unified skeleton representation learning: one encoder for skeletons with 15, 20 or 25 joints from ten datasets, built on Canonical Joint Slots and a Semantic Joint Embedding.">
+  <meta name="author" content="Jeonghyeok Do, Yun Chen, Munchurl Kim">
+  <meta name="theme-color" content="#CD3719">
+  <link rel="canonical" href="https://kaist-viclab.github.io/SOfA_site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SOfA">
+  <meta property="og:title" content="SOfA · One for All: Generalist Foundation Model for Cross-Sensor Skeleton Representation Learning">
+  <meta property="og:description" content="One encoder for any skeleton sensor: SOfA fills a fixed set of Canonical Joint Slots from 25-, 20- and unseen 15-joint skeletons, with one set of weights across ten datasets.">
+  <meta property="og:url" content="https://kaist-viclab.github.io/SOfA_site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/SOfA_site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The SOfA logo, a skeleton sitting on a sofa, above the paper's motivation figure: previous methods train one encoder per sensor, while SOfA fills learnable Canonical Joint Slots with one shared encoder.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SOfA · One for All: Generalist Foundation Model for Cross-Sensor Skeleton Representation Learning">
+  <meta name="twitter:description" content="One encoder for any skeleton sensor: one set of weights for 25-, 20- and unseen 15-joint skeletons from ten datasets.">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/SOfA_site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The SOfA logo, a skeleton sitting on a sofa, above the paper's motivation figure: previous methods train one encoder per sensor, while SOfA fills learnable Canonical Joint Slots with one shared encoder.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"], a[data-soon] { pointer-events: none; cursor: default; }</style></noscript>
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
 </head>
 <body>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-        </a>
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path d="M3.5 9.5L12 4l8.5 5.5M4.5 20h15M6.5 11.5v5.5M10 11.5v5.5M14 11.5v5.5M17.5 11.5v5.5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-gallery" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16M7 16.5v-4.5M12 16.5V7M17 16.5v-7.5"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="SOfA, back to top"><img src="static/images/icon.png" width="98" height="84" alt=""><span class="wordmark" aria-hidden="true">S<span>OfA</span></span></a>
+    <div class="topnav-links">
+      <a href="#figures">Figures</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
+    <a class="topnav-cta" href="static/paper/SOfA.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
 </nav>
 
-<!-- ============================ HERO ============================ -->
-<section class="hero">
-    <div class="hero-body">
-        <div class="container is-max-desktop">
-            <div class="columns is-centered">
-                <div class="column has-text-centered">
-                    <div class="title is-2 publication-title">
-                        <h1 style="display: inline; clear:none;">
-                            <img src="./static/image/logo.png" alt="SOfA logo" width="200"><br><br>
-                            <b><font color="#cd3719">O</font>ne <font color="#cd3719">f</font>or
-                                <font color="#cd3719">A</font>ll</b>: Generalist Foundation Model<br>for
-                            Cross-Sensor <font color="#349028"><b>S</b></font>keleton Representation Learning
-                        </h1>
-                    </div>
-
-                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://sites.google.com/view/jeonghyeokdo">Jeonghyeok Do</a>&nbsp;&nbsp;&nbsp;&nbsp;
-            </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://scholar.google.com/citations?user=vAUNfCcAAAAJ">Yun Chen</a>&nbsp;&nbsp;&nbsp;&nbsp;
-            </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://scholar.google.com/citations?user=bGXte_4AAAAJ">Munchurl Kim</a><sup>&dagger;</sup>
-            </span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"><sup>&dagger;</sup>Corresponding author</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block">Korea Advanced Institute of Science and Technology (KAIST), South Korea</span>
-                    </div>
-
-                    <div class="column has-text-centered">
-                        <div class="publication-links">
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2609.07078"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/SOfA"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="fab fa-github"></i></span>
-                  <span>Code</span>
-                </a>
-              </span>
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="fas fa-flask"></i></span>
-                  <span>VIC-Lab</span>
-                </a>
-              </span>
-                        </div>
-                        <p style="margin-top: 14px;" class="venue-line">
-                            Code and pre-trained weights will be released soon.
-                        </p>
-                    </div>
-
-                </div>
-            </div>
+<header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: Skeleton &amp; motion">
+    <p class="lineage-menu-head"><b>Research line</b>Skeleton &amp; motion</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/SkateFormer_site/"><span class="lineage-name">SkateFormer</span><span class="lineage-venue">ECCV 2024</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/TDSM_site/"><span class="lineage-name">TDSM</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/SLiM_site/"><span class="lineage-name">SLiM</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-menu-stage"><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">SOfA</span><span class="lineage-venue">arXiv 2026</span></span><a class="lineage-menu-item" href="https://kaist-viclab.github.io/MotionMaestro_site/"><span class="lineage-name">MotionMaestro</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.webp" width="668" height="192" alt="SOfA" fetchpriority="high">
+      <span class="hero-title"><span class="hero-accent nowrap">One for All</span>: Generalist Foundation Model for Cross-Sensor <span class="hero-accent-s">Skeleton</span> Representation Learning</span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a></span>
+      <span class="author"><a href="https://therealchenyun.github.io/" target="_blank" rel="noopener">Yun Chen</a></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>&dagger;</sup></span>
+    </p>
+    <p class="hero-affil">Korea Advanced Institute of Science and Technology (KAIST), South Korea</p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Corresponding author</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:cyruby@kaist.ac.kr">cyruby@kaist.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">arXiv preprint, 2026</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="static/paper/SOfA.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://arxiv.org/abs/2609.07078" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/SOfA" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="#results"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Results</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>For learning generalizable motion representations from large-scale unlabeled data, Self-supervised learning (SSL) has become a widely adopted methodology. However, existing approaches are primarily limited by the inherent heterogeneity of skeleton data&mdash;characterized by varying joint counts, indexing protocols, and topological structures across different sensors&mdash;which typically necessitates training separate, sensor-specific, or even entirely dataset-specific models.</p>
+          <p>To overcome this, we introduce <b>SOfA</b> (<b>S</b>keleton <b>O</b>ne <b>f</b>or <b>A</b>ll), the <i>first</i> generalist foundation model designed to achieve <i>sensor-unified</i> skeleton representation learning across diverse sensors. To accommodate the dimensional gap caused by varying joint counts, we introduce a fixed-size set of learnable <i>Canonical Joint Slots</i>, acting as a universal vessel that seamlessly accommodates arbitrary skeletal topologies. SOfA fills these slots via an attention mechanism that dynamically aggregates skeletal information from sensor-specific inputs. Furthermore, we resolve joint index misalignment between various sensors by introducing a <i>Semantic Joint Embedding</i> derived from a pre-trained text encoder, rather than relying on absolute positional embeddings.</p>
+          <p>To validate our approach, we standardized ten 3D skeleton datasets for unified training. Extensive experiments demonstrate that SOfA can serve as a truly universal encoder, achieving state-of-the-art (SOTA) performance across a wide range of downstream tasks and sensor types, often outperforming dataset-specific models with a single foundation model.</p>
         </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Headline + paper Fig. 1 (motivation) -->
+  <section class="section section--headline" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">One encoder for any skeleton sensor</h2>
+        <p class="lead">One set of weights for 25-, 20- and unseen 15-joint skeletons from ten datasets, instead of one model per sensor or dataset.</p>
+      </header>
+      <figure class="figure teaser">
+        <a class="figure-media zoom" href="static/images/motivation_full.jpg" data-title="Sensor-specific versus sensor-unified representation">
+          <img src="static/images/motivation_1600.jpg"
+               srcset="static/images/motivation_1200.jpg 1200w, static/images/motivation_1600.jpg 1600w, static/images/motivation_2000.jpg 2000w"
+               sizes="(min-width: 1144px) 1080px, calc(100vw - 32px)"
+               width="1600" height="859" fetchpriority="high" decoding="async"
+               alt="Two panels. (a) Previous methods: skeleton sequence X1 from sensor 1 and X2 from sensor 2 go to separate encoders E1 and E2, which are not compatible with each other, giving sensor-specific representations of size T by J1 and T by J2. (b) SOfA: sequences from various sensors are used as the condition for a single encoder E that fills learnable Canonical Joint Slots S_c of size 1 by J_c, giving a sensor-unified representation of size T by J_c.">
+        </a>
+        <figcaption><b>Sensor-specific versus sensor-unified.</b> (a)&nbsp;Previous methods need a separate encoder for each sensor topology; (b)&nbsp;SOfA fills a fixed set of learnable Canonical Joint Slots from any sensor with one shared encoder.</figcaption>
+      </figure>
     </div>
-</section>
+  </section>
 
-<!-- ========================= MOTIVATION ========================= -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">One Encoder for Any Skeleton Sensor</h2>
+  <!-- Paper figures: figure carousel with a thumbnail strip -->
+  <section class="section section--band" id="figures" aria-labelledby="figures-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="figures-title">Paper figures</h2>
+        <p class="lead">The learned Canonical Joint Slots in t-SNE, the leakage-free NTU evaluation protocol, and normalized samples from the ten datasets.</p>
+      </header>
+      <div class="carousel fig-carousel" data-switch>
+        <div class="carousel-nav">
+          <button type="button" class="carousel-btn" data-prev aria-label="Previous figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="thumbs hscroll thumbs--fig" role="tablist" aria-label="Paper figures">
+            <button type="button" class="thumb" role="tab" id="fig-t4" aria-controls="fig-4" aria-selected="true"><img src="static/images/cjs_tsne_thumb.jpg" alt="" width="480" height="310" loading="lazy" decoding="async"><span><b>Fig. 4</b> Slots in <span class="nowrap">t-SNE</span></span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t5" aria-controls="fig-5" aria-selected="false"><img src="static/images/data_leakage_thumb.jpg" alt="" width="480" height="285" loading="lazy" decoding="async"><span><b>Fig. 5</b> NTU protocol</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t1" aria-controls="fig-1" aria-selected="false"><img src="static/images/datasets_1_thumb.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"><span><b>Fig. 6</b> Ten datasets</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t2" aria-controls="fig-2" aria-selected="false"><img src="static/images/datasets_2_thumb.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"><span><b>Fig. 7</b> More samples</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t3" aria-controls="fig-3" aria-selected="false"><img src="static/images/datasets_3_thumb.jpg" alt="" width="480" height="300" loading="lazy" decoding="async"><span><b>Fig. 8</b> Unseen 15-joint</span></button>
+          </div>
+          <button type="button" class="carousel-btn" data-next aria-label="Next figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+        <div class="slides">
+          <figure class="figure slide" id="fig-4" role="tabpanel" aria-labelledby="fig-t4">
+            <a class="figure-media zoom" href="static/images/cjs_tsne_full.jpg" data-title="t-SNE of Canonical Joint Slot assignments">
+              <img src="static/images/cjs_tsne_2000.jpg" srcset="static/images/cjs_tsne_1200.jpg 1200w, static/images/cjs_tsne_1600.jpg 1600w, static/images/cjs_tsne_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 32px)"
+                   width="2000" height="645" loading="lazy" decoding="async"
+                   alt="Three t-SNE scatter plots: Kinect v2 versus Kinect v1 joints; Kinect v2 joints with the five learned slots marked as stars; Kinect v1 joints with the same five slots. The slots sit among different groups of joints.">
+            </a>
+            <figcaption><b>Canonical Joint Slots in t-SNE.</b> The five slots converge toward the centers of distinct anatomical clusters (torso and four limbs), consistent with the best slot count, <i>J</i><sub>c</sub>&nbsp;=&nbsp;5 (Table&nbsp;13).</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-5" style="--ar: 1.6844" role="tabpanel" aria-labelledby="fig-t5" hidden>
+            <a class="figure-media zoom" href="static/images/data_leakage_full.jpg" data-title="NTU pre-training corpus and evaluation sets">
+              <img src="static/images/data_leakage_1600.jpg" srcset="static/images/data_leakage_1200.jpg 1200w, static/images/data_leakage_1600.jpg 1600w, static/images/data_leakage_2000.jpg 2000w"
+                   sizes="(min-width: 1144px) min(1080px, max(760px, calc((100vh - 170px) * 1.6844))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 1.6844)))"
+                   width="1600" height="950" loading="lazy" decoding="async"
+                   alt="Diagram of the NTU splits. (a) NTU-60 X-Sub inside NTU-120 X-Sub, and NTU-60 X-View cutting across the NTU-120 X-Set split. (b) The pre-training corpus is the intersection of the NTU-120 X-Sub and X-Set training splits. (c) to (e) NTU-120 X-Sub, NTU-120 X-Set and NTU-60 X-Sub test sets are reported directly. (f) For NTU-60 X-View, test sequences that overlap the pre-training corpus are excluded, giving the leakage-free X-View*.">
+            </a>
+            <figcaption><b>NTU pre-training corpus and evaluation sets.</b> Pre-training keeps only sequences in both NTU-120 training splits (X-Sub&nbsp;&cap;&nbsp;X-Set); NTU-60 X-View test sequences that overlap it are removed, giving X-View<sup>*</sup>.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-1" style="--ar: 1.1304; --min-w: 360px" role="tabpanel" aria-labelledby="fig-t1" hidden>
+            <a class="figure-media zoom" href="static/images/datasets_1_full.jpg" data-title="Normalized skeleton samples from the ten datasets">
+              <img src="static/images/datasets_1_1600.jpg" srcset="static/images/datasets_1_1200.jpg 1200w, static/images/datasets_1_1600.jpg 1600w"
+                   sizes="(min-width: 1304px) min(1240px, calc((100vh - 170px) * 1.1304)), min(calc(100vw - 32px), max(360px, calc((100vh - 170px) * 1.1304)))"
+                   width="1600" height="1415" loading="lazy" decoding="async"
+                   alt="Ten rows of blue stick-figure skeletons, seven frames each: NTU-60, NTU-120, ETRI-Act, ETRI-LivingLab and PKU-MMD with 25 joints; MSR-Action3D, NW-UCLA and UT-Kinect with 20 joints; SBU-Inter with 15 joints, two interacting people drawn in red and blue; Florence with 15 joints.">
+            </a>
+            <figcaption><b>Normalized skeleton samples from the ten datasets.</b> Despite different joint counts, trackers and recording environments, all sequences share one <span class="nowrap">hip-centered</span> coordinate frame.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-2" style="--ar: 1.1304; --min-w: 360px" role="tabpanel" aria-labelledby="fig-t2" hidden>
+            <a class="figure-media zoom" href="static/images/datasets_2_full.jpg" data-title="Additional normalized skeleton samples">
+              <img src="static/images/datasets_2_1600.jpg" srcset="static/images/datasets_2_1200.jpg 1200w, static/images/datasets_2_1600.jpg 1600w"
+                   sizes="(min-width: 1304px) min(1240px, calc((100vh - 170px) * 1.1304)), min(calc(100vw - 32px), max(360px, calc((100vh - 170px) * 1.1304)))"
+                   width="1600" height="1415" loading="lazy" decoding="async"
+                   alt="A second set of seven-frame skeleton sequences for the same ten datasets, one row per dataset, from NTU-60 (25 joints) to Florence (15 joints).">
+            </a>
+            <figcaption><b>Additional samples from the ten datasets.</b> The preprocessing keeps dataset-specific motion patterns while reducing cross-dataset geometric discrepancies.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-3" style="--ar: 1.1304; --min-w: 360px" role="tabpanel" aria-labelledby="fig-t3" hidden>
+            <a class="figure-media zoom" href="static/images/datasets_3_full.jpg" data-title="Additional normalized skeleton samples, including the unseen 15-joint protocols">
+              <img src="static/images/datasets_3_1600.jpg" srcset="static/images/datasets_3_1200.jpg 1200w, static/images/datasets_3_1600.jpg 1600w"
+                   sizes="(min-width: 1304px) min(1240px, calc((100vh - 170px) * 1.1304)), min(calc(100vw - 32px), max(360px, calc((100vh - 170px) * 1.1304)))"
+                   width="1600" height="1415" loading="lazy" decoding="async"
+                   alt="A third set of seven-frame skeleton sequences for the ten datasets, including the unseen 15-joint SBU-Inter interactions and Florence sequences in the last two rows.">
+            </a>
+            <figcaption><b>Samples including the unseen 15-joint protocols.</b> The unified preprocessing holds under large topological variation and interaction-specific layouts.</figcaption>
+          </figure>
+        </div>
+      </div>
 
-        <div class="kpi-row">
-            <div class="kpi">
-                <div class="kpi-num">10</div>
-                <div class="kpi-label">heterogeneous 3D skeleton datasets<br>unified into one corpus</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi-num">1</div>
-                <div class="kpi-label">shared encoder for 15/20/25/30-joint<br>topologies &mdash; no reconfiguration</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi-num">6.59&times;</div>
-                <div class="kpi-label">lower inference GFLOPs<br>than MAE-based SSL baselines</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi-num">+6.8<span style="font-size:0.6em">%p</span></div>
-                <div class="kpi-label">on PKU-MMD over the best<br>sensor-specific specialist</div>
-            </div>
-        </div>
+      <div class="disclosures">
+      <details class="disclosure" id="datasets" data-animate>
+        <summary>Ten datasets <span class="summary-sub">Table 14</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" id="table-14">
+<figcaption><span class="fig-label">Table 14.</span> <b>The ten heterogeneous 3D skeleton datasets.</b> Grouped by tracking protocol and skeletal topology; the 15-joint protocols are reserved exclusively for unseen evaluation.</figcaption>
+<div class="table-meta table-meta--hint"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 14 (scrolls horizontally)"><table class="results results--text" id="table-14-t0">
+<thead>
+<tr><th scope="col" class="col-method">Dataset</th><th scope="col" class="metric">Tracker</th><th scope="col" class="metric">Joints</th><th scope="col" class="metric">Classes</th><th scope="col" class="metric">Samples</th><th scope="col" class="metric">Evaluation Setting</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">NTU-60</td><td>Kinect v2</td><td class="num">25</td><td class="num">60</td><td class="num">56,880</td><td>Pre-train & Downstream</td></tr>
+<tr><td class="col-method">NTU-120</td><td>Kinect v2</td><td class="num">25</td><td class="num">120</td><td class="num">114,480</td><td>Pre-train & Downstream</td></tr>
+<tr><td class="col-method">PKU-MMD</td><td>Kinect v2</td><td class="num">25</td><td class="num">51</td><td class="num">7,096</td><td>Pre-train & Downstream</td></tr>
+<tr><td class="col-method">ETRI-Act</td><td>Kinect v2</td><td class="num">25</td><td class="num">55</td><td class="num">112,620</td><td>Pre-train & Downstream</td></tr>
+<tr><td class="col-method">ETRI-LivingLab</td><td>Kinect v2</td><td class="num">25</td><td class="num">55</td><td class="num">8,605</td><td>Pre-train & Downstream</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">MSR-Action3D</td><td>Kinect v1</td><td class="num">20</td><td class="num">20</td><td class="num">567</td><td>Pre-train & Downstream</td></tr>
+<tr><td class="col-method">NW-UCLA</td><td>Kinect v1</td><td class="num">20</td><td class="num">10</td><td class="num">1,494</td><td>Pre-train & Downstream</td></tr>
+<tr><td class="col-method">UT-Kinect</td><td>Kinect v1</td><td class="num">20</td><td class="num">10</td><td class="num">199</td><td>Pre-train & Downstream</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">SBU-Inter</td><td>Custom Tracker 1</td><td class="num">15</td><td class="num">8</td><td class="num">282</td><td>Unseen (OOD)</td></tr>
+<tr><td class="col-method">Florence</td><td>Custom Tracker 2</td><td class="num">15</td><td class="num">9</td><td class="num">215</td><td>Unseen (OOD)</td></tr>
+</tbody>
+</table></div></div>
 
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full fig">
-                <img src="./static/image/motivation.png" alt="Motivation of SOfA">
-                <div class="content has-text-justified caption">
-                    <p>
-                        <b>(a) Previous methods</b> couple the architecture to a fixed joint count and rigid absolute
-                        positional embeddings, so each sensor needs its own isolated encoder and the resulting features
-                        are mutually incompatible &mdash; a <i>sensor-specific</i> representation.<br>
-                        <b>(b) SOfA (Ours)</b> introduces a fixed-size set of learnable <b>Canonical Joint Slots</b>
-                        <i>S<sub>c</sub></i>. An arbitrary sensor sequence enters only as a <i>condition</i>, and a
-                        single shared encoder dynamically fills the slots to emit a standardized,
-                        <i>sensor-unified</i> representation regardless of the original joint count.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-title">Conceptual comparison of skeleton representation learning paradigms</div>
-        <div class="table-scroll">
-            <table class="paper-table">
-                <thead>
-                <tr>
-                    <th class="al">Property</th>
-                    <th class="al">Standard SSL</th>
-                    <th class="al">HSP (CVPR'25)</th>
-                    <th class="al">SOfA (Ours)</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="al">Cross-Sensor Capability</td>
-                    <td class="al">&#10007;</td>
-                    <td class="al">Intra-scene (Paired)</td>
-                    <td class="al" style="background-color:#fffdd9">Universal (Unpaired)</td>
-                </tr>
-                <tr>
-                    <td class="al">Alignment Strategy</td>
-                    <td class="al">&#10007;</td>
-                    <td class="al">Skeletal interpolation</td>
-                    <td class="al" style="background-color:#fffdd9">Canonical Joint Slots + Semantic Joint Embedding</td>
-                </tr>
-                <tr>
-                    <td class="al">Sensor Flexibility</td>
-                    <td class="al">&#10007;</td>
-                    <td class="al">Pre-defined 2D&ndash;3D pair</td>
-                    <td class="al" style="background-color:#fffdd9">Arbitrary 3D sensor</td>
-                </tr>
-                <tr>
-                    <td class="al">Dataset Dependency</td>
-                    <td class="al">Homogeneous</td>
-                    <td class="al">Heterogeneous (Paired)</td>
-                    <td class="al" style="background-color:#fffdd9">Heterogeneous (Independent)</td>
-                </tr>
-                <tr>
-                    <td class="al">Representation Scope</td>
-                    <td class="al">Domain-specific</td>
-                    <td class="al">Multi-modal fusion</td>
-                    <td class="al" style="background-color:#fffdd9">Generalist foundation</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="subcaption">
-            Standard SSL methods are constrained by fixed topologies, and the recent HSP is limited to intra-scene
-            multi-modal fusion using paired data. SOfA is the <i>first</i> generalist foundation model, generalizing
-            across entirely independent datasets and arbitrary sensor configurations.
-        </div>
+</figure>
+        </div></div>
+      </details>
+      </div>
     </div>
-</section>
+  </section>
 
-<hr class="sofa-section-rule">
+  <!-- Quantitative results: Tables 2-4, then ablations and appendix tables in disclosures -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead"><b>67.1%</b> on PKU-MMD with SOfA-L (+6.8 points over the previous best), <b>92.9%</b> on NW-UCLA, and <b>91.7%</b> / <b>97.0%</b> on the unseen 15-joint Florence and SBU-Inter.</p>
+      </header>
 
-<!-- ========================== ABSTRACT ========================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <h2 class="title is-3">Abstract</h2>
-                <div class="content has-text-justified" style="margin-bottom: 40px;">
-                    <p>Self-supervised learning (SSL) has become the standard route to generalizable motion
-                        representations from large-scale unlabeled data. However, existing approaches are bottlenecked
-                        by the inherent <i>heterogeneity of skeleton data</i> &mdash; varying joint counts, indexing
-                        protocols, and topological structures across sensors &mdash; which forces separate,
-                        sensor-specific or even dataset-specific models.</p>
-                    <p>We introduce <strong>SOfA</strong> (<strong>S</strong>keleton <strong>O</strong>ne
-                        <strong>f</strong>or <strong>A</strong>ll), the <i>first</i> generalist foundation model for
-                        <i>sensor-unified</i> skeleton representation learning across diverse sensors.</p>
-                    <p>To absorb the dimensional gap caused by varying joint counts, we introduce a fixed-size set of
-                        learnable <strong>Canonical Joint Slots</strong>, a universal vessel that accommodates arbitrary
-                        skeletal topologies; SOfA fills these slots through an attention mechanism that dynamically
-                        aggregates skeletal information from sensor-specific inputs. To resolve joint index
-                        misalignment across sensors, we replace absolute positional embeddings with a
-                        <strong>Semantic Joint Embedding</strong> derived from a pre-trained text encoder.</p>
-                    <p>We standardize ten 3D skeleton datasets for unified training. Extensive experiments show that
-                        SOfA serves as a truly universal encoder, achieving state-of-the-art performance across a wide
-                        range of downstream tasks and sensor types &mdash; often outperforming dataset-specific models
-                        with a single foundation model.</p>
-                </div>
-            </div>
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="true">Table 2<small>NTU &amp; PKU-MMD</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t3" aria-controls="panel-t3" aria-selected="false">Table 3<small>ETRI-Act &amp; NW-UCLA</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t4" aria-controls="panel-t4" aria-selected="false">Table 4<small>Florence &amp; SBU-Inter</small></button>
+          </div>
         </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1">
+<figure class="table-figure" id="table-2">
+<figcaption><span class="fig-label">Table 2.</span> <b>Comparison with recent SSL methods on NTU-60, NTU-120 and PKU-MMD&nbsp;<span class="nowrap">(25-joint)</span>.</b></figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (scrolls horizontally)"><table class="results" id="table-2-t0">
+<thead>
+<tr><th rowspan="2" scope="col" class="col-method">Method</th><th rowspan="2" scope="col" class="col-venue">Publication</th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>NTU-60</span></th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>NTU-120</span></th><th scope="col" class="col-group grp-start"><span>PKU-MMD</span></th></tr>
+<tr><th scope="col" class="metric grp-start">X-Sub</th><th scope="col" class="metric">X-View</th><th scope="col" class="metric grp-start">X-Sub</th><th scope="col" class="metric">X-Set</th><th scope="col" class="metric grp-start">X-Sub</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="7"><span class="group-label">Sensor-Specific Representation</span></td></tr>
+<tr><td class="col-method">GL-Transformer</td><td class="col-venue">ECCV'22</td><td class="grp-start num">76.3</td><td class="num">83.8</td><td class="grp-start num">66.0</td><td class="num">68.7</td><td class="grp-start na">&ndash;</td></tr>
+<tr><td class="col-method">CPM</td><td class="col-venue">ECCV'22</td><td class="grp-start num">78.7</td><td class="num">84.9</td><td class="grp-start num">68.7</td><td class="num">69.6</td><td class="grp-start num">48.3</td></tr>
+<tr><td class="col-method">CMD</td><td class="col-venue">ECCV'22</td><td class="grp-start num">79.8</td><td class="num">86.9</td><td class="grp-start num">70.3</td><td class="num">71.5</td><td class="grp-start num">43.0</td></tr>
+<tr><td class="col-method">AimCLR</td><td class="col-venue">AAAI'22</td><td class="grp-start num">74.3</td><td class="num">79.7</td><td class="grp-start num">63.4</td><td class="num">63.4</td><td class="grp-start na">&ndash;</td></tr>
+<tr><td class="col-method">HYSP</td><td class="col-venue">ICLR'23</td><td class="grp-start num">78.2</td><td class="num">82.6</td><td class="grp-start num">61.8</td><td class="num">64.6</td><td class="grp-start na">&ndash;</td></tr>
+<tr><td class="col-method">HaLP</td><td class="col-venue">CVPR'23</td><td class="grp-start num">79.7</td><td class="num">86.8</td><td class="grp-start num">71.1</td><td class="num">72.2</td><td class="grp-start num">43.5</td></tr>
+<tr><td class="col-method">ActCLR</td><td class="col-venue">CVPR'23</td><td class="grp-start num">80.9</td><td class="num">86.7</td><td class="grp-start num">69.0</td><td class="num">70.5</td><td class="grp-start na">&ndash;</td></tr>
+<tr><td class="col-method">RVTCLR</td><td class="col-venue">ICCV'23</td><td class="grp-start num">74.7</td><td class="num">79.1</td><td class="grp-start na">&ndash;</td><td class="na">&ndash;</td><td class="grp-start na">&ndash;</td></tr>
+<tr><td class="col-method">SkeletonMAE</td><td class="col-venue">ICMEW'23</td><td class="grp-start num">74.8</td><td class="num">77.7</td><td class="grp-start num">72.5</td><td class="num">73.5</td><td class="grp-start num">36.1</td></tr>
+<tr><td class="col-method">MAMP</td><td class="col-venue">ICCV'23</td><td class="grp-start num">84.9</td><td class="num">89.1</td><td class="grp-start num">78.6</td><td class="num">79.1</td><td class="grp-start num">53.8</td></tr>
+<tr><td class="col-method">PTSL</td><td class="col-venue">AAAI'23</td><td class="grp-start num">77.3</td><td class="num">81.8</td><td class="grp-start num">66.2</td><td class="num">67.7</td><td class="grp-start num">49.3</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="col-venue">ECCV'24</td><td class="grp-start num">85.3</td><td class="num">89.8</td><td class="grp-start num">79.6</td><td class="num">79.9</td><td class="grp-start num">53.5</td></tr>
+<tr><td class="col-method">IGM</td><td class="col-venue">ECCV'24</td><td class="grp-start num">86.2</td><td class="num">91.2</td><td class="grp-start num second">80.0</td><td class="num">81.4</td><td class="grp-start na">&ndash;</td></tr>
+<tr><td class="col-method">MacDiff</td><td class="col-venue">ECCV'24</td><td class="grp-start num">86.4</td><td class="num">91.0</td><td class="grp-start num">79.4</td><td class="num">80.2</td><td class="grp-start na">&ndash;</td></tr>
+<tr><td class="col-method">HSP</td><td class="col-venue">CVPR'25</td><td class="grp-start num">80.7</td><td class="num">88.0</td><td class="grp-start num">71.0</td><td class="num">73.2</td><td class="grp-start num">48.9</td></tr>
+<tr><td class="col-method">USDRL</td><td class="col-venue">AAAI'25</td><td class="grp-start num">85.2</td><td class="num">91.7</td><td class="grp-start num">76.6</td><td class="num">78.1</td><td class="grp-start num">54.4</td></tr>
+<tr><td class="col-method">GFP</td><td class="col-venue">ICCV'25</td><td class="grp-start num">85.9</td><td class="num">92.0</td><td class="grp-start num">79.1</td><td class="num">80.3</td><td class="grp-start num">56.2</td></tr>
+<tr><td class="col-method">AMR</td><td class="col-venue">CVPR'26</td><td class="grp-start num best">87.4</td><td class="num second">92.3</td><td class="grp-start num best">81.1</td><td class="num second">81.9</td><td class="grp-start num">60.3</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="7"><span class="group-label">Sensor-Unified Representation</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA (Ours)</td><td class="col-venue na"></td><td class="grp-start num">85.7</td><td class="num">92.1<sup>*</sup></td><td class="grp-start num">79.2</td><td class="num">80.4</td><td class="grp-start num second">65.4</td></tr>
+<tr class="ours"><td class="col-method">SOfA-L (Ours)</td><td class="col-venue na"></td><td class="grp-start num second">87.0</td><td class="num best">92.6<sup>*</sup></td><td class="grp-start num">79.5</td><td class="num best">82.0</td><td class="grp-start num best">67.1</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">X-View<sup>*</sup>: leakage-free evaluation on the official NTU-60 X-View test set without the 5,392 sequences that also appear in the pre-training corpus (13,568 remain; Fig.&nbsp;5).</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t3" aria-labelledby="tab-t3" tabindex="-1" hidden>
+<figure class="table-figure" id="table-3">
+<figcaption><span class="fig-label">Table 3.</span> <b>Linear evaluation on seen benchmarks with varying joint configurations.</b> (a) ETRI-Act <span class="nowrap">(25-joint)</span> and (b) NW-UCLA <span class="nowrap">(20-joint)</span> are included in the pre-training domain.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-pair"><div class="subtable"><p class="table-subcap">(a) ETRI-Act (25-joint)</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (a) (scrolls horizontally)"><table class="results" id="table-3-t0">
+<thead>
+<tr><th scope="col" class="col-method">Methods</th><th scope="col" class="metric">ETRI-Act</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Fully-supervised</span></td></tr>
+<tr><td class="col-method">IndRNN</td><td class="num">73.9</td></tr>
+<tr><td class="col-method">Beyond Joint</td><td class="num">79.1</td></tr>
+<tr><td class="col-method">SK-CNN</td><td class="num">83.6</td></tr>
+<tr><td class="col-method">ST-GCN</td><td class="num">86.8</td></tr>
+<tr><td class="col-method">Ensem-NN</td><td class="num">83.0</td></tr>
+<tr><td class="col-method">MANs</td><td class="num">82.4</td></tr>
+<tr><td class="col-method">HCN</td><td class="num">88.0</td></tr>
+<tr><td class="col-method">FSA-CNN</td><td class="num">90.6</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="2"><span class="group-label">Un-supervised (SSL)</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA (Ours)</td><td class="num">87.9</td></tr>
+</tbody>
+</table></div></div></div><div class="subtable"><p class="table-subcap">(b) NW-UCLA (20-joint)</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (b) (scrolls horizontally)"><table class="results" id="table-3-t1">
+<thead>
+<tr><th scope="col" class="col-method">Methods</th><th scope="col" class="metric">NW-UCLA</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Sensor-Specific</span></td></tr>
+<tr><td class="col-method">LongT-GAN</td><td class="num">74.3</td></tr>
+<tr><td class="col-method">P&C</td><td class="num">84.9</td></tr>
+<tr><td class="col-method">MCAE-MP</td><td class="num">84.9</td></tr>
+<tr><td class="col-method">SeBiReNet</td><td class="num">80.3</td></tr>
+<tr><td class="col-method">Colorization</td><td class="num">91.1</td></tr>
+<tr><td class="col-method">GL-Transformer</td><td class="num">90.4</td></tr>
+<tr><td class="col-method">Masked-Color</td><td class="num">92.0</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="2"><span class="group-label">Sensor-Unified</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA (Ours)</td><td class="num">92.9</td></tr>
+</tbody>
+</table></div></div></div></div>
+
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t4" aria-labelledby="tab-t4" tabindex="-1" hidden>
+<figure class="table-figure" id="table-4">
+<figcaption><span class="fig-label">Table 4.</span> <b>Linear evaluation on unseen cross-domain benchmarks.</b> (a) Florence <span class="nowrap">(15-joint)</span> and (b) SBU-Inter <span class="nowrap">(15-joint)</span> are excluded from pre-training.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-pair"><div class="subtable"><p class="table-subcap">(a) Florence (15-joint)</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (a) (scrolls horizontally)"><table class="results" id="table-4-t0">
+<thead>
+<tr><th scope="col" class="col-method">Methods</th><th scope="col" class="metric">Florence</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Seen + Fully-supervised</span></td></tr>
+<tr><td class="col-method">Seidenari <i>et al.</i> (2013)</td><td class="num">82.0</td></tr>
+<tr><td class="col-method">Devanne <i>et al.</i> (2014)</td><td class="num">87.0</td></tr>
+<tr><td class="col-method">Vemulapalli <i>et al.</i> (2014)</td><td class="num">90.9</td></tr>
+<tr><td class="col-method">HarSkel</td><td class="num">94.4</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Unseen + Sensor-Specific</span></td></tr>
+<tr><td class="col-method">SkeletonMAE</td><td class="num">66.8</td></tr>
+<tr><td class="col-method">MAMP</td><td class="num">73.7</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="2"><span class="group-label">Unseen + Sensor-Unified</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA (Ours)</td><td class="num">91.7</td></tr>
+</tbody>
+</table></div></div></div><div class="subtable"><p class="table-subcap">(b) SBU-Inter (15-joint)</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (b) (scrolls horizontally)"><table class="results" id="table-4-t1">
+<thead>
+<tr><th scope="col" class="col-method">Methods</th><th scope="col" class="metric">SBU-Inter</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Seen + Fully-supervised</span></td></tr>
+<tr><td class="col-method">Co-LSTM</td><td class="num">90.4</td></tr>
+<tr><td class="col-method">ST-LSTM</td><td class="num">93.3</td></tr>
+<tr><td class="col-method">VA-LSTM</td><td class="num">97.2</td></tr>
+<tr><td class="col-method">GCA</td><td class="num">94.9</td></tr>
+<tr><td class="col-method">LSTM-IRN</td><td class="num">98.2</td></tr>
+<tr><td class="col-method">IGFormer</td><td class="num">98.4</td></tr>
+<tr><td class="col-method">ISTA-Net</td><td class="num">98.5</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Unseen + Sensor-Specific</span></td></tr>
+<tr><td class="col-method">SkeletonMAE</td><td class="num">73.1</td></tr>
+<tr><td class="col-method">MAMP</td><td class="num">80.2</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="2"><span class="group-label">Unseen + Sensor-Unified</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA (Ours)</td><td class="num">97.0</td></tr>
+</tbody>
+</table></div></div></div></div>
+
+</figure>
+        </div>
+      </div>
+      <p class="table-note results-note">Linear evaluation with the joint modality alone, no multi-stream ensemble. Baselines are trained separately for each dataset; SOfA uses the same weights for every benchmark.</p>
+
+      <div class="disclosures">
+      <details class="disclosure" id="ablations" data-animate>
+        <summary>Ablations <span class="summary-sub">Tables 5 and 13</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-5">
+<figcaption><span class="fig-label">Table 5.</span> <b>Ablation of SOfA components.</b> The contributions of CJS and SJE across heterogeneous topologies (Top-1&nbsp;accuracy,&nbsp;%).</figcaption>
+<div class="table-meta table-meta--hint"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 5 (scrolls horizontally)"><table class="results results--compact" id="table-5-t0">
+<thead>
+<tr><th colspan="2" scope="colgroup" class="col-group"><span>Modules</span></th><th colspan="3" scope="colgroup" class="col-group grp-start"><span>25-Joint Datasets</span></th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>20-Joint Datasets</span></th></tr>
+<tr><th scope="col" class="metric">CJS</th><th scope="col" class="metric">SJE</th><th scope="col" class="metric grp-start">NTU-60</th><th scope="col" class="metric">NTU-120</th><th scope="col" class="metric">PKU-MMD</th><th scope="col" class="metric grp-start">NW-UCLA</th><th scope="col" class="metric">UT-Kinect</th></tr>
+</thead>
+<tbody>
+<tr><td class="mark-x">✗</td><td class="mark-x">✗</td><td class="grp-start num">75.2</td><td class="num">70.7</td><td class="num">50.9</td><td class="grp-start num">68.9</td><td class="num">77.0</td></tr>
+<tr><td class="mark-ok">✓</td><td class="mark-x">✗</td><td class="grp-start num">84.9</td><td class="num">78.7</td><td class="num">64.7</td><td class="grp-start num">72.3</td><td class="num">80.0</td></tr>
+<tr><td class="mark-x">✗</td><td class="mark-ok">✓</td><td class="grp-start num">76.4</td><td class="num">71.4</td><td class="num">52.3</td><td class="grp-start num">86.7</td><td class="num">91.0</td></tr>
+<tr class="ours"><td class="mark-ok">✓</td><td class="mark-ok">✓</td><td class="grp-start num">85.7</td><td class="num">79.2</td><td class="num">65.4</td><td class="grp-start num">92.9</td><td class="num">97.0</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">Removing CJS lowers accuracy on every benchmark (average drop of 8.48%); removing SJE hurts the 20-joint datasets most (NW-UCLA <span class="nowrap">92.9% &rarr; 72.3%</span>).</p>
+</figure>
+
+<figure class="table-figure" id="table-13">
+<figcaption><span class="fig-label">Table 13.</span> <b>Number of Canonical Joint Slots.</b> Linear evaluation accuracy (%) on 25-joint and 20-joint benchmarks, with inference GFLOPs.</figcaption>
+<div class="table-meta table-meta--hint"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 13 (scrolls horizontally)"><table class="results results--compact" id="table-13-t0">
+<thead>
+<tr><th scope="col" class="col-group col-method"><span>Slots</span></th><th colspan="3" scope="colgroup" class="col-group grp-start"><span>25-Joint Datasets</span></th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>20-Joint Datasets</span></th><th scope="col" class="col-group grp-start"><span>GFLOPs</span></th></tr>
+<tr><th scope="col" class="metric col-method">CJS</th><th scope="col" class="metric grp-start">NTU-60</th><th scope="col" class="metric">NTU-120</th><th scope="col" class="metric">PKU-MMD</th><th scope="col" class="metric grp-start">NW-UCLA</th><th scope="col" class="metric">UT-Kinect</th><th scope="col" class="metric grp-start">Inference</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">0</td><td class="grp-start num">76.4</td><td class="num">71.4</td><td class="num">52.3</td><td class="grp-start num">86.7</td><td class="num">91.0</td><td class="grp-start num">3.60</td></tr>
+<tr class="ours"><td class="col-method">5</td><td class="grp-start num">85.7</td><td class="num">79.2</td><td class="num">65.4</td><td class="grp-start num">92.9</td><td class="num">97.0</td><td class="grp-start num">4.30</td></tr>
+<tr><td class="col-method">10</td><td class="grp-start num">85.5</td><td class="num">79.0</td><td class="num">64.5</td><td class="grp-start num">92.7</td><td class="num">98.0</td><td class="grp-start num">5.41</td></tr>
+<tr><td class="col-method">15</td><td class="grp-start num">85.3</td><td class="num">78.9</td><td class="num">63.5</td><td class="grp-start num">91.8</td><td class="num">97.0</td><td class="grp-start num">6.55</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">Five slots give the best overall accuracy; 10 or 15 slots cost more GFLOPs and lower most benchmarks.</p>
+</figure>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="efficiency" data-animate>
+        <summary>Efficiency and scaling <span class="summary-sub">Tables 8 and 7</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-8">
+<figcaption><span class="fig-label">Table 8.</span> <b>Computational complexity on PKU-MMD.</b> Number of tokens, training and inference GFLOPs, and Top-1 accuracy (X-Sub).</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8 (scrolls horizontally)"><table class="results" id="table-8-t0">
+<thead>
+<tr><th rowspan="2" scope="col" class="col-method">Method</th><th scope="col" class="col-group grp-start"><span>Tokens</span></th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>GFLOPs</span></th><th scope="col" class="col-group grp-start"><span>PKU-MMD</span></th></tr>
+<tr><th scope="col" class="metric grp-start"><i>T</i> × <i>J</i></th><th scope="col" class="metric grp-start">Train</th><th scope="col" class="metric">Inference</th><th scope="col" class="metric grp-start">X-Sub</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="5"><span class="group-label">Sensor-Specific</span></td></tr>
+<tr><td class="col-method">SkeletonMAE</td><td class="grp-start num">30 × 25</td><td class="grp-start num">19.67</td><td class="num">28.32</td><td class="grp-start num">36.1</td></tr>
+<tr><td class="col-method">MAMP</td><td class="grp-start num">30 × 25</td><td class="grp-start num">19.67</td><td class="num">28.32</td><td class="grp-start num">53.8</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="grp-start num">30 × 25</td><td class="grp-start num">47.99</td><td class="num">28.32</td><td class="grp-start num">53.5</td></tr>
+<tr><td class="col-method">GFP</td><td class="grp-start num">30 × 25</td><td class="grp-start num">4.18</td><td class="num">28.32</td><td class="grp-start num">56.2</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="5"><span class="group-label">Sensor-Unified</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA</td><td class="grp-start num">8 × (25+5)</td><td class="grp-start num">8.60</td><td class="num best">4.30</td><td class="grp-start num">65.4</td></tr>
+<tr class="ours"><td class="col-method">SOfA-L</td><td class="grp-start num">8 × (25+5)</td><td class="grp-start num">14.90</td><td class="num">7.45</td><td class="grp-start num best">67.1</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">SOfA needs 4.30 inference GFLOPs, a <span class="nowrap">6.59&times;</span> reduction from the 28.32 GFLOPs of the MAE-based baselines.</p>
+</figure>
+
+<figure class="table-figure" id="table-7">
+<figcaption><span class="fig-label">Table 7.</span> <b>Network scalability on the 25-joint benchmarks.</b> Top-1 accuracy (%) under linear evaluation with the joint (J) modality. SOfA is the base model, SOfA (<i>J</i> = 30) is evaluated on an extended synthetic topology, and SOfA-L is the deeper and wider variant.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 7 (scrolls horizontally)"><table class="results" id="table-7-t0">
+<thead>
+<tr><th rowspan="2" scope="col" class="col-method">Method</th><th rowspan="2" scope="col" class="col-venue">Modality</th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>NTU-60</span></th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>NTU-120</span></th><th scope="col" class="col-group grp-start"><span>PKU-MMD</span></th></tr>
+<tr><th scope="col" class="metric grp-start">X-Sub</th><th scope="col" class="metric">X-View</th><th scope="col" class="metric grp-start">X-Sub</th><th scope="col" class="metric">X-Set</th><th scope="col" class="metric grp-start">X-Sub</th></tr>
+</thead>
+<tbody>
+<tr class="ours"><td class="col-method">SOfA</td><td class="col-venue">J</td><td class="grp-start num">85.7</td><td class="num">92.1<sup>*</sup></td><td class="grp-start num">79.2</td><td class="num">80.4</td><td class="grp-start num">65.4</td></tr>
+<tr class="ours"><td class="col-method">SOfA (<i>J</i> = 30)</td><td class="col-venue">J</td><td class="grp-start num">85.5</td><td class="num">91.9<sup>*</sup></td><td class="grp-start num">79.0</td><td class="num">80.1</td><td class="grp-start num">65.6</td></tr>
+<tr class="ours"><td class="col-method">SOfA-L</td><td class="col-venue">J</td><td class="grp-start num best">87.0</td><td class="num best">92.6<sup>*</sup></td><td class="grp-start num best">79.5</td><td class="num best">82.0</td><td class="grp-start num best">67.1</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">The deeper and wider SOfA-L (12 layers, <i>D</i>&nbsp;=&nbsp;384) improves every benchmark; the synthetic 30-joint topology performs on par with the standard 25 joints. X-View<sup>*</sup>: leakage-free NTU-60 X-View test subset (see Table&nbsp;2).</p>
+</figure>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="more-tasks" data-animate>
+        <summary>Semi-supervised, retrieval and 20-joint benchmarks <span class="summary-sub">Tables 9&ndash;12</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+            <div class="table-grid">
+<figure class="table-figure" id="table-9">
+<figcaption><span class="fig-label">Table 9.</span> <b>Semi-supervised results on NTU-60</b> using only 1% labeled data.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 9 (scrolls horizontally)"><table class="results" id="table-9-t0">
+<thead>
+<tr><th rowspan="2" scope="col" class="col-method">Methods</th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>NTU-60</span></th></tr>
+<tr><th scope="col" class="metric grp-start">X-Sub</th><th scope="col" class="metric">X-View</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="3"><span class="group-label">Sensor-Specific</span></td></tr>
+<tr><td class="col-method">CPM</td><td class="grp-start num">56.7</td><td class="num">57.5</td></tr>
+<tr><td class="col-method">CMD</td><td class="grp-start num">50.6</td><td class="num">53.0</td></tr>
+<tr><td class="col-method">HaLP</td><td class="grp-start num">46.6</td><td class="num">48.7</td></tr>
+<tr><td class="col-method">HiCo</td><td class="grp-start num">54.4</td><td class="num">54.8</td></tr>
+<tr><td class="col-method">UmURL</td><td class="grp-start num">58.1</td><td class="num">58.3</td></tr>
+<tr><td class="col-method">SkeletonMAE</td><td class="grp-start num">54.4</td><td class="num">54.6</td></tr>
+<tr><td class="col-method">MAMP</td><td class="grp-start num">66.0</td><td class="num">68.7</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="grp-start num">67.5</td><td class="num">69.1</td></tr>
+<tr><td class="col-method">USDRL</td><td class="grp-start num">57.3</td><td class="num">60.7</td></tr>
+<tr><td class="col-method">GFP</td><td class="grp-start num best">71.8</td><td class="num second">72.9</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="3"><span class="group-label">Sensor-Unified</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA</td><td class="grp-start num second">71.6</td><td class="num best">74.2<sup>*</sup></td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+
+<figure class="table-figure" id="table-10">
+<figcaption><span class="fig-label">Table 10.</span> <b>Action retrieval results on NTU-60</b> (X-Sub, X-View).</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 10 (scrolls horizontally)"><table class="results" id="table-10-t0">
+<thead>
+<tr><th rowspan="2" scope="col" class="col-method">Methods</th><th colspan="2" scope="colgroup" class="col-group grp-start"><span>NTU-60</span></th></tr>
+<tr><th scope="col" class="metric grp-start">X-Sub</th><th scope="col" class="metric">X-View</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="3"><span class="group-label">Sensor-Specific</span></td></tr>
+<tr><td class="col-method">LongT-GAN</td><td class="grp-start num">39.1</td><td class="num">48.1</td></tr>
+<tr><td class="col-method">P&C</td><td class="grp-start num">50.7</td><td class="num">76.3</td></tr>
+<tr><td class="col-method">ISC</td><td class="grp-start num">62.5</td><td class="num">82.6</td></tr>
+<tr><td class="col-method">HaLP</td><td class="grp-start num">65.8</td><td class="num">83.6</td></tr>
+<tr><td class="col-method">HiCo</td><td class="grp-start num">68.3</td><td class="num">84.8</td></tr>
+<tr><td class="col-method">MAMP</td><td class="grp-start num">62.0</td><td class="num">70.0</td></tr>
+<tr><td class="col-method">GFP</td><td class="grp-start num second">70.9</td><td class="num best">87.1</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="3"><span class="group-label">Sensor-Unified</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA</td><td class="grp-start num best">72.1</td><td class="num second">86.8<sup>*</sup></td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+            </div>
+            <div class="table-grid">
+<figure class="table-figure" id="table-11">
+<figcaption><span class="fig-label">Table 11.</span> <b>Fully supervised comparison on MSR-Action3D <span class="nowrap">(20-joint)</span></b>, linear evaluation.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 11 (scrolls horizontally)"><table class="results" id="table-11-t0">
+<thead>
+<tr><th scope="col" class="col-method">Methods</th><th scope="col" class="metric">MSR-Action3D</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Fully-supervised</span></td></tr>
+<tr><td class="col-method">HON4D</td><td class="num">82.2</td></tr>
+<tr><td class="col-method">Rahmani <i>et al.</i></td><td class="num">82.7</td></tr>
+<tr><td class="col-method">Tran <i>et al.</i></td><td class="num">84.5</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="2"><span class="group-label">Un-supervised</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA</td><td class="num">82.2</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+
+<figure class="table-figure" id="table-12">
+<figcaption><span class="fig-label">Table 12.</span> <b>Fully supervised comparison on UT-Kinect <span class="nowrap">(20-joint)</span></b>, linear evaluation.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 12 (scrolls horizontally)"><table class="results" id="table-12-t0">
+<thead>
+<tr><th scope="col" class="col-method">Methods</th><th scope="col" class="metric">UT-Kinect</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="2"><span class="group-label">Fully-supervised</span></td></tr>
+<tr><td class="col-method">Xia <i>et al.</i></td><td class="num">90.9</td></tr>
+<tr><td class="col-method">Devanne <i>et al.</i></td><td class="num">91.5</td></tr>
+<tr><td class="col-method">Wang <i>et al.</i></td><td class="num">96.5</td></tr>
+</tbody>
+<tbody>
+<tr class="group group--ours"><td colspan="2"><span class="group-label">Un-supervised</span></td></tr>
+<tr class="ours"><td class="col-method">SOfA</td><td class="num">97.0</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+            </div>
+            <p class="table-note">With 1% of the labels, SOfA is best on X-View and 0.2 points below GFP on X-Sub; in retrieval it is best on X-Sub (72.1%). On UT-Kinect it surpasses all compared fully supervised methods (97.0% vs. 96.5%). X-View<sup>*</sup>: leakage-free NTU-60 X-View test subset (see Table&nbsp;2).</p>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="paradigms" data-animate>
+        <summary>Comparison of learning paradigms <span class="summary-sub">Table 1</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" id="table-1">
+<figcaption><span class="fig-label">Table 1.</span> <b>Conceptual comparison of skeleton representation learning paradigms.</b> Standard SSL methods are constrained by fixed topologies, and HSP is limited to intra-scene multi-modal fusion using paired data; SOfA generalizes across independent datasets and arbitrary sensor configurations.</figcaption>
+<div class="table-meta table-meta--hint"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 (scrolls horizontally)"><table class="results results--text" id="table-1-t0">
+<thead>
+<tr><th scope="col" class="col-method">Property</th><th scope="col" class="metric">Standard SSL</th><th scope="col" class="metric">HSP (CVPR'25)</th><th scope="col" class="metric col-ours">SOfA (Ours)</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Cross-Sensor Capability</td><td class="mark-x">✗</td><td>Intra-scene (Paired)</td><td class="col-ours">Universal (Unpaired)</td></tr>
+<tr><td class="col-method">Alignment Strategy</td><td class="mark-x">✗</td><td>Skeletal interpolation</td><td class="col-ours">Canonical Joint Slots + Semantic Joint Embedding</td></tr>
+<tr><td class="col-method">Sensor Flexibility</td><td class="mark-x">✗</td><td>Pre-defined 2D-3D pair</td><td class="col-ours">Arbitrary 3D sensor</td></tr>
+<tr><td class="col-method">Dataset Dependency</td><td>Homogeneous</td><td>Heterogeneous (Paired)</td><td class="col-ours">Heterogeneous (Independent)</td></tr>
+<tr><td class="col-method">Representation Scope</td><td>Domain-specific</td><td>Multi-modal fusion</td><td class="col-ours">Generalist foundation</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+        </div></div>
+      </details>
+      </div>
     </div>
-</section>
+  </section>
 
-<hr class="sofa-section-rule">
-
-<!-- ========================== OVERVIEW ========================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Overview of SOfA</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full fig">
-                <img src="./static/image/framework.png" alt="Overview of the SOfA framework">
-                <div class="content has-text-justified caption">
-                    SOfA establishes a sensor-unified representation within a teacher&ndash;student architecture, where
-                    both networks dynamically fill a fixed-size set of Canonical Joint Slots. Processing a masked view,
-                    the student encoder minimizes the canonical reconstruction error
-                    (&#8466;<sub>Cano</sub>) to match the slot representations of the unmasked teacher, alongside a
-                    global distillation loss (&#8466;<sub>DINO</sub>) that aligns high-level semantics. Because the
-                    varying sensor tokens <b>W</b><sub>p</sub> enter only as a dynamic <i>condition</i>, they are
-                    discarded after encoding and the model exposes exclusively the unified canonical representation
-                    <b>W</b> = [<b>w</b><sub>cls</sub> | <b>W</b><sub>c</sub>] to downstream tasks.
-                </div>
-            </div>
-        </div>
+  <!-- Method (compact) -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">Any skeleton in, canonical slots out</h2>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/framework_full.jpg" data-title="Overview of SOfA">
+          <img src="static/images/framework_1600.jpg"
+               srcset="static/images/framework_1200.jpg 1200w, static/images/framework_1600.jpg 1600w, static/images/framework_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 32px)"
+               width="1600" height="770" loading="lazy" decoding="async"
+               alt="SOfA framework. Skeleton sequences sampled from various sensors are patchified and given a Semantic Joint Embedding. The resulting patch tokens Z_p are combined with temporally repeated Canonical Joint Slots Z_c. The teacher network receives the full input; the student network receives a masked input and its ViT encoder feeds a canonical head and a DINO head. The canonical loss L_Cano makes the student fill the slots like the teacher, and the DINO loss aligns the class tokens; the teacher is an EMA of the student. The representation W, made of the class token and the canonical tokens, is used for downstream tasks.">
+        </a>
+        <figcaption><b>Overview of SOfA.</b> Teacher and student both fill a fixed set of Canonical Joint Slots; the student sees a masked view and matches the unmasked teacher, and only the canonical representation is kept for downstream tasks.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">01</span><b>Canonical Joint Slots.</b> A fixed set of learnable slots is filled from any sensor&rsquo;s joint tokens by masked self-attention; padded joints are masked out.</li>
+        <li><span class="kp-num">02</span><b>Semantic Joint Embedding.</b> Joint names such as &ldquo;Left Wrist&rdquo; pass through a pretrained T5 text encoder in place of absolute positional&nbsp;embeddings.</li>
+        <li><span class="kp-num">03</span><b>Teacher&ndash;student pre-training.</b> From a 90%-masked view, the student matches the EMA teacher&rsquo;s slot (<i>L</i><sub>Cano</sub>) and class-token (<i>L</i><sub>DINO</sub>) outputs.</li>
+      </ol>
     </div>
-</section>
+  </section>
 
-<hr class="sofa-section-rule">
-
-<!-- ============================ MODULE =========================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Semantic Joint Embedding &amp; Canonical Joint Slots</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full fig">
-                <img src="./static/image/module.png" alt="Semantic Joint Embedding and Canonical Joint Slot aggregation">
-                <div class="content has-text-justified caption">
-                    <p><b>(Left) Semantic Joint Embedding (SJE).</b> Absolute positional embeddings assign rigid
-                        numerical indices, so the same index refers to different anatomical joints across sensors
-                        &mdash; or to empty, zero-padded slots. SJE instead builds a prompt from each sensor's joint
-                        metadata (<i>"A human skeleton joint of the {Left Wrist}"</i>) and encodes it with a pre-trained
-                        T5 text encoder, giving anatomically identical joints a consistent latent identity across every
-                        dataset and inheriting semantic relations between joint names.</p>
-                    <p><b>(Right) Canonical Joint Slots (CJS).</b> The class token, the canonical tokens and the
-                        condition patch tokens propagate jointly through masked self-attention, so the slots are filled
-                        by aggregating information from the visible joints. An attention mask assigns
-                        &minus;&infin; to zero-padded joint positions, so the final representation is computed strictly
-                        from valid skeletal information regardless of the input's original joint count.</p>
-                </div>
-            </div>
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
         </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- =========================== DATASETS ========================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">A Unified Corpus of Ten Heterogeneous Datasets</h2>
-
-        <div class="table-scroll">
-            <table class="paper-table">
-                <thead>
-                <tr>
-                    <th class="al">Dataset</th>
-                    <th>Tracker</th>
-                    <th>Joints</th>
-                    <th>Classes</th>
-                    <th>Samples</th>
-                    <th class="al">Evaluation Setting</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr><td class="al">NTU-60</td><td>Kinect v2</td><td>25</td><td>60</td><td>56,880</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr><td class="al">NTU-120</td><td>Kinect v2</td><td>25</td><td>120</td><td>114,480</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr><td class="al">PKU-MMD</td><td>Kinect v2</td><td>25</td><td>51</td><td>7,096</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr><td class="al">ETRI-Act</td><td>Kinect v2</td><td>25</td><td>55</td><td>112,620</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr><td class="al">ETRI-LivingLab</td><td>Kinect v2</td><td>25</td><td>55</td><td>8,605</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr class="rule"><td class="al">MSR-Action3D</td><td>Kinect v1</td><td>20</td><td>20</td><td>567</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr><td class="al">NW-UCLA</td><td>Kinect v1</td><td>20</td><td>10</td><td>1,494</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr><td class="al">UT-Kinect</td><td>Kinect v1</td><td>20</td><td>10</td><td>199</td><td class="al">Pre-train &amp; Downstream</td></tr>
-                <tr class="rule"><td class="al">SBU-Inter</td><td>Custom Tracker 1</td><td>15</td><td>8</td><td>282</td><td class="al">Unseen (OOD)</td></tr>
-                <tr><td class="al">Florence</td><td>Custom Tracker 2</td><td>15</td><td>9</td><td>215</td><td class="al">Unseen (OOD)</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="subcaption" style="margin-bottom: 2rem;">
-            Eight datasets with 20- and 25-joint protocols form the pre-training corpus; the two 15-joint protocols are
-            reserved <i>exclusively</i> for unseen evaluation. All sources are aligned to a shared hip-centered
-            coordinate frame, with the vertical body axis mapped to <i>y</i> and coordinates normalized to meters.
-        </div>
-
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full fig">
-                <img src="./static/image/datasets_1.png" alt="Normalized skeleton samples from the ten datasets">
-                <div class="content has-text-justified caption">
-                    Representative normalized skeletons from the ten heterogeneous datasets. Despite variations in joint
-                    count, tracking protocol and acquisition environment, all sequences share a common hip-centered
-                    frame and upright orientation after our unified preprocessing.
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- ====================== MAIN PERFORMANCE ======================= -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Performance Evaluation</h2>
-
-        <div class="table-title">Linear evaluation on NTU-60, NTU-120 and PKU-MMD (25-joint)</div>
-        <div class="table-scroll">
-            <table class="paper-table">
-                <thead>
-                <tr>
-                    <th class="al" rowspan="2">Method</th>
-                    <th rowspan="2">Publication</th>
-                    <th class="cmid" colspan="2">NTU-60</th>
-                    <th class="cmid" colspan="2">NTU-120</th>
-                    <th class="cmid">PKU-MMD</th>
-                </tr>
-                <tr>
-                    <th>X-Sub</th><th>X-View</th><th>X-Sub</th><th>X-Set</th><th>X-Sub</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="group"><td colspan="7">Sensor-Specific Representation:</td></tr>
-                <tr><td class="al">GL-Transformer</td><td class="pub">ECCV'22</td><td>76.3</td><td>83.8</td><td>66.0</td><td>68.7</td><td>&ndash;</td></tr>
-                <tr><td class="al">CPM</td><td class="pub">ECCV'22</td><td>78.7</td><td>84.9</td><td>68.7</td><td>69.6</td><td>48.3</td></tr>
-                <tr><td class="al">CMD</td><td class="pub">ECCV'22</td><td>79.8</td><td>86.9</td><td>70.3</td><td>71.5</td><td>43.0</td></tr>
-                <tr><td class="al">AimCLR</td><td class="pub">AAAI'22</td><td>74.3</td><td>79.7</td><td>63.4</td><td>63.4</td><td>&ndash;</td></tr>
-                <tr><td class="al">HYSP</td><td class="pub">ICLR'23</td><td>78.2</td><td>82.6</td><td>61.8</td><td>64.6</td><td>&ndash;</td></tr>
-                <tr><td class="al">HaLP</td><td class="pub">CVPR'23</td><td>79.7</td><td>86.8</td><td>71.1</td><td>72.2</td><td>43.5</td></tr>
-                <tr><td class="al">ActCLR</td><td class="pub">CVPR'23</td><td>80.9</td><td>86.7</td><td>69.0</td><td>70.5</td><td>&ndash;</td></tr>
-                <tr><td class="al">RVTCLR</td><td class="pub">ICCV'23</td><td>74.7</td><td>79.1</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
-                <tr><td class="al">SkeletonMAE</td><td class="pub">ICMEW'23</td><td>74.8</td><td>77.7</td><td>72.5</td><td>73.5</td><td>36.1</td></tr>
-                <tr><td class="al">MAMP</td><td class="pub">ICCV'23</td><td>84.9</td><td>89.1</td><td>78.6</td><td>79.1</td><td>53.8</td></tr>
-                <tr><td class="al">PTSL</td><td class="pub">AAAI'23</td><td>77.3</td><td>81.8</td><td>66.2</td><td>67.7</td><td>49.3</td></tr>
-                <tr><td class="al">S-JEPA</td><td class="pub">ECCV'24</td><td>85.3</td><td>89.8</td><td>79.6</td><td>79.9</td><td>53.5</td></tr>
-                <tr><td class="al">IGM</td><td class="pub">ECCV'24</td><td>86.2</td><td>91.2</td><td><span class="second">80.0</span></td><td>81.4</td><td>&ndash;</td></tr>
-                <tr><td class="al">MacDiff</td><td class="pub">ECCV'24</td><td>86.4</td><td>91.0</td><td>79.4</td><td>80.2</td><td>&ndash;</td></tr>
-                <tr><td class="al">HSP</td><td class="pub">CVPR'25</td><td>80.7</td><td>88.0</td><td>71.0</td><td>73.2</td><td>48.9</td></tr>
-                <tr><td class="al">USDRL</td><td class="pub">AAAI'25</td><td>85.2</td><td>91.7</td><td>76.6</td><td>78.1</td><td>54.4</td></tr>
-                <tr><td class="al">GFP</td><td class="pub">ICCV'25</td><td>85.9</td><td>92.0</td><td>79.1</td><td>80.3</td><td>56.2</td></tr>
-                <tr><td class="al">AMR</td><td class="pub">CVPR'26</td><td><span class="best">87.4</span></td><td><span class="second">92.3</span></td><td><span class="best">81.1</span></td><td><span class="second">81.9</span></td><td>60.3</td></tr>
-                <tr class="group ours rule"><td colspan="7">Sensor-Unified Representation:</td></tr>
-                <tr class="ours"><td class="al">SOfA (Ours)</td><td class="pub">&ndash;</td><td>85.7</td><td>92.1<sup>*</sup></td><td>79.2</td><td>80.4</td><td><span class="second">65.4</span></td></tr>
-                <tr class="ours"><td class="al">SOfA-L (Ours)</td><td class="pub">&ndash;</td><td><span class="second">87.0</span></td><td><span class="best">92.6</span><sup>*</sup></td><td>79.5</td><td><span class="best">82.0</span></td><td><span class="best">67.1</span></td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="subcaption" style="margin-bottom: 2.5rem;">
-            Top-1 accuracy (%) under the <i>linear evaluation</i> protocol, joint modality only, no multi-stream
-            ensemble. Unlike the baselines &mdash; each of which trains an independent model per dataset &mdash; SOfA
-            uses a <b>single unified representation across every benchmark</b>. <b>Bold</b> is best,
-            <u>underline</u> is second best. X-View<sup>*</sup> denotes evaluation on leakage-free test samples only.
-        </div>
-
-        <div class="columns is-centered">
-            <div class="column is-half">
-                <div class="table-title">(a) ETRI-Act (25-joint)</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al">Methods</th><th>ETRI-Act</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="2">Fully-supervised:</td></tr>
-                        <tr><td class="al">IndRNN</td><td>73.9</td></tr>
-                        <tr><td class="al">Beyond Joint</td><td>79.1</td></tr>
-                        <tr><td class="al">SK-CNN</td><td>83.6</td></tr>
-                        <tr><td class="al">ST-GCN</td><td>86.8</td></tr>
-                        <tr><td class="al">Ensem-NN</td><td>83.0</td></tr>
-                        <tr><td class="al">MANs</td><td>82.4</td></tr>
-                        <tr><td class="al">HCN</td><td>88.0</td></tr>
-                        <tr><td class="al">FSA-CNN</td><td>90.6</td></tr>
-                        <tr class="group ours rule"><td colspan="2">Un-supervised (SSL):</td></tr>
-                        <tr class="ours"><td class="al">SOfA (Ours)</td><td>87.9</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="column is-half">
-                <div class="table-title">(b) NW-UCLA (20-joint)</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al">Methods</th><th>NW-UCLA</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="2">Sensor-Specific:</td></tr>
-                        <tr><td class="al">LongT-GAN</td><td>74.3</td></tr>
-                        <tr><td class="al">P&amp;C</td><td>84.9</td></tr>
-                        <tr><td class="al">MCAE-MP</td><td>84.9</td></tr>
-                        <tr><td class="al">SeBiReNet</td><td>80.3</td></tr>
-                        <tr><td class="al">Colorization</td><td>91.1</td></tr>
-                        <tr><td class="al">GL-Transformer</td><td>90.4</td></tr>
-                        <tr><td class="al">Masked-Color</td><td>92.0</td></tr>
-                        <tr class="group ours rule"><td colspan="2">Sensor-Unified:</td></tr>
-                        <tr class="ours"><td class="al">SOfA (Ours)</td><td>92.9</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="subcaption" style="margin-bottom: 2.5rem;">
-            Both benchmarks lie inside the pre-training domain. On ETRI-Act, SOfA reaches 87.9% within a close margin of
-            strong fully-supervised models &mdash; without any action label during pre-training. On the 20-joint
-            NW-UCLA it outperforms every sensor-specific model using <b>the exact same weights</b> as the 25-joint
-            results above, with no per-dataset reconfiguration.
-        </div>
-
-        <div class="table-title">Computational complexity on PKU-MMD</div>
-        <div class="table-scroll">
-            <table class="paper-table">
-                <thead>
-                <tr>
-                    <th class="al" rowspan="2">Method</th>
-                    <th class="cmid">Tokens</th>
-                    <th class="cmid" colspan="2">GFLOPs</th>
-                    <th class="cmid">PKU-MMD</th>
-                </tr>
-                <tr>
-                    <th><i>T</i> &times; <i>J</i></th><th>Train</th><th>Inference</th><th>X-Sub</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="group"><td colspan="5">Sensor-Specific:</td></tr>
-                <tr><td class="al">SkeletonMAE</td><td>30 &times; 25</td><td>19.67</td><td>28.32</td><td>36.1</td></tr>
-                <tr><td class="al">MAMP</td><td>30 &times; 25</td><td>19.67</td><td>28.32</td><td>53.8</td></tr>
-                <tr><td class="al">S-JEPA</td><td>30 &times; 25</td><td>47.99</td><td>28.32</td><td>53.5</td></tr>
-                <tr><td class="al">GFP</td><td>30 &times; 25</td><td>4.18</td><td>28.32</td><td>56.2</td></tr>
-                <tr class="group ours rule"><td colspan="5">Sensor-Unified:</td></tr>
-                <tr class="ours"><td class="al">SOfA</td><td>8 &times; (25+5)</td><td>8.60</td><td><span class="best">4.30</span></td><td>65.4</td></tr>
-                <tr class="ours"><td class="al">SOfA-L</td><td>8 &times; (25+5)</td><td>14.90</td><td>7.45</td><td><span class="best">67.1</span></td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="subcaption">
-            Aggressive temporal compression lets SOfA run inference at <b>4.30 GFLOPs</b> &mdash; a
-            <b>6.59&times; reduction</b> against the 28.32 GFLOPs of MAE-based baselines &mdash; while improving
-            PKU-MMD Top-1 by a large margin (65.4% vs. 56.2% for the strongest baseline). Even SOfA-L, at 7.45 GFLOPs,
-            stays far cheaper than every baseline.
-        </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- ===================== UNSEEN GENERALIZATION =================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Generalization to Unseen Skeletal Protocols</h2>
-
-        <div class="columns is-centered">
-            <div class="column is-half">
-                <div class="table-title">(a) Florence (15-joint)</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al">Methods</th><th>Florence</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="2">Seen + Fully-supervised:</td></tr>
-                        <tr><td class="al">Seidenari <i>et al.</i></td><td>82.0</td></tr>
-                        <tr><td class="al">Devanne <i>et al.</i></td><td>87.0</td></tr>
-                        <tr><td class="al">Vemulapalli <i>et al.</i></td><td>90.9</td></tr>
-                        <tr><td class="al">HarSkel</td><td>94.4</td></tr>
-                        <tr class="group rule"><td colspan="2">Unseen + Sensor-Specific:</td></tr>
-                        <tr><td class="al">SkeletonMAE</td><td>66.8</td></tr>
-                        <tr><td class="al">MAMP</td><td>73.7</td></tr>
-                        <tr class="group ours rule"><td colspan="2">Unseen + Sensor-Unified:</td></tr>
-                        <tr class="ours"><td class="al">SOfA (Ours)</td><td>91.7</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="column is-half">
-                <div class="table-title">(b) SBU-Inter (15-joint)</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al">Methods</th><th>SBU-Inter</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="2">Seen + Fully-supervised:</td></tr>
-                        <tr><td class="al">Co-LSTM</td><td>90.4</td></tr>
-                        <tr><td class="al">ST-LSTM</td><td>93.3</td></tr>
-                        <tr><td class="al">VA-LSTM</td><td>97.2</td></tr>
-                        <tr><td class="al">GCA</td><td>94.9</td></tr>
-                        <tr><td class="al">LSTM-IRN</td><td>98.2</td></tr>
-                        <tr><td class="al">IGFormer</td><td>98.4</td></tr>
-                        <tr><td class="al">ISTA-Net</td><td>98.5</td></tr>
-                        <tr class="group rule"><td colspan="2">Unseen + Sensor-Specific:</td></tr>
-                        <tr><td class="al">SkeletonMAE</td><td>73.1</td></tr>
-                        <tr><td class="al">MAMP</td><td>80.2</td></tr>
-                        <tr class="group ours rule"><td colspan="2">Unseen + Sensor-Unified:</td></tr>
-                        <tr class="ours"><td class="al">SOfA (Ours)</td><td>97.0</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="subcaption">
-            Both 15-joint datasets are <b>completely excluded from pre-training</b> and follow different joint layouts
-            and indexing systems &mdash; they are not merely lower-dimensional versions of the seen protocols. With a
-            frozen encoder and no fine-tuning, SOfA reaches <b>91.7%</b> on Florence and <b>97.0%</b> on SBU-Inter,
-            while sensor-specific SSL methods collapse (66.8% and 73.1%). SOfA lands in the range of fully-supervised
-            models that were trained end-to-end on these datasets with full label access.
-        </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- ==================== MORE DOWNSTREAM TASKS ==================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">More Downstream Tasks</h2>
-
-        <div class="columns is-centered">
-            <div class="column is-half">
-                <div class="table-title">Semi-supervised on NTU-60 (1% labels)</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al" rowspan="2">Methods</th><th class="cmid" colspan="2">NTU-60</th></tr>
-                        <tr><th>X-Sub</th><th>X-View</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="3">Sensor-Specific:</td></tr>
-                        <tr><td class="al">CPM</td><td>56.7</td><td>57.5</td></tr>
-                        <tr><td class="al">CMD</td><td>50.6</td><td>53.0</td></tr>
-                        <tr><td class="al">HaLP</td><td>46.6</td><td>48.7</td></tr>
-                        <tr><td class="al">HiCo</td><td>54.4</td><td>54.8</td></tr>
-                        <tr><td class="al">UmURL</td><td>58.1</td><td>58.3</td></tr>
-                        <tr><td class="al">SkeletonMAE</td><td>54.4</td><td>54.6</td></tr>
-                        <tr><td class="al">MAMP</td><td>66.0</td><td>68.7</td></tr>
-                        <tr><td class="al">S-JEPA</td><td>67.5</td><td>69.1</td></tr>
-                        <tr><td class="al">USDRL</td><td>57.3</td><td>60.7</td></tr>
-                        <tr><td class="al">GFP</td><td><span class="best">71.8</span></td><td><span class="second">72.9</span></td></tr>
-                        <tr class="group ours rule"><td colspan="3">Sensor-Unified:</td></tr>
-                        <tr class="ours"><td class="al">SOfA</td><td><span class="second">71.6</span></td><td><span class="best">74.2</span><sup>*</sup></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="column is-half">
-                <div class="table-title">Action retrieval on NTU-60</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al" rowspan="2">Methods</th><th class="cmid" colspan="2">NTU-60</th></tr>
-                        <tr><th>X-Sub</th><th>X-View</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="3">Sensor-Specific:</td></tr>
-                        <tr><td class="al">LongT-GAN</td><td>39.1</td><td>48.1</td></tr>
-                        <tr><td class="al">P&amp;C</td><td>50.7</td><td>76.3</td></tr>
-                        <tr><td class="al">ISC</td><td>62.5</td><td>82.6</td></tr>
-                        <tr><td class="al">HaLP</td><td>65.8</td><td>83.6</td></tr>
-                        <tr><td class="al">HiCo</td><td>68.3</td><td>84.8</td></tr>
-                        <tr><td class="al">MAMP</td><td>62.0</td><td>70.0</td></tr>
-                        <tr><td class="al">GFP</td><td><span class="second">70.9</span></td><td><span class="best">87.1</span></td></tr>
-                        <tr class="group ours rule"><td colspan="3">Sensor-Unified:</td></tr>
-                        <tr class="ours"><td class="al">SOfA</td><td><span class="best">72.1</span></td><td><span class="second">86.8</span><sup>*</sup></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="subcaption" style="margin-bottom: 2.5rem;">
-            Under 1% label supervision SOfA sets a new best on X-View (74.2%) and stays within 0.2%-point of GFP on
-            X-Sub. In retrieval it establishes a new state of the art on X-Sub (72.1% vs. 70.9%), trailing GFP by only
-            0.3%-point on X-View &mdash; a sensor-unified representation matches or exceeds sensor-specific
-            pre-training even at instance level.
-        </div>
-
-        <div class="columns is-centered">
-            <div class="column is-half">
-                <div class="table-title">MSR-Action3D (20-joint)</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al">Methods</th><th>MSR-Action3D</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="2">Fully-supervised:</td></tr>
-                        <tr><td class="al">HON4D</td><td>82.2</td></tr>
-                        <tr><td class="al">Rahmani <i>et al.</i></td><td>82.7</td></tr>
-                        <tr><td class="al">Tran <i>et al.</i></td><td>84.5</td></tr>
-                        <tr class="group ours rule"><td colspan="2">Un-supervised:</td></tr>
-                        <tr class="ours"><td class="al">SOfA</td><td>82.2</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="column is-half">
-                <div class="table-title">UT-Kinect (20-joint)</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr><th class="al">Methods</th><th>UT-Kinect</th></tr>
-                        </thead>
-                        <tbody>
-                        <tr class="group"><td colspan="2">Fully-supervised:</td></tr>
-                        <tr><td class="al">Xia <i>et al.</i></td><td>90.9</td></tr>
-                        <tr><td class="al">Devanne <i>et al.</i></td><td>91.5</td></tr>
-                        <tr><td class="al">Wang <i>et al.</i></td><td>96.5</td></tr>
-                        <tr class="group ours rule"><td colspan="2">Un-supervised:</td></tr>
-                        <tr class="ours"><td class="al">SOfA</td><td>97.0</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="subcaption">
-            On two more 20-joint benchmarks, SOfA matches fully-supervised methods on MSR-Action3D (82.2%, within
-            2.3%-point of the best reported 84.5%) and surpasses all of them on UT-Kinect (97.0% vs. 96.5%).
-        </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- ========================== ABLATIONS ========================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Ablation Studies</h2>
-
-        <div class="table-title">Contribution of CJS and SJE across heterogeneous topologies</div>
-        <div class="table-scroll">
-            <table class="paper-table">
-                <thead>
-                <tr>
-                    <th class="cmid" colspan="2">Modules</th>
-                    <th class="cmid" colspan="3">25-Joint Datasets</th>
-                    <th class="cmid" colspan="2">20-Joint Datasets</th>
-                </tr>
-                <tr>
-                    <th>CJS</th><th>SJE</th>
-                    <th>NTU-60</th><th>NTU-120</th><th>PKU-MMD</th>
-                    <th>NW-UCLA</th><th>UT-Kinect</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr><td>&#10007;</td><td>&#10007;</td><td>75.2</td><td>70.7</td><td>50.9</td><td>68.9</td><td>77.0</td></tr>
-                <tr><td>&#10003;</td><td>&#10007;</td><td>84.9</td><td>78.7</td><td>64.7</td><td>72.3</td><td>80.0</td></tr>
-                <tr><td>&#10007;</td><td>&#10003;</td><td>76.4</td><td>71.4</td><td>52.3</td><td>86.7</td><td>91.0</td></tr>
-                <tr class="ours"><td>&#10003;</td><td>&#10003;</td><td>85.7</td><td>79.2</td><td>65.4</td><td>92.9</td><td>97.0</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="subcaption" style="margin-bottom: 2.5rem;">
-            <b>CJS</b> is what makes the canonical space work: removing it forces every sensor protocol through a single
-            class token, an information bottleneck that costs <b>8.48% on average</b>. <b>SJE</b> matters most where
-            topologies diverge &mdash; dropping it collapses NW-UCLA from 92.9% to 72.3%, because roughly 90% of the
-            corpus is 25-joint Kinect-v2 data and the network otherwise biases toward that indexing. SJE is the semantic
-            anchor that bridges the index discrepancy.
-        </div>
-
-        <div class="columns is-centered">
-            <div class="column is-full">
-                <div class="table-title">Number of Canonical Joint Slots</div>
-                <div class="table-scroll">
-                    <table class="paper-table">
-                        <thead>
-                        <tr>
-                            <th class="cmid">Slots</th>
-                            <th class="cmid" colspan="3">25-Joint Datasets</th>
-                            <th class="cmid" colspan="2">20-Joint Datasets</th>
-                            <th class="cmid">GFLOPs</th>
-                        </tr>
-                        <tr>
-                            <th>CJS</th>
-                            <th>NTU-60</th><th>NTU-120</th><th>PKU-MMD</th>
-                            <th>NW-UCLA</th><th>UT-Kinect</th>
-                            <th>Inference</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr><td>0</td><td>76.4</td><td>71.4</td><td>52.3</td><td>86.7</td><td>91.0</td><td>3.60</td></tr>
-                        <tr class="ours"><td>5</td><td>85.7</td><td>79.2</td><td>65.4</td><td>92.9</td><td>97.0</td><td>4.30</td></tr>
-                        <tr><td>10</td><td>85.5</td><td>79.0</td><td>64.5</td><td>92.7</td><td>98.0</td><td>5.41</td></tr>
-                        <tr><td>15</td><td>85.3</td><td>78.9</td><td>63.5</td><td>91.8</td><td>97.0</td><td>6.55</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="subcaption" style="margin-bottom: 2.5rem;">
-                    Performance peaks precisely at <i>J<sub>c</sub></i> = 5, improving over the no-slot baseline by
-                    9.3, 7.8, 13.1, 6.2 and 6.0%-point respectively. More slots gradually dilute the representation
-                    bottleneck and introduce redundancy, making the canonical space less compact for cross-sensor
-                    alignment. Beyond resolving joint-count discrepancy, <i>J<sub>c</sub></i> doubles as a
-                    <b>tunable output resolution</b> &mdash; compact prompts for motion diffusion, richer structural
-                    inputs for VLMs &mdash; with no architectural change.
-                </div>
-            </div>
-        </div>
-
-        <div class="table-title">Network scalability and extended synthetic topology</div>
-        <div class="table-scroll">
-            <table class="paper-table">
-                <thead>
-                <tr>
-                    <th class="al" rowspan="2">Method</th>
-                    <th rowspan="2">Modality</th>
-                    <th class="cmid" colspan="2">NTU-60</th>
-                    <th class="cmid" colspan="2">NTU-120</th>
-                    <th class="cmid">PKU-MMD</th>
-                </tr>
-                <tr><th>X-Sub</th><th>X-View</th><th>X-Sub</th><th>X-Set</th><th>X-Sub</th></tr>
-                </thead>
-                <tbody>
-                <tr class="ours"><td class="al">SOfA</td><td>J</td><td>85.7</td><td>92.1<sup>*</sup></td><td>79.2</td><td>80.4</td><td>65.4</td></tr>
-                <tr class="ours"><td class="al">SOfA (<i>J</i> = 30)</td><td>J</td><td>85.5</td><td>91.9<sup>*</sup></td><td>79.0</td><td>80.1</td><td>65.6</td></tr>
-                <tr class="ours"><td class="al">SOfA-L</td><td>J</td><td><span class="best">87.0</span></td><td><span class="best">92.6</span><sup>*</sup></td><td><span class="best">79.5</span></td><td><span class="best">82.0</span></td><td><span class="best">67.1</span></td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="subcaption">
-            Zero-padding to <i>J</i><sub>max</sub> = 25 is a batching convenience, <b>not an architectural ceiling</b>.
-            The <i>J</i> = 30 row feeds an extended synthetic topology built by interpolating joint pairs and describing
-            them to SJE in text (<i>"midpoint of J<sub>a</sub> and J<sub>b</sub>"</i>) &mdash; performance holds
-            without retraining, because the attention backbone treats joints as a variable-length sequence and SJE
-            generates valid embeddings for novel joints on the fly. Scaling from 8 layers / dim 256 / 8 heads (SOfA)
-            to 12 layers / dim 384 / 12 heads (SOfA-L) improves every benchmark, indicating the unified corpus is
-            large enough to support stronger backbones.
-        </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- ===================== SLOT INTERPRETABILITY =================== -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">What Do the Canonical Slots Learn?</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full fig">
-                <img src="./static/image/CJS.png" alt="t-SNE visualization of Canonical Joint Slot assignments">
-                <div class="content has-text-justified caption">
-                    t-SNE of the slot assignments across sensors. The five slots autonomously converge toward the
-                    semantic centers of distinct anatomical clusters &mdash; the torso and the four limbs &mdash;
-                    rather than acting as a generic compression bottleneck. If the slots were merely compressing, their
-                    optimal count would be arbitrary; instead performance peaks at exactly five, matching the five major
-                    regions of the human body. The learned canonical space is <b>anatomically meaningful</b>.
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- ======================== DATA LEAKAGE ========================= -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Leakage-Free Evaluation Protocol</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full fig">
-                <img src="./static/image/data_leakage.png" alt="Construction of the NTU pre-training corpus and evaluation sets">
-                <div class="content has-text-justified caption">
-                    <p>Because SOfA pre-trains a <i>single</i> encoder on a combined corpus, NTU-60 and NTU-120 need
-                        care: NTU-120 contains every NTU-60 sequence. We pre-train on NTU-120 only, keeping just the
-                        sequences assigned to training by <b>both</b> protocols (X-Sub &cap; X-Set) &mdash;
-                        <b>25,053 sequences, only 22% of NTU-120</b>.</p>
-                    <p>The official NTU-120 X-Sub / X-Set and NTU-60 X-Sub test sets are then usable directly.
-                        NTU-60 X-View is the exception: it splits by camera ID while X-Set splits by setup ID, so some
-                        official X-View test sequences appear in the pre-training corpus. We remove all
-                        <b>5,392</b> overlapping sequences by sequence ID before evaluation, leaving
-                        <b>13,568</b> sequences reported as <b>X-View<sup>*</sup></b>. The filtering is completed
-                        before evaluation and does not depend on model predictions.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<hr class="sofa-section-rule">
-
-<!-- =========================== BIBTEX ============================ -->
-<section class="section" id="BibTeX">
-    <div class="container is-max-desktop">
-        <h2 class="title">BibTeX</h2>
-        <pre><code>@article{do2026sofa,
+<pre><code id="bibtex-code">@article{do2026sofa,
   title={One for All: Generalist Foundation Model for Cross-Sensor Skeleton Representation Learning},
   author={Do, Jeonghyeok and Chen, Yun and Kim, Munchurl},
   journal={arXiv preprint arXiv:2609.07078},
   year={2026}
 }</code></pre>
+      </div>
+      <div class="bibtex bibtex--prior">
+        <div class="bibtex-head">
+          <span class="bibtex-label">Prior work: <a href="https://kaist-viclab.github.io/SLiM_site/" target="_blank" rel="noopener">SLiM</a> (NeurIPS 2026)</span>
+          <button class="copy-btn" type="button" data-copy="#bibtex-code-prior">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+<pre><code id="bibtex-code-prior">@inproceedings{do2026less,
+  title={Less is More: Compact-Token Masked Feature Prediction for Skeleton Representation Learning},
+  author={Do, Jeonghyeok and Chen, Yun and Youk, Geunhyuk and Kim, Munchurl},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2026}
+}</code></pre>
+      </div>
     </div>
-</section>
+  </section>
+
+</main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: Skeleton &amp; motion">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">Skeleton &amp; motion</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/SkateFormer_site/"><span class="lineage-name">SkateFormer</span><span class="lineage-venue">ECCV 2024</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/TDSM_site/"><span class="lineage-name">TDSM</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/SLiM_site/"><span class="lineage-name">SLiM</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-stage"><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">SOfA</span><span class="lineage-venue">arXiv 2026</span></span><a class="lineage-item" href="https://kaist-viclab.github.io/MotionMaestro_site/"><span class="lineage-name">MotionMaestro</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
 
 <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <div class="columns is-centered">
-            <div class="column is-8">
-                <div class="content">
-                    <p>
-                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
-                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>
-                        that kindly open sourced the template of this website.
-                        Please visit our <a target="_blank" rel="noopener noreferrer"
-                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
-                        researches.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.png" width="98" height="84" alt="" loading="lazy"><span class="wordmark">S<span>OfA</span></span></span>&nbsp;&middot; arXiv preprint, 2026&nbsp;&middot; Korea Advanced Institute of Science and Technology (KAIST)</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://arxiv.org/abs/2609.07078" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/KAIST-VICLab/SOfA" target="_blank" rel="noopener">Code</a>
+      <a href="mailto:ehwjdgur0913@kaist.ac.kr,cyruby@kaist.ac.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
 </footer>
 
 </body>

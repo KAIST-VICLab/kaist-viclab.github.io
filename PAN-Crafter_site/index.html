@@ -1,679 +1,554 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="description"
-          content="PAN-Sharpening (PS).">
-    <meta name="keywords"
-          content="PAN-Sharpening (PS), Modality-Adaptive Reconstruction (MARs), Cross-Modality Alignment-Aware Attention (CM3A)">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening</title>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-    <link rel="stylesheet" href="./static/css/bulma.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="./static/css/twentytwenty.css">
-    <link rel="stylesheet" href="./static/css/index.css">
-
-    <link rel="icon" sizes="256x256" href="./static/image/mars.png" type="image/png"/>
-
-    <script src="./static/js/jquery-3.2.1.min.js"></script>
-    <script src="./static/js/jquery.event.move.js"></script>
-    <script src="./static/js/jquery.twentytwenty.js"></script>
-    <script src="./static/js/bulma-carousel.min.js"></script>
-    <script src="./static/js/bulma-slider.min.js"></script>
-    <script src="./static/js/fontawesome.all.min.js"></script>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening</title>
+  <meta name="description" content="PAN-Crafter is a modality-consistent alignment framework for PAN-sharpening. Modality-Adaptive Reconstruction (MARs) lets one network reconstruct both HRMS and PAN images, and Cross-Modality Alignment-Aware Attention (CM3A) aligns MS texture to PAN structure and vice versa.">
+  <meta name="author" content="Jeonghyeok Do, Sungpyo Kim, Geunhyuk Youk, Jaehyup Lee, Munchurl Kim">
+  <meta name="theme-color" content="#E0634B">
+  <link rel="canonical" href="https://kaist-viclab.github.io/PAN-Crafter_site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PAN-Crafter">
+  <meta property="og:title" content="PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening">
+  <meta property="og:description" content="PAN-Crafter aligns MS texture and PAN structure in both directions and outperforms the most recent state-of-the-art method in all metrics, with 50.11× faster inference and 0.63× the memory (ICCV 2025).">
+  <meta property="og:url" content="https://kaist-viclab.github.io/PAN-Crafter_site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/PAN-Crafter_site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The PAN-Crafter logo above a full-resolution comparison on WV3: input LRMS and PAN with zoomed-in views, S2DBPN, PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening">
+  <meta name="twitter:description" content="PAN-Crafter aligns MS texture and PAN structure in both directions and outperforms the most recent state-of-the-art method in all metrics, with 50.11× faster inference and 0.63× the memory (ICCV 2025).">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/PAN-Crafter_site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The PAN-Crafter logo above a full-resolution comparison on WV3: input LRMS and PAN with zoomed-in views, S2DBPN, PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"], a[data-soon] { pointer-events: none; cursor: default; }</style></noscript>
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
 </head>
 <body>
 
-<style>
-    .pan-gradient {
-        background: linear-gradient(90deg, #E63946, #FF8C00, #8B4513);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: bold;
-        display: inline-block;
-    }
-</style>
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-supp" viewBox="0 0 24 24"><path d="M15 3H9.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H18a2 2 0 0 0 2-2V8z"/><path d="M15 3v5h5"/><path d="M4.5 7.5V19a2 2 0 0 0 2 2H15"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path d="M3.5 9.5L12 4l8.5 5.5M4.5 20h15M6.5 11.5v5.5M10 11.5v5.5M14 11.5v5.5M17.5 11.5v5.5"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3.5"/><path d="M10 9.3v5.4l4.6-2.7z"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-gallery" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
 
-<section class="hero">
-    <div class="hero-body">
-        <div class="container is-max-desktop">
-            <div class="columns is-centered">
-                <div class="column has-text-centered">
-                    <div class="title is-2 publication-title">
-                        <h1 style="display: inline; clear:none;">
-                            <img src="./static/image/mars.png" width="50" height="50">
-                            <span class="pan-gradient"><b>PAN</b></span><b>-Crafter</b>: Learning Modality-Consistent
-                            Alignment for PAN-Sharpening
-                        </h1>
-                    </div>
+<a class="skip-link" href="#main">Skip to content</a>
 
-                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo">Jeonghyeok Do</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://github.com/KAIST-VICLab">Sungpyo Kim</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://geunhyukyouk.github.io/">Geunhyuk Youk</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://sites.google.com/view/jaehyup-lee">Jaehyup Lee</a><sup>2†</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ">Munchurl Kim</a><sup>1†</sup>
-            </span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"> <sup>†</sup>Co-corresponding authors</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"><sup>1</sup>Korea Advanced Institute of Science and Technology, South Korea</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"><sup>2</sup>Kyungpook National University, South Korea</span>
-                    </div>
-	                <div class="is-size-4 publication-authors">
-                        <span class="author-block", style="color:#346dc2">ICCV 2025</span>
-                    </div>
-                    <div class="column has-text-centered">
-                        <div class="publication-links">
-                            <!-- PDF Link. -->
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_PAN-Crafter_Learning_Modality-Consistent_Alignment_for_PAN-Sharpening_ICCV_2025_paper.pdf"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://openaccess.thecvf.com/content/ICCV2025/supplemental/Do_PAN-Crafter_Learning_Modality-Consistent_ICCV_2025_supplemental.pdf"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Supple</span>
-                </a>
-              </span>
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2505.23367"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-<!-- Video Link. -->
-              <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://youtu.be/kQeZz6X5ag8"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
-                            <!-- Code Link. -->
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/PAN-Crafter"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-</section>
-
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <h2 class="title is-3">(Unseen) WV2 Full-Resolution PS Results </h2>
-        </div>
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="PAN-Crafter, back to top"><img src="static/images/icon.png" width="84" height="84" alt=""><span class="wordmark" aria-hidden="true"><span>PAN</span>-Crafter</span></a>
+    <div class="topnav-links">
+      <a href="#gallery">Gallery</a>
+      <a href="#figures">Figures</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
-</section>
+    <a class="topnav-cta" href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_PAN-Crafter_Learning_Modality-Consistent_Alignment_for_PAN-Sharpening_ICCV_2025_paper.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
+</nav>
 
-<section class="hero is-light is-small mt-4">
-    <div class="hero-body">
-        <div class="container">
-            <div id="results-carousel-horizontal" class="carousel results-carousel">
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/lrms_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/ours_0.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/canconv_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/ours_0.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/lrms_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/ours_1.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/canconv_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/ours_1.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/lrms_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/ours_2.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/canconv_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv2/ours_2.png">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+<header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: Remote sensing">
+    <p class="lineage-menu-head"><b>Research line</b>Remote sensing</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-menu-stage"><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></span></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/C-DiffSET_site/"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoCore-9B_site/"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoSET_site/"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.svg" width="2390" height="410" alt="PAN-Crafter:" fetchpriority="high">
+      <span class="hero-title">Learning <span class="hero-accent hero-phrase"><span class="nowrap">Modality-Consistent</span> Alignment</span> <span class="nowrap">for PAN-Sharpening</span></span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a><sup>1</sup></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Sungpyo Kim</a><sup>1</sup></span>
+      <span class="author"><a href="https://geunhyukyouk.github.io/" target="_blank" rel="noopener">Geunhyuk Youk</a><sup>1</sup></span>
+      <span class="author"><a href="https://sites.google.com/view/jaehyup-lee" target="_blank" rel="noopener">Jaehyup Lee</a><sup>2,&dagger;</sup></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>1,&dagger;</sup></span>
+    </p>
+    <p class="hero-affil"><span><sup>1</sup>Korea Advanced Institute of Science and Technology (KAIST), South Korea</span><span><sup>2</sup>Kyungpook National University, South Korea</span></p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Co-corresponding authors</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:ksp04204@kaist.ac.kr">ksp04204@kaist.ac.kr</a><a href="mailto:rmsgurkjg@kaist.ac.kr">rmsgurkjg@kaist.ac.kr</a><a href="mailto:jaehyuplee@knu.ac.kr">jaehyuplee@knu.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">ICCV 2025</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_PAN-Crafter_Learning_Modality-Consistent_Alignment_for_PAN-Sharpening_ICCV_2025_paper.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://openaccess.thecvf.com/content/ICCV2025/supplemental/Do_PAN-Crafter_Learning_Modality-Consistent_ICCV_2025_supplemental.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-supp"/></svg>Supp</a>
+      <a class="btn" href="https://arxiv.org/abs/2505.23367" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
+      <a class="btn" href="https://youtu.be/kQeZz6X5ag8" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-video"/></svg>Video</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/PAN-Crafter" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="#gallery"><svg class="icon" aria-hidden="true"><use href="#i-gallery"/></svg>Gallery</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>PAN-sharpening aims to fuse high-resolution panchromatic (PAN) images with low-resolution multi-spectral (MS) images to generate high-resolution multi-spectral (HRMS) outputs. However, cross-modality misalignment&mdash;caused by sensor placement, acquisition timing, and resolution disparity&mdash;induces a fundamental challenge. Conventional deep learning methods assume perfect pixel-wise alignment and rely on per-pixel reconstruction losses, leading to spectral distortion, double edges, and blurring when misalignment is present.</p>
+          <p>To address this, we propose <b>PAN-Crafter</b>, a modality-consistent alignment framework that explicitly mitigates the misalignment gap between PAN and MS modalities. At its core, Modality-Adaptive Reconstruction (MARs) enables a single network to jointly reconstruct HRMS and PAN images, leveraging PAN&rsquo;s high-frequency details as auxiliary self-supervision. Additionally, we introduce Cross-Modality Alignment-Aware Attention (CM3A), a novel mechanism that bidirectionally aligns MS texture to PAN structure and vice versa, enabling adaptive feature refinement across modalities. Extensive experiments on multiple benchmark datasets demonstrate that our PAN-Crafter outperforms the most recent state-of-the-art method in all metrics, even with 50.11&times; faster inference time and 0.63&times; the memory size. Furthermore, it demonstrates strong generalization performance on unseen satellite datasets, showing its robustness across different conditions.</p>
         </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Headline + first result: paper Fig. 1 (WV3, full resolution) -->
+  <section class="section section--headline" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">Misaligned inputs, sharp outputs</h2>
+        <p class="lead">Aligns MS texture and PAN structure both ways; beats the latest state of the art in all metrics at <b>50.11&times;</b> faster inference.</p>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/teaser_full.jpg" data-title="Full-resolution comparison on WV3">
+          <img src="static/images/teaser_1600.jpg"
+               srcset="static/images/teaser_1200.jpg 1200w, static/images/teaser_1600.jpg 1600w, static/images/teaser_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="675" fetchpriority="high" decoding="async"
+               alt="WV3 scene at full resolution: the input LRMS and PAN images with a red box, their zoomed-in views, and the zoomed-in outputs of S2DBPN, PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter around parked cars and white-roofed buildings.">
+        </a>
+        <figcaption><b>Full-resolution comparison on WV3.</b> Input LRMS and PAN with zoomed-in views, five recent methods and PAN-Crafter: minimal artifacts near buildings and cars, where other approaches often yield blurred or distorted results.</figcaption>
+      </figure>
     </div>
-</section>
+  </section>
 
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <h2 class="title is-3">WV3 Full-Resolution PS Results</h2>
+  <!-- Interactive gallery: native crops of Figs. 1, 5, 7, 8, 9, 12; whole scenes (old page demo images); paper figures -->
+  <section class="section section--band" id="gallery" aria-labelledby="gallery-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="gallery-title">All methods, same scenes</h2>
+        <p class="lead">The zoomed-in crops of the paper&rsquo;s full-resolution figures at their native resolution: recent methods and PAN-Crafter on the same LRMS and PAN input, including WV2, a satellite unseen in training. Select a tile to compare it with PAN-Crafter.</p>
+      </header>
+
+      <div class="tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Dataset">
+            <button class="tab" role="tab" type="button" id="tab-g-wv3" aria-controls="panel-g-wv3" aria-selected="true">WV3<small>WorldView-3</small></button>
+            <button class="tab" role="tab" type="button" id="tab-g-qb" aria-controls="panel-g-qb" aria-selected="false">QB<small>QuickBird</small></button>
+            <button class="tab" role="tab" type="button" id="tab-g-gf2" aria-controls="panel-g-gf2" aria-selected="false">GF2<small>GaoFen-2</small></button>
+            <button class="tab" role="tab" type="button" id="tab-g-wv2" aria-controls="panel-g-wv2" aria-selected="false">WV2<small>unseen</small></button>
+          </div>
         </div>
-    </div>
-</section>
-
-<section class="hero is-light is-small mt-4">
-    <div class="hero-body">
-        <div class="container">
-            <div id="results-carousel-horizontal" class="carousel results-carousel">
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/lrms_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/ours_0.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/canconv_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/ours_0.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/lrms_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/ours_1.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/canconv_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/ours_1.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/lrms_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/ours_2.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/canconv_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/wv3/ours_2.png">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="legend" aria-label="Tile legend">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--input"></span>Input LRMS / PAN (zoomed-in)</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--ours"></span>PAN-Crafter (ours)</span>
+          <span class="legend-item"><span class="legend-swatch"></span>Baseline</span>
         </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <h2 class="title is-3">QB Full-Resolution PS Results</h2>
+        <div class="tabpanel" role="tabpanel" id="panel-g-wv3" aria-labelledby="tab-g-wv3" tabindex="-1">
+          <div data-gallery="crops-wv3"></div>
         </div>
-    </div>
-</section>
-
-<section class="hero is-light is-small mt-4">
-    <div class="hero-body">
-        <div class="container">
-            <div id="results-carousel-horizontal" class="carousel results-carousel">
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/lrms_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/ours_0.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/canconv_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/ours_0.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/lrms_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/ours_1.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/canconv_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/ours_1.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/lrms_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/ours_2.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/canconv_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qb/ours_2.png">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-qb" aria-labelledby="tab-g-qb" tabindex="-1" hidden>
+          <div data-gallery="crops-qb"></div>
         </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <h2 class="title is-3">GF2 Full-Resolution PS Results</h2>
+        <div class="tabpanel" role="tabpanel" id="panel-g-gf2" aria-labelledby="tab-g-gf2" tabindex="-1" hidden>
+          <div data-gallery="crops-gf2"></div>
         </div>
-    </div>
-</section>
-
-<section class="hero is-light is-small mt-4">
-    <div class="hero-body">
-        <div class="container">
-            <div id="results-carousel-horizontal" class="carousel results-carousel">
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/lrms_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/ours_0.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/canconv_0.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/ours_0.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/lrms_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/ours_1.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/canconv_1.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/ours_1.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/lrms_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/ours_2.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/canconv_2.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/gf2/ours_2.png">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-wv2" aria-labelledby="tab-g-wv2" tabindex="-1" hidden>
+          <div data-gallery="crops-wv2"></div>
         </div>
-    </div>
-</section>
+      </div>
+      <noscript><p class="gallery-noscript">The interactive gallery needs JavaScript. The paper figures below show the same scenes.</p></noscript>
+      <p class="carousel-hint"><span class="hint-pointer">Use the arrows or the <kbd>&larr;</kbd>&thinsp;<kbd>&rarr;</kbd> keys to change scene &middot; click a tile to compare it with PAN-Crafter</span><span class="hint-touch">Swipe or use the arrows to change scene &middot; tap a tile to compare it with PAN-Crafter</span></p>
 
-<!-- Abstract. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <h2 class="title is-3">Abstract</h2>
-                <div class="content has-text-justified" style="margin-bottom: 40px;">
-                    <p>
-                        We propose <b>Modality-Adaptive Reconstruction (MARs)</b>, a unified reconstruction framework that enables robust learning from <em>misaligned PAN-MS</em> image pairs by dynamically generating both HRMS and PAN images.
-                    </p>
-                    <p>
-                        We introduce <b>Cross-Modality Alignment-Aware Attention (CM3A)</b>, a novel <em>alignment mechanism</em> that adaptively refines textures and structures between PAN and MS images, improving spatial-spectral consistency.
-                    </p>
-                    <p>
-                        We achieve state-of-the-art (SOTA) performance across <em>multiple benchmark datasets</em> and show strong robustness on <em>unseen satellite datasets</em>, demonstrating the effectiveness of our PAN-Crafter in handling real-world cross-modality misalignment.
-                    </p>
-                </div>
-            </div>
+      <header class="section-head section-head--sub" id="scenes">
+        <h2 class="section-title" id="scenes-title">Whole scenes at full resolution</h2>
+        <p class="lead">Complete <span class="nowrap">512 &times; 512</span> full-resolution scenes from each satellite: the input LRMS, CANConv and PAN-Crafter.</p>
+      </header>
+      <div class="tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Dataset (whole scenes)">
+            <button class="tab" role="tab" type="button" id="tab-s-wv3" aria-controls="panel-s-wv3" aria-selected="true">WV3</button>
+            <button class="tab" role="tab" type="button" id="tab-s-qb" aria-controls="panel-s-qb" aria-selected="false">QB</button>
+            <button class="tab" role="tab" type="button" id="tab-s-gf2" aria-controls="panel-s-gf2" aria-selected="false">GF2</button>
+            <button class="tab" role="tab" type="button" id="tab-s-wv2" aria-controls="panel-s-wv2" aria-selected="false">WV2<small>unseen</small></button>
+          </div>
         </div>
-    </div>
-</section>
-
-
-<!-- Motivation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Motivation of PAN-Crafter</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/motiv.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Example of PAN, LRMS, and their overlayed visualization.</b> PAN images typically have four times the spatial resolution of MS images, necessitating up-sampling on the MS images before fusion. However, this up-sampling step introduces interpolation artifacts and spatial shifts, further <em>amplifying alignment discrepancies</em>.<br>
-                            <b>(a)</b> High-resolution PAN image.<br>
-                            <b>(b)</b> Low-resolution multi-spectral image.<br>
-                            <b>(c)</b> Overlay of PAN and LRMS images to highlight differences.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-s-wv3" aria-labelledby="tab-s-wv3" tabindex="-1">
+          <div data-gallery="scenes-wv3"></div>
         </div>
-    </div>
-</section>
-
-
-<!-- Overview of PAN-Crafter. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Overview of PAN-Crafter</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/framework.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Overview of the proposed PAN-Crafter architecture.</b> The network processes input PAN and LRMS images leveraging <em>Modality-Adaptive Reconstruction (MARs) mode</em>, which enables adaptive generation of HRMS and PAN outputs. By leveraging spatial structures and spectral fidelity of PAN and MS images, MARs ensures high-frequency details are preserved while minimizing spectral distortion. The architecture follows an encoder-decoder design, incorporating residual blocks and <em>cross-modality alignment-aware attention (CM3A)</em> at multiple scales to mitigate modality misalignment while preserving spectral and structural fidelity of MS and PAN images, respectively.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-s-qb" aria-labelledby="tab-s-qb" tabindex="-1" hidden>
+          <div data-gallery="scenes-qb"></div>
         </div>
-    </div>
-</section>
-
-
-<!-- CM3A. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Cross-Modality Alignment-Aware Attention (CM3A)</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/CM3A.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Cross-Modality Alignment-Aware Attention (CM3A).</b> Cross-Modality Alignment-Aware Attention (CM3A) enables bidirectional alignment by transferring MS texture to PAN structure during <em>HRMS reconstruction</em> and PAN structure to MS texture during <em>PAN back-reconstruction</em>. This mechanism not only mitigates cross-modality misalignment but also ensures structural and spectral fidelity in the reconstructed images.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-s-gf2" aria-labelledby="tab-s-gf2" tabindex="-1" hidden>
+          <div data-gallery="scenes-gf2"></div>
         </div>
-    </div>
-</section>
-
-<!-- Performance Evaluation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Quantitative Evaluation</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/result1.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Quantitative comparison of deep learning-based PS methods on the WV3 dataset.</b> Our PAN-Crafter consistently outperforms existing approaches across most evaluation metrics while maintaining low memory consumption and fast inference time.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-s-wv2" aria-labelledby="tab-s-wv2" tabindex="-1" hidden>
+          <div data-gallery="scenes-wv2"></div>
         </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/result2.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Quantitative comparison of deep learning-based PS methods on the GF2 and QB datasets.</b> Our PAN-Crafter surpasses diffusion-based models (PanDiff and TMDiff) in both full- and reduced-resolution datasets, demonstrating that our CM3A module effectively handles local misalignment without the computational burden of iterative diffusion process.
-                        </p>
-                    </div>
-            </div>
-        </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/result3.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Left.</b> Quantitative comparison of deep learning-based PS methods on the <em>unseen</em> WV2 satellite dataset.<br>
-                            <b>Right.</b> Ablation studies on CM3A and MARs on the WV3 dataset.
-                        </p>
-                    </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<script>
-    $(window).on('load', function () {
-        bulmaCarousel.attach('#results-carousel-horizontal', {
-            slidesToScroll: 1,
-            slidesToShow: 3,
-            loop: true,
-            autoplay: true,
-        });
-
-        bulmaCarousel.attach('#results-carousel-vertical', {
-            slidesToScroll: 1,
-            slidesToShow: 5,
-            loop: true,
-            autoplay: true,
-        });
-
-        bulmaCarousel.attach('#results-carousel-testimonials', {
-            slidesToScroll: 1,
-            slidesToShow: 3,
-            loop: true,
-            autoplay: true,
-            breakpoints: [
-                {
-                    changePoint: 50 + 260 * 2,
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    loop: true,
-                    autoplay: true,
-                },
-                {
-                    changePoint: 50 + 260 * 3,
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                    loop: true,
-                    autoplay: true,
-                },
-                {
-                    changePoint: 50 + 260 * 4,
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                    loop: true,
-                    autoplay: true,
-                }
-            ],
-        });
-
-        $(".twentytwenty-container-top").twentytwenty({
-            before_label: 'LRMS',
-            after_label: 'Ours',
-            default_offset_pct: 0.75,
-        });
-
-        $(".twentytwenty-container-bottom").twentytwenty({
-            before_label: 'CANConv',
-            after_label: 'Ours',
-            default_offset_pct: 0.5,
-        });
-
-        $('.results-carousel').css({
-            'max-height': '2000px',
-            'visibility': 'visible'
-        });
-    });
-
+      </div>
+      <p class="carousel-hint"><span class="hint-pointer">Click a tile to open the comparison slider against PAN-Crafter</span><span class="hint-touch">Tap a tile to open the comparison slider against PAN-Crafter</span></p>
+<script type="application/json" id="gallery-data">
+{"sets":{"crops-wv3":{"name":"WV3","unit":"Scene","root":"static/tiles/","tileMin":140,"compareScale":2.6,"scenes":[{"title":"WV3 · Fig. 1","status":"Fig. 1","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv3/s01/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"wv3/s01/02_input-pan.png","w":150,"h":150},{"n":"S2DBPN","v":"TGRS'23","k":"baseline","f":"wv3/s01/03_s2dbpn.jpg","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"wv3/s01/04_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"wv3/s01/05_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"wv3/s01/06_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv3/s01/07_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv3/s01/08_pan-crafter.jpg","w":150,"h":150}]},{"title":"WV3 · Fig. 5","status":"Fig. 5","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv3/s02/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"wv3/s02/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"wv3/s02/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"wv3/s02/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"wv3/s02/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv3/s02/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv3/s02/07_pan-crafter.jpg","w":150,"h":150}]},{"title":"WV3 · Fig. 8","status":"Fig. 8","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv3/s03/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"wv3/s03/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"wv3/s03/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"wv3/s03/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"wv3/s03/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv3/s03/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv3/s03/07_pan-crafter.jpg","w":150,"h":150}]},{"title":"WV3 · Fig. 9","status":"Fig. 9","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv3/s04/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"wv3/s04/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"wv3/s04/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"wv3/s04/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"wv3/s04/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv3/s04/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv3/s04/07_pan-crafter.jpg","w":150,"h":150}]}]},"crops-qb":{"name":"QB","unit":"Scene","root":"static/tiles/","tileMin":140,"compareScale":2.6,"scenes":[{"title":"QB · Fig. 5","status":"Fig. 5","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"qb/s01/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"qb/s01/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"qb/s01/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"qb/s01/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"qb/s01/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"qb/s01/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"qb/s01/07_pan-crafter.jpg","w":150,"h":150}]},{"title":"QB · Fig. 8","status":"Fig. 8","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"qb/s02/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"qb/s02/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"qb/s02/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"qb/s02/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"qb/s02/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"qb/s02/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"qb/s02/07_pan-crafter.jpg","w":150,"h":150}]},{"title":"QB · Fig. 9","status":"Fig. 9","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"qb/s03/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"qb/s03/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"qb/s03/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"qb/s03/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"qb/s03/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"qb/s03/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"qb/s03/07_pan-crafter.jpg","w":150,"h":150}]}]},"crops-gf2":{"name":"GF2","unit":"Scene","root":"static/tiles/","tileMin":140,"compareScale":2.6,"scenes":[{"title":"GF2 · Fig. 8","status":"Fig. 8","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"gf2/s01/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"gf2/s01/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"gf2/s01/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"gf2/s01/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"gf2/s01/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"gf2/s01/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"gf2/s01/07_pan-crafter.jpg","w":150,"h":150}]},{"title":"GF2 · Fig. 9","status":"Fig. 9","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"gf2/s02/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"gf2/s02/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"gf2/s02/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"gf2/s02/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"gf2/s02/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"gf2/s02/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"gf2/s02/07_pan-crafter.jpg","w":150,"h":150}]}]},"crops-wv2":{"name":"WV2 (unseen)","unit":"Scene","root":"static/tiles/","tileMin":140,"compareScale":2.6,"scenes":[{"title":"WV2 (unseen) · Fig. 7","status":"Fig. 7","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv2/s01/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"wv2/s01/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"wv2/s01/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"wv2/s01/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"wv2/s01/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv2/s01/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv2/s01/07_pan-crafter.jpg","w":150,"h":150}]},{"title":"WV2 (unseen) · Fig. 7","status":"Fig. 7","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv2/s02/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"wv2/s02/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"wv2/s02/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"wv2/s02/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"wv2/s02/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv2/s02/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv2/s02/07_pan-crafter.jpg","w":150,"h":150}]},{"title":"WV2 (unseen) · Fig. 12","status":"Fig. 12","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv2/s03/01_input-lrms.jpg","w":150,"h":150},{"n":"Input PAN","v":"input","k":"input","f":"wv2/s03/02_input-pan.png","w":150,"h":150},{"n":"PanDiff","v":"TGRS'23","k":"baseline","f":"wv2/s03/03_pandiff.jpg","w":150,"h":150},{"n":"DCPNet","v":"TGRS'24","k":"baseline","f":"wv2/s03/04_dcpnet.jpg","w":150,"h":150},{"n":"TMDiff","v":"TGRS'24","k":"baseline","f":"wv2/s03/05_tmdiff.jpg","w":150,"h":150},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv2/s03/06_canconv.jpg","w":150,"h":150},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv2/s03/07_pan-crafter.jpg","w":150,"h":150}]}]},"scenes-wv3":{"name":"WV3","unit":"Scene","root":"static/scenes/","tileMin":300,"compareScale":1.25,"scenes":[{"title":"WV3 · whole scene 1","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv3/s01/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv3/s01/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv3/s01/ours.jpg","w":512,"h":512}]},{"title":"WV3 · whole scene 2","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv3/s02/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv3/s02/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv3/s02/ours.jpg","w":512,"h":512}]},{"title":"WV3 · whole scene 3","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv3/s03/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv3/s03/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv3/s03/ours.jpg","w":512,"h":512}]}]},"scenes-qb":{"name":"QB","unit":"Scene","root":"static/scenes/","tileMin":300,"compareScale":1.25,"scenes":[{"title":"QB · whole scene 1","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"qb/s01/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"qb/s01/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"qb/s01/ours.jpg","w":512,"h":512}]},{"title":"QB · whole scene 2","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"qb/s02/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"qb/s02/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"qb/s02/ours.jpg","w":512,"h":512}]},{"title":"QB · whole scene 3","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"qb/s03/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"qb/s03/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"qb/s03/ours.jpg","w":512,"h":512}]}]},"scenes-gf2":{"name":"GF2","unit":"Scene","root":"static/scenes/","tileMin":300,"compareScale":1.25,"scenes":[{"title":"GF2 · whole scene 1","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"gf2/s01/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"gf2/s01/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"gf2/s01/ours.jpg","w":512,"h":512}]},{"title":"GF2 · whole scene 2","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"gf2/s02/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"gf2/s02/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"gf2/s02/ours.jpg","w":512,"h":512}]},{"title":"GF2 · whole scene 3","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"gf2/s03/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"gf2/s03/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"gf2/s03/ours.jpg","w":512,"h":512}]}]},"scenes-wv2":{"name":"WV2 (unseen)","unit":"Scene","root":"static/scenes/","tileMin":300,"compareScale":1.25,"scenes":[{"title":"WV2 (unseen) · whole scene 1","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv2/s01/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv2/s01/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv2/s01/ours.jpg","w":512,"h":512}]},{"title":"WV2 (unseen) · whole scene 2","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv2/s02/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv2/s02/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv2/s02/ours.jpg","w":512,"h":512}]},{"title":"WV2 (unseen) · whole scene 3","status":"512 × 512","cols":[{"n":"Input LRMS","v":"input","k":"input","f":"wv2/s03/lrms.jpg","w":512,"h":512},{"n":"CANConv","v":"CVPR'24","k":"baseline","f":"wv2/s03/canconv.jpg","w":512,"h":512},{"n":"PAN-Crafter","v":"Ours","k":"ours","f":"wv2/s03/ours.jpg","w":512,"h":512}]}]}}}
 </script>
 
-<section class="section" id="BibTeX">
-    <div class="container is-max-desktop">
-        <h2 class="title">BibTeX</h2>
-        <pre><code>@InProceedings{Do_2025_ICCV,
-    author    = {Do, Jeonghyeok and Kim, Sungpyo and Youk, Geunhyuk and Lee, Jaehyup and Kim, Munchurl},
-    title     = {PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening},
-    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-    month     = {October},
-    year      = {2025},
-    pages     = {4242-4252}
-}</code></pre>
+      <!-- Paper figures: Figs. 5-12 (results), Fig. 2 (misalignment), Fig. 4 (CM3A) -->
+      <header class="section-head section-head--sub" id="figures">
+        <h2 class="section-title" id="figures-title">Paper figures</h2>
+        <p class="lead">Full- and reduced-resolution comparisons with error maps, the unseen WV2 satellite, and the PAN&ndash;MS misalignment that CM3A addresses.</p>
+      </header>
+      <div class="carousel fig-carousel" data-switch>
+        <div class="carousel-nav">
+          <button type="button" class="carousel-btn" data-prev aria-label="Previous figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="thumbs hscroll thumbs--fig" role="tablist" aria-label="Paper figures">
+            <button type="button" class="thumb" role="tab" id="fig-t1" aria-controls="fig-1" aria-selected="true"><img src="static/images/full_res_thumb.jpg" alt="" width="480" height="154" loading="lazy" decoding="async"><span><b>Fig. 5</b> WV3 &middot; QB full res.</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t2" aria-controls="fig-2" aria-selected="false"><img src="static/images/reduced_res_thumb.jpg" alt="" width="480" height="75" loading="lazy" decoding="async"><span><b>Fig. 6</b> GF2 reduced res.</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t3" aria-controls="fig-3" aria-selected="false"><img src="static/images/unseen_thumb.jpg" alt="" width="480" height="154" loading="lazy" decoding="async"><span><b>Fig. 7</b> Unseen WV2</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t4" aria-controls="fig-4" aria-selected="false"><img src="static/images/supp_full_1_thumb.jpg" alt="" width="480" height="227" loading="lazy" decoding="async"><span><b>Fig. 8</b> More full res. (1/2)</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t5" aria-controls="fig-5" aria-selected="false"><img src="static/images/supp_full_2_thumb.jpg" alt="" width="480" height="227" loading="lazy" decoding="async"><span><b>Fig. 9</b> More full res. (2/2)</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t6" aria-controls="fig-6" aria-selected="false"><img src="static/images/supp_reduced_1_thumb.jpg" alt="" width="480" height="209" loading="lazy" decoding="async"><span><b>Fig. 10</b> More reduced res. (1/2)</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t7" aria-controls="fig-7" aria-selected="false"><img src="static/images/supp_reduced_2_thumb.jpg" alt="" width="480" height="209" loading="lazy" decoding="async"><span><b>Fig. 11</b> More reduced res. (2/2)</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t8" aria-controls="fig-8" aria-selected="false"><img src="static/images/supp_unseen_thumb.jpg" alt="" width="480" height="154" loading="lazy" decoding="async"><span><b>Fig. 12</b> More unseen WV2</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t9" aria-controls="fig-9" aria-selected="false"><img src="static/images/misalign_thumb.jpg" alt="" width="480" height="175" loading="lazy" decoding="async"><span><b>Fig. 2</b> PAN&ndash;MS misalignment</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t10" aria-controls="fig-10" aria-selected="false"><img src="static/images/cm3a_thumb.jpg" alt="" width="480" height="316" loading="lazy" decoding="async"><span><b>Fig. 4</b> CM3A</span></button>
+          </div>
+          <button type="button" class="carousel-btn" data-next aria-label="Next figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+        <div class="slides">
+          <figure class="figure slide" id="fig-1" style="--ar: 3.1098; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t1">
+            <a class="figure-media zoom" href="static/images/full_res_full.jpg" data-title="Full-resolution comparison on WV3 and QB">
+              <img src="static/images/full_res_2000.jpg" srcset="static/images/full_res_1200.jpg 1200w, static/images/full_res_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 3.1098))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 3.1098)))"
+                   width="2000" height="643" loading="lazy" decoding="async"
+                   alt="Two rows, WV3 and QB at full resolution: input LRMS with a red box, zoomed-in LRMS and PAN, then PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter around cars on a road and yellow crosswalk lines.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 5.</span> <b>Full-resolution comparison on WV3 and QB.</b> Only PAN-Crafter produces clear edges around cars, buildings and crosswalk lines; previous methods tend to produce blurry and distorted results from misaligned PAN and MS pairs.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-2" style="--ar: 6.4257; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t2" hidden>
+            <a class="figure-media zoom" href="static/images/reduced_res_full.jpg" data-title="Reduced-resolution comparison on GF2">
+              <img src="static/images/reduced_res_2000.jpg" srcset="static/images/reduced_res_1200.jpg 1200w, static/images/reduced_res_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 6.4257))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 6.4257)))"
+                   width="2000" height="311" loading="lazy" decoding="async"
+                   alt="One GF2 row at reduced resolution: LAGConv, S2DBPN, PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter, each with a blue error-map inset in the lower right.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 6.</span> <b>Reduced-resolution comparison.</b> GF2 at reduced resolution; the blue insets are error maps against the ground truth, where brighter regions indicate higher reconstruction errors.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-3" style="--ar: 3.1098; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t3" hidden>
+            <a class="figure-media zoom" href="static/images/unseen_full.jpg" data-title="Full-resolution comparison on the unseen WV2 dataset">
+              <img src="static/images/unseen_2000.jpg" srcset="static/images/unseen_1200.jpg 1200w, static/images/unseen_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 3.1098))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 3.1098)))"
+                   width="2000" height="643" loading="lazy" decoding="async"
+                   alt="Two WV2 rows at full resolution: input LRMS with a red box, zoomed-in LRMS and PAN, then PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter around a crossroad and a row of houses.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 7.</span> <b>Unseen WV2 at full resolution.</b> WV2 is not included in training, a real-world zero-shot setting; PAN-Crafter produces sharper details with fewer distortions.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-4" style="--ar: 2.1122; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t4" hidden>
+            <a class="figure-media zoom" href="static/images/supp_full_1_full.jpg" data-title="More full-resolution results on WV3, QB and GF2">
+              <img src="static/images/supp_full_1_2000.jpg" srcset="static/images/supp_full_1_1200.jpg 1200w, static/images/supp_full_1_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 2.1122))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 2.1122)))"
+                   width="2000" height="947" loading="lazy" decoding="async"
+                   alt="Three rows, WV3, QB and GF2 at full resolution: input LRMS, zoomed-in LRMS and PAN, then PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 8.</span> <b>More full-resolution results on WV3, QB and GF2.</b> Minimal artifacts around buildings and vehicles, where other methods frequently produce blurry or distorted outputs.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-5" style="--ar: 2.1122; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t5" hidden>
+            <a class="figure-media zoom" href="static/images/supp_full_2_full.jpg" data-title="More full-resolution results on WV3, QB and GF2">
+              <img src="static/images/supp_full_2_2000.jpg" srcset="static/images/supp_full_2_1200.jpg 1200w, static/images/supp_full_2_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 2.1122))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 2.1122)))"
+                   width="2000" height="947" loading="lazy" decoding="async"
+                   alt="Three rows, WV3, QB and GF2 at full resolution: input LRMS, zoomed-in LRMS and PAN, then PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter around a parking lot, a crosswalk and rooftops.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 9.</span> <b>More full-resolution results on WV3, QB and GF2.</b> Minimal artifacts, particularly around vehicles and crosswalks.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-6" style="--ar: 2.2923; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t6" hidden>
+            <a class="figure-media zoom" href="static/images/supp_reduced_1_full.jpg" data-title="More reduced-resolution results">
+              <img src="static/images/supp_reduced_1_2000.jpg" srcset="static/images/supp_reduced_1_1200.jpg 1200w, static/images/supp_reduced_1_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 2.2923))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 2.2923)))"
+                   width="2000" height="872" loading="lazy" decoding="async"
+                   alt="Three rows at reduced resolution (GF2, WV3, QB): LAGConv, S2DBPN, PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter, each with a blue error-map inset.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 10.</span> <b>More reduced-resolution results on GF2, WV3 and QB.</b> The blue insets are error maps against the ground truth; brighter regions indicate higher errors.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-7" style="--ar: 2.2923; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t7" hidden>
+            <a class="figure-media zoom" href="static/images/supp_reduced_2_full.jpg" data-title="More reduced-resolution results">
+              <img src="static/images/supp_reduced_2_2000.jpg" srcset="static/images/supp_reduced_2_1200.jpg 1200w, static/images/supp_reduced_2_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 2.2923))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 2.2923)))"
+                   width="2000" height="872" loading="lazy" decoding="async"
+                   alt="Three more rows at reduced resolution (GF2, WV3, QB): LAGConv, S2DBPN, PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter, each with a blue error-map inset.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 11.</span> <b>More reduced-resolution results on GF2, WV3 and QB.</b> The blue insets are error maps against the ground truth; brighter regions indicate higher errors.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-8" style="--ar: 3.1250; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t8" hidden>
+            <a class="figure-media zoom" href="static/images/supp_unseen_full.jpg" data-title="More results on the unseen WV2 dataset">
+              <img src="static/images/supp_unseen_2000.jpg" srcset="static/images/supp_unseen_1200.jpg 1200w, static/images/supp_unseen_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 3.1250))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 3.1250)))"
+                   width="2000" height="640" loading="lazy" decoding="async"
+                   alt="Two more WV2 rows at full resolution: input LRMS, zoomed-in LRMS and PAN, then PanDiff, DCPNet, TMDiff, CANConv and PAN-Crafter around houses and a street.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 12.</span> <b>More results on the unseen WV2.</b> PAN-Crafter preserves both the fine structural and the spectral details of the input MS and PAN images.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-9" style="--ar: 2.7397; --min-w: 760px" role="tabpanel" aria-labelledby="fig-t9" hidden>
+            <a class="figure-media zoom" href="static/images/misalign_full.jpg" data-title="PAN, LRMS and their overlay">
+              <img src="static/images/misalign_2000.jpg" srcset="static/images/misalign_1200.jpg 1200w, static/images/misalign_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 170px) * 2.7397))), min(calc(100vw - 32px), max(760px, calc((100vh - 170px) * 2.7397)))"
+                   width="2000" height="730" loading="lazy" decoding="async"
+                   alt="Three panels: a PAN image, the LRMS image of the same area, and a zoomed overlay in which the green boxes of cars in PAN and the magenta boxes of the same cars in LRMS are offset.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 2.</span> <b>PAN&ndash;MS misalignment.</b> (a) High-resolution PAN image, (b) low-resolution multi-spectral image, (c) overlay of the two, which highlights their differences; the red insets are zoomed-in views.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-10" style="--ar: 1.5173; --min-w: 360px" role="tabpanel" aria-labelledby="fig-t10" hidden>
+            <a class="figure-media zoom" href="static/images/cm3a_full.jpg" data-title="Cross-Modality Alignment-Aware Attention (CM3A)">
+              <img src="static/images/cm3a_2000.jpg" srcset="static/images/cm3a_1200.jpg 1200w, static/images/cm3a_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(360px, calc((100vh - 170px) * 1.5173))), min(calc(100vw - 32px), max(360px, calc((100vh - 170px) * 1.5173)))"
+                   width="2000" height="1318" loading="lazy" decoding="async"
+                   alt="Diagram of CM3A: in MS mode the query from the down-sampled LRMS and the input feature attends to a 3 by 3 window of MS keys (self-attention) and of PAN keys (alignment-aware attention); PAN mode mirrors it with the down-sampled PAN.">
+            </a>
+            <figcaption><span class="fig-label">Fig. 4.</span> <b>Cross-Modality Alignment-Aware Attention (CM3A).</b> Bidirectional alignment: MS texture to PAN structure during HRMS reconstruction, and PAN structure to MS texture during PAN back-reconstruction.</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
+
+  <!-- Quantitative results (Tables 1-3; Table 4 and Table 10 in disclosures) -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead">PAN-Crafter is best in <b>8 of 9</b> quality metrics on WV3, in <b>all six</b> on GF2, in <b>4 of 6</b> on QB and in <b>4 of 5</b> on the unseen WV2, with the lowest memory use.</p>
+      </header>
+
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t1" aria-controls="panel-t1" aria-selected="true">Table 1<small>WV3</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="false">Table 2<small>GF2 &amp; QB</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t3" aria-controls="panel-t3" aria-selected="false">Table 3<small>WV2 unseen</small></button>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t1" aria-labelledby="tab-t1" tabindex="-1">
+<figure class="table-figure" data-tex="tab:wv3" id="table-1">
+<figcaption><span class="fig-label">Table 1.</span> <b>Quantitative comparison on the WV3 dataset.</b> Deep learning-based PS methods at full and reduced resolution. <b>Bold</b> indicates the best performance in each metric. The inference time and memory usage are measured on a <span class="nowrap">256 × 256 × 8</span> HRMS target at reduced resolution.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>↓ lower is better · ↑ higher is better</span></div><span class="table-hint"><svg aria-hidden="true" class="icon"><use href="#i-swipe"></use></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div aria-label="Table 1 (scrolls horizontally)" class="table-scroll" role="region" tabindex="0"><table class="results" id="table-1-t0">
+<thead>
+<tr><th class="col-method" rowspan="2" scope="col">Method</th><th class="col-venue" rowspan="2" scope="col">Venue</th><th class="col-group grp-start" colspan="3" scope="colgroup"><span>Full resolution</span></th><th class="col-group grp-start" colspan="6" scope="colgroup"><span>Reduced resolution</span></th><th class="metric grp-start" rowspan="2" scope="col">Time<span class="arrow">↓</span> <span class="th-note">(s)</span></th><th class="metric" rowspan="2" scope="col">Memory<span class="arrow">↓</span> <span class="th-note">(GB)</span></th></tr>
+<tr><th class="metric grp-start" scope="col">HQNR<span class="arrow">↑</span></th><th class="metric" scope="col"><span class="nowrap">D<sub>s</sub></span><span class="arrow">↓</span></th><th class="metric" scope="col"><span class="nowrap">D<sub>λ</sub></span><span class="arrow">↓</span></th><th class="metric grp-start" scope="col">ERGAS<span class="arrow">↓</span></th><th class="metric" scope="col">SCC<span class="arrow">↑</span></th><th class="metric" scope="col">SAM<span class="arrow">↓</span></th><th class="metric" scope="col">Q8<span class="arrow">↑</span></th><th class="metric" scope="col">PSNR<span class="arrow">↑</span></th><th class="metric" scope="col">SSIM<span class="arrow">↑</span></th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">PanNet</td><td class="col-venue">ICCV'17</td><td class="grp-start num">0.918</td><td class="num">0.049</td><td class="num">0.035</td><td class="grp-start num">2.538</td><td class="num">0.979</td><td class="num">3.402</td><td class="num">0.913</td><td class="num">36.148</td><td class="num">0.966</td><td class="grp-start na">–</td><td class="na">–</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="col-venue">JSTARS'18</td><td class="grp-start num">0.924</td><td class="num">0.050</td><td class="num">0.028</td><td class="grp-start num">2.489</td><td class="num">0.979</td><td class="num">3.300</td><td class="num">0.914</td><td class="num">36.329</td><td class="num">0.967</td><td class="grp-start na">–</td><td class="na">–</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="col-venue">ICCV'21</td><td class="grp-start num">0.920</td><td class="num">0.053</td><td class="num">0.029</td><td class="grp-start num">2.428</td><td class="num">0.981</td><td class="num">3.188</td><td class="num">0.916</td><td class="num">36.569</td><td class="num">0.968</td><td class="grp-start na">–</td><td class="na">–</td></tr>
+<tr><td class="col-method">LAGConv</td><td class="col-venue">AAAI'22</td><td class="grp-start num">0.915</td><td class="num">0.055</td><td class="num">0.033</td><td class="grp-start num">2.380</td><td class="num">0.981</td><td class="num">3.153</td><td class="num">0.916</td><td class="num">36.732</td><td class="num">0.970</td><td class="grp-start num best">0.004</td><td class="num">3.281</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="col-venue">TGRS'23</td><td class="grp-start num">0.946</td><td class="num">0.030</td><td class="num">0.025</td><td class="grp-start num">2.245</td><td class="num">0.985</td><td class="num">3.019</td><td class="num">0.917</td><td class="num">37.216</td><td class="num">0.972</td><td class="grp-start num">0.005</td><td class="num">2.387</td></tr>
+<tr><td class="col-method">PanDiff</td><td class="col-venue">TGRS'23</td><td class="grp-start num">0.952</td><td class="num">0.034</td><td class="num best">0.014</td><td class="grp-start num">2.276</td><td class="num">0.984</td><td class="num">3.058</td><td class="num">0.913</td><td class="num">37.029</td><td class="num">0.971</td><td class="grp-start num">2.955</td><td class="num">2.328</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="col-venue">TGRS'24</td><td class="grp-start num">0.923</td><td class="num">0.036</td><td class="num">0.043</td><td class="grp-start num">2.301</td><td class="num">0.984</td><td class="num">3.083</td><td class="num">0.915</td><td class="num">37.009</td><td class="num">0.972</td><td class="grp-start num">0.109</td><td class="num">7.213</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="col-venue">TGRS'24</td><td class="grp-start num">0.924</td><td class="num">0.059</td><td class="num">0.018</td><td class="grp-start num">2.151</td><td class="num">0.986</td><td class="num">2.885</td><td class="num">0.915</td><td class="num">37.477</td><td class="num">0.973</td><td class="grp-start num">9.997</td><td class="num">9.910</td></tr>
+<tr><td class="col-method">CANConv</td><td class="col-venue">CVPR'24</td><td class="grp-start num">0.951</td><td class="num">0.030</td><td class="num">0.020</td><td class="grp-start num">2.163</td><td class="num">0.985</td><td class="num">2.927</td><td class="num">0.918</td><td class="num">37.441</td><td class="num">0.973</td><td class="grp-start num">0.451</td><td class="num">2.713</td></tr>
+<tr class="ours"><td class="col-method">PAN-Crafter</td><td class="col-venue">–</td><td class="grp-start num best">0.958</td><td class="num best">0.027</td><td class="num">0.016</td><td class="grp-start num best">2.040</td><td class="num best">0.988</td><td class="num best">2.787</td><td class="num best">0.922</td><td class="num best">37.956</td><td class="num best">0.976</td><td class="grp-start num">0.009</td><td class="num best">1.711</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">PAN-Crafter needs 0.009&nbsp;s and 1.711&nbsp;GB: <b>50.11&times;</b> faster than CANConv, which relies on k-means clustering for kernel generation, and 328.33&times; and 1110.78&times; faster than the diffusion models PanDiff and TMDiff.</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1" hidden>
+<figure class="table-figure" data-tex="tab:gf2_qb" id="table-2">
+<figcaption><span class="fig-label">Table 2.</span> <b>Quantitative comparison on the GF2 and QB datasets.</b> <b>Bold</b> indicates the best performance.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>↓ lower is better · ↑ higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="table-2-vl">Show</span><div aria-labelledby="table-2-vl" class="view-toggle" data-table="#table-2-t0" role="group"><button aria-pressed="true" data-view="all" type="button">Both</button><button aria-pressed="false" data-view="g1" type="button">GF2</button><button aria-pressed="false" data-view="g2" type="button">QB</button></div></div><span class="table-hint"><svg aria-hidden="true" class="icon"><use href="#i-swipe"></use></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div aria-label="Table 2 (scrolls horizontally)" class="table-scroll" role="region" tabindex="0"><table class="results results--3row" id="table-2-t0">
+<thead>
+<tr><th class="col-method" rowspan="3" scope="col">Method</th><th class="col-group grp-start g1" colspan="6" scope="colgroup"><span>GF2</span></th><th class="col-group grp-start g2" colspan="6" scope="colgroup"><span>QB</span></th></tr>
+<tr class="subgroups"><th class="sub-group grp-start g1" colspan="2" scope="colgroup">Full resolution</th><th class="sub-group g1" colspan="4" scope="colgroup">Reduced resolution</th><th class="sub-group grp-start g2" colspan="2" scope="colgroup">Full resolution</th><th class="sub-group g2" colspan="4" scope="colgroup">Reduced resolution</th></tr>
+<tr><th class="metric grp-start g1" scope="col">HQNR<span class="arrow">↑</span></th><th class="metric g1" scope="col"><span class="nowrap">D<sub>s</sub></span><span class="arrow">↓</span></th><th class="metric sub-start g1" scope="col">ERGAS<span class="arrow">↓</span></th><th class="metric g1" scope="col">SCC<span class="arrow">↑</span></th><th class="metric g1" scope="col">SAM<span class="arrow">↓</span></th><th class="metric g1" scope="col">PSNR<span class="arrow">↑</span></th><th class="metric grp-start g2" scope="col">HQNR<span class="arrow">↑</span></th><th class="metric g2" scope="col"><span class="nowrap">D<sub>s</sub></span><span class="arrow">↓</span></th><th class="metric sub-start g2" scope="col">ERGAS<span class="arrow">↓</span></th><th class="metric g2" scope="col">SCC<span class="arrow">↑</span></th><th class="metric g2" scope="col">SAM<span class="arrow">↓</span></th><th class="metric g2" scope="col">PSNR<span class="arrow">↑</span></th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">PanNet</td><td class="grp-start g1 num">0.929</td><td class="g1 num">0.052</td><td class="sub-start g1 num">1.038</td><td class="g1 num">0.975</td><td class="g1 num">1.050</td><td class="g1 num">39.197</td><td class="grp-start g2 num">0.851</td><td class="g2 num">0.092</td><td class="sub-start g2 num">4.856</td><td class="g2 num">0.966</td><td class="g2 num">5.273</td><td class="g2 num">35.563</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="grp-start g1 num">0.898</td><td class="g1 num">0.079</td><td class="sub-start g1 num">0.862</td><td class="g1 num">0.983</td><td class="g1 num">0.946</td><td class="g1 num">40.730</td><td class="grp-start g2 num">0.888</td><td class="g2 num">0.058</td><td class="sub-start g2 num">4.074</td><td class="g2 num">0.977</td><td class="g2 num">4.828</td><td class="g2 num">37.040</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="grp-start g1 num">0.865</td><td class="g1 num">0.105</td><td class="sub-start g1 num">0.960</td><td class="g1 num">0.980</td><td class="g1 num">0.971</td><td class="g1 num">39.866</td><td class="grp-start g2 num">0.853</td><td class="g2 num">0.079</td><td class="sub-start g2 num">4.183</td><td class="g2 num">0.975</td><td class="g2 num">4.892</td><td class="g2 num">36.821</td></tr>
+<tr><td class="col-method">LAGConv</td><td class="grp-start g1 num">0.895</td><td class="g1 num">0.078</td><td class="sub-start g1 num">0.816</td><td class="g1 num">0.985</td><td class="g1 num">0.886</td><td class="g1 num">41.147</td><td class="grp-start g2 num">0.892</td><td class="g2 num best">0.035</td><td class="sub-start g2 num">3.845</td><td class="g2 num">0.980</td><td class="g2 num">4.682</td><td class="g2 num">37.565</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="grp-start g1 num">0.935</td><td class="g1 num">0.046</td><td class="sub-start g1 num">0.686</td><td class="g1 num">0.990</td><td class="g1 num">0.772</td><td class="g1 num">42.686</td><td class="grp-start g2 num">0.908</td><td class="g2 num">0.036</td><td class="sub-start g2 num">3.956</td><td class="g2 num">0.980</td><td class="g2 num">4.849</td><td class="g2 num">37.314</td></tr>
+<tr><td class="col-method">PanDiff</td><td class="grp-start g1 num">0.936</td><td class="g1 num">0.045</td><td class="sub-start g1 num">0.674</td><td class="g1 num">0.990</td><td class="g1 num">0.767</td><td class="g1 num">42.827</td><td class="grp-start g2 num">0.919</td><td class="g2 num">0.055</td><td class="sub-start g2 num">3.723</td><td class="g2 num">0.982</td><td class="g2 num">4.611</td><td class="g2 num">37.842</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="grp-start g1 num">0.953</td><td class="g1 num">0.024</td><td class="sub-start g1 num">0.724</td><td class="g1 num">0.988</td><td class="g1 num">0.806</td><td class="g1 num">42.312</td><td class="grp-start g2 num">0.880</td><td class="g2 num">0.073</td><td class="sub-start g2 num">3.618</td><td class="g2 num">0.983</td><td class="g2 num best">4.420</td><td class="g2 num">38.079</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="grp-start g1 num">0.942</td><td class="g1 num">0.030</td><td class="sub-start g1 num">0.754</td><td class="g1 num">0.988</td><td class="g1 num">0.764</td><td class="g1 num">41.896</td><td class="grp-start g2 num">0.901</td><td class="g2 num">0.068</td><td class="sub-start g2 num">3.804</td><td class="g2 num">0.981</td><td class="g2 num">4.627</td><td class="g2 num">37.642</td></tr>
+<tr><td class="col-method">CANConv</td><td class="grp-start g1 num">0.919</td><td class="g1 num">0.063</td><td class="sub-start g1 num">0.653</td><td class="g1 num">0.991</td><td class="g1 num">0.722</td><td class="g1 num">43.166</td><td class="grp-start g2 num">0.893</td><td class="g2 num">0.070</td><td class="sub-start g2 num">3.740</td><td class="g2 num">0.982</td><td class="g2 num">4.554</td><td class="g2 num">37.795</td></tr>
+<tr class="ours"><td class="col-method">PAN-Crafter</td><td class="grp-start g1 num best">0.964</td><td class="g1 num best">0.017</td><td class="sub-start g1 num best">0.522</td><td class="g1 num best">0.994</td><td class="g1 num best">0.596</td><td class="g1 num best">45.076</td><td class="grp-start g2 num best">0.920</td><td class="g2 num">0.039</td><td class="sub-start g2 num best">3.570</td><td class="g2 num best">0.984</td><td class="g2 num">4.426</td><td class="g2 num best">38.195</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">QB is known to be the most challenging dataset; PAN-Crafter is slightly behind in D<sub>s</sub> and SAM there but best in HQNR, ERGAS, SCC and PSNR.</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t3" aria-labelledby="tab-t3" tabindex="-1" hidden>
+<figure class="table-figure" data-tex="tab:wv2" id="table-3">
+<figcaption><span class="fig-label">Table 3.</span> <b>Generalization to the unseen WV2 satellite dataset.</b> All models are trained on WV3 and evaluated on WV2 to assess real-world generalization. <b>Bold</b> indicates the best performance.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>↓ lower is better · ↑ higher is better</span></div><span class="table-hint"><svg aria-hidden="true" class="icon"><use href="#i-swipe"></use></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div aria-label="Table 3 (scrolls horizontally)" class="table-scroll" role="region" tabindex="0"><table class="results" id="table-3-t0">
+<thead>
+<tr><th class="col-method" rowspan="2" scope="col">Method</th><th class="col-group grp-start" colspan="5" scope="colgroup"><span>WV2 dataset (unseen satellite dataset)</span></th></tr>
+<tr><th class="metric grp-start" scope="col">HQNR<span class="arrow">↑</span></th><th class="metric" scope="col">ERGAS<span class="arrow">↓</span></th><th class="metric" scope="col">SCC<span class="arrow">↑</span></th><th class="metric" scope="col">SAM<span class="arrow">↓</span></th><th class="metric" scope="col">PSNR<span class="arrow">↑</span></th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">PanNet</td><td class="grp-start num">0.875</td><td class="num">5.481</td><td class="num">0.876</td><td class="num">7.040</td><td class="num">27.120</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="grp-start num">0.862</td><td class="num">4.930</td><td class="num">0.905</td><td class="num">5.898</td><td class="num">27.901</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="grp-start num">0.862</td><td class="num">5.100</td><td class="num">0.902</td><td class="num">6.118</td><td class="num">27.616</td></tr>
+<tr><td class="col-method">LAGConv</td><td class="grp-start num">0.902</td><td class="num">5.133</td><td class="num">0.885</td><td class="num">6.094</td><td class="num">27.525</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="grp-start num">0.813</td><td class="num">5.703</td><td class="num">0.915</td><td class="num">7.063</td><td class="num">26.748</td></tr>
+<tr><td class="col-method">PanDiff</td><td class="grp-start num">0.932</td><td class="num">4.291</td><td class="num">0.916</td><td class="num">5.430</td><td class="num">28.964</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="grp-start num">0.797</td><td class="num">5.507</td><td class="num best">0.931</td><td class="num">10.174</td><td class="num">27.063</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="grp-start num">0.874</td><td class="num">5.157</td><td class="num">0.875</td><td class="num">6.087</td><td class="num">27.473</td></tr>
+<tr><td class="col-method">CANConv</td><td class="grp-start num">0.876</td><td class="num">4.328</td><td class="num">0.918</td><td class="num">5.481</td><td class="num">29.005</td></tr>
+<tr class="ours"><td class="col-method">PAN-Crafter</td><td class="grp-start num best">0.942</td><td class="num best">4.169</td><td class="num">0.924</td><td class="num best">5.078</td><td class="num best">29.276</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">Fully zero-shot: all models are trained on WV3 and tested on WV2 without any fine-tuning.</p>
+</figure>
+        </div>
+      </div>
+
+      <div class="disclosures">
+      <details class="disclosure" id="ablation" data-animate>
+        <summary>Ablation of MARs and CM3A <span class="summary-sub">Table 4</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" data-tex="tab:ablation" id="table-4">
+<figcaption><span class="fig-label">Table 4.</span> <b>Ablation studies on CM3A and MARs on the WV3 dataset.</b> The combination of both components achieves the best performance, highlighting their synergistic effect in jointly refining spatial and spectral consistency.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>✓ component used</span><span>↓ lower is better · ↑ higher is better</span></div><span class="table-hint"><svg aria-hidden="true" class="icon"><use href="#i-swipe"></use></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div aria-label="Table 4 (scrolls horizontally)" class="table-scroll" role="region" tabindex="0"><table class="results results--ablation" id="table-4-t0">
+<thead>
+<tr><th class="col-method col-mark" rowspan="2" scope="col">CM3A</th><th class="col-mark" rowspan="2" scope="col">MARs</th><th class="col-group grp-start" colspan="6" scope="colgroup"><span>WV3 dataset</span></th></tr>
+<tr><th class="metric grp-start" scope="col">HQNR<span class="arrow">↑</span></th><th class="metric" scope="col">ERGAS<span class="arrow">↓</span></th><th class="metric" scope="col">SAM<span class="arrow">↓</span></th><th class="metric" scope="col">PSNR<span class="arrow">↑</span></th><th class="metric" scope="col">Time<span class="arrow">↓</span> <span class="th-note">(s)</span></th><th class="metric" scope="col">Memory<span class="arrow">↓</span> <span class="th-note">(GB)</span></th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method col-mark"><span aria-label="without" class="mark-no">–</span></td><td class="col-mark"><span aria-label="without" class="mark-no">–</span></td><td class="grp-start num">0.948</td><td class="num">2.232</td><td class="num">2.980</td><td class="num">37.245</td><td class="num">0.006</td><td class="num">1.537</td></tr>
+<tr><td class="col-method col-mark"><span aria-label="with" class="mark-ok">✓</span></td><td class="col-mark"><span aria-label="without" class="mark-no">–</span></td><td class="grp-start num">0.949</td><td class="num">2.212</td><td class="num">2.970</td><td class="num">37.285</td><td class="num">0.007</td><td class="num">1.556</td></tr>
+<tr><td class="col-method col-mark"><span aria-label="without" class="mark-no">–</span></td><td class="col-mark"><span aria-label="with" class="mark-ok">✓</span></td><td class="grp-start num">0.956</td><td class="num">2.122</td><td class="num">2.873</td><td class="num">37.602</td><td class="num">0.009</td><td class="num">1.701</td></tr>
+<tr class="ours"><td class="col-method col-mark"><span aria-label="with" class="mark-ok">✓</span></td><td class="col-mark"><span aria-label="with" class="mark-ok">✓</span></td><td class="grp-start num best">0.958</td><td class="num best">2.040</td><td class="num best">2.787</td><td class="num best">37.956</td><td class="num">0.009</td><td class="num">1.711</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">MARs alone raises PSNR from 37.245 to 37.602&nbsp;dB; CM3A alone gives a marginal gain (37.285&nbsp;dB), but together with MARs it reaches <b>37.956&nbsp;dB</b> and the best HQNR, ERGAS and SAM.</p>
+</figure>
+        </div></div>
+      </details>
+      <details class="disclosure" id="cost" data-animate>
+        <summary>Computational cost <span class="summary-sub">Table 10</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" data-tex="tab:complex" id="table-10">
+<figcaption><span class="fig-label">Table 10.</span> <b>Computational efficiency comparison of deep learning-based PS methods.</b> Inference time (s), memory usage (MB), FLOPs (G) and parameter count (M); the paper lists one column per method.</figcaption>
+<div class="table-meta"><div class="table-legend"></div><span class="table-hint"><svg aria-hidden="true" class="icon"><use href="#i-swipe"></use></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div aria-label="Table 10 (scrolls horizontally)" class="table-scroll" role="region" tabindex="0"><table class="results results--cost" id="table-10-t0">
+<thead>
+<tr><th class="col-method" scope="col">Method</th><th class="metric grp-start" scope="col">Time <span class="th-note">(s)</span></th><th class="metric" scope="col">Memory <span class="th-note">(MB)</span></th><th class="metric" scope="col">FLOPs <span class="th-note">(G)</span></th><th class="metric" scope="col">Params. <span class="th-note">(M)</span></th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">LAGConv</td><td class="grp-start num">0.004</td><td class="num">3360.1</td><td class="num">8.43</td><td class="num">0.15</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="grp-start num">0.005</td><td class="num">2444.0</td><td class="num">158.94</td><td class="num">16.19</td></tr>
+<tr><td class="col-method">PanDiff</td><td class="grp-start num">2.955</td><td class="num">2383.6</td><td class="num">62.07</td><td class="num">9.52</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="grp-start num">0.109</td><td class="num">7386.8</td><td class="num">105.40</td><td class="num">1.414</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="grp-start num">9.997</td><td class="num">10147.4</td><td class="num">1284.42</td><td class="num">154.10</td></tr>
+<tr><td class="col-method">CANConv</td><td class="grp-start num">0.451</td><td class="num">2777.6</td><td class="num">52.21</td><td class="num">0.79</td></tr>
+<tr class="ours"><td class="col-method">PAN-Crafter</td><td class="grp-start num">0.009</td><td class="num">1751.9</td><td class="num">79.03</td><td class="num">7.17</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">PAN-Crafter uses the least memory of the compared methods (1751.9&nbsp;MB) and is faster than all of them except LAGConv and S2DBPN.</p>
+</figure>
+        </div></div>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method (compact): paper Fig. 3 -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">Reconstruct both modalities, align both ways</h2>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/framework_full.jpg" data-title="PAN-Crafter architecture">
+          <img src="static/images/framework_1600.jpg"
+               srcset="static/images/framework_1200.jpg 1200w, static/images/framework_1600.jpg 1600w, static/images/framework_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="556" loading="lazy" decoding="async"
+               alt="PAN-Crafter architecture. The up-sampled LRMS image and the PAN image are concatenated and passed through a U-Net of convolutions, ResBlocks and AttnBlocks with down- and up-sampling; a Modality-Adaptive Reconstruction switch selects MS mode, which adds the output to the LRMS image to give the HRMS image, or PAN mode, which adds it to a down- and up-sampled PAN image repeated over the channels to back-reconstruct the PAN image. Insets show the ResBlock (LayerNorm, SiLU, convolution, mode-dependent modulation) and the AttnBlock (LayerNorm, CM3A, select, feed-forward).">
+        </a>
+        <figcaption><b>PAN-Crafter architecture.</b> An encoder&ndash;decoder with ResBlocks and CM3A at multiple scales; the MARs mode switches the output between the HRMS image and the back-reconstructed PAN image.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">01</span><b>Modality-Adaptive Reconstruction (MARs).</b> One network, two modes: MS mode predicts the HRMS image, PAN mode back-reconstructs the PAN image, whose high-frequency details act as auxiliary self-supervision. Inference uses MS mode.</li>
+        <li><span class="kp-num">02</span><b>CM3A, in both directions.</b> Local <span class="nowrap">3 &times; 3</span> attention aligns MS texture to PAN structure in MS mode and PAN structure to MS texture in PAN mode; down-sampled input images replace fixed positional embeddings.</li>
+        <li><span class="kp-num">03</span><b>A multi-scale U-Net.</b> ResBlocks with mode-dependent modulation at every scale; AttnBlocks with CM3A only at the low- and mid-resolution stages, to reduce computational overhead: 0.009&nbsp;s and 1.711&nbsp;GB per <span class="nowrap">256 &times; 256 &times; 8</span> target.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+<pre><code id="bibtex-code">@InProceedings{Do_2025_ICCV,
+  author={Do, Jeonghyeok and Kim, Sungpyo and Youk, Geunhyuk and Lee, Jaehyup and Kim, Munchurl},
+  title={PAN-Crafter: Learning Modality-Consistent Alignment for PAN-Sharpening},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  month={October},
+  year={2025},
+  pages={4242-4252}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: Remote sensing">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">Remote sensing</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-stage"><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></span></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/C-DiffSET_site/"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/GeoCore-9B_site/"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/GeoSET_site/"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
 
 <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <a target="_blank" rel="noopener noreferrer" class="icon-link"
-               href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_PAN-Crafter_Learning_Modality-Consistent_Alignment_for_PAN-Sharpening_ICCV_2025_paper.pdf">
-                <i class="fas fa-file-pdf"></i>
-            </a>
-            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab"
-               class="external-link" disabled>
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <div class="columns is-centered">
-            <div class="column is-8">
-                <div class="content">
-                    <p>
-                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
-                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> and
-                        <a target="_blank" rel="noopener noreferrer"
-                           href="https://github.com/marigoldmonodepth/marigoldmonodepth.github.io/tree/main">Marigold</a>
-                        that
-                        kindly open sourced the template of this website. Website template licensed under
-                        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-                            CC-BY-SA-4.0
-                        </a>.
-                        Please visit our <a target="_blank" rel="noopener noreferrer"
-                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
-                        researches.
-                    </p>
-                </div>
-            </div>
-            <a href="https://mapmyvisitors.com/web/1byco"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=yGzGH4sFlZ0XCkEPWMZb99nOU0SZ2MeGj1reg3Q0daA&cl=ffffff" /></a>
-        </div>
-    </div>
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.png" width="84" height="84" alt="" loading="lazy"><span class="wordmark"><span>PAN</span>-Crafter</span></span>&nbsp;&middot; ICCV 2025&nbsp;&middot; KAIST and Kyungpook National University</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_PAN-Crafter_Learning_Modality-Consistent_Alignment_for_PAN-Sharpening_ICCV_2025_paper.pdf" target="_blank" rel="noopener">Paper</a>
+      <a href="https://arxiv.org/abs/2505.23367" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/KAIST-VICLab/PAN-Crafter" target="_blank" rel="noopener">Code</a>
+      <a href="mailto:ehwjdgur0913@kaist.ac.kr,ksp04204@kaist.ac.kr,rmsgurkjg@kaist.ac.kr,jaehyuplee@knu.ac.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
 </footer>
 
 </body>

@@ -1,364 +1,597 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="description"
-          content="Zero-Shot Skeleton-based Action Recognition.">
-    <meta name="keywords"
-          content="Skeleton-based Action Recognition, Zero-Shot Skeleton-based Action Recognition, Diffusion Models">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bridging the Skeleton-Text Modality Gap: Diffusion-Powered Modality Alignment for Zero-shot Skeleton-based Action Recognition</title>
-    <style>
-    @keyframes shake {
-      0% {transform: translateX(0);}
-      10%, 90% {transform: translateX(-5px);}
-      20%, 80% {transform: translateX(5px);}
-      30%, 50%, 70% {transform: translateX(-5px);}
-      40%, 60% {transform: translateX(5px);}
-      100% {transform: translateX(0);}
-    }
-
-    #blur {
-      /* font-size: 60px; */
-      color: rgb(52,144,197);
-      filter: blur(3x);
-      -webkit-filter: blur(2.5px);
-      animation: shake 1s infinite;
-      display: inline-block;;
-      clear: none;
-    }
-    #shake {
-      /* font-size: 60px; */
-      animation: shake 1s infinite;
-      display: inline-block;;
-      clear: none;
-    }
-    </style>
-
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MQVFTG44');
-    </script>
-    <!-- End Google Tag Manager -->
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
-    <link rel="stylesheet" href="./static/css/bulma.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-    <link rel="stylesheet" href="./static/css/index.css">
-    <link rel="icon" sizes="256x256" href="./static/image/skeleton.png" type="image/png"/>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script defer src="./static/js/fontawesome.all.min.js"></script>
-    <script src="./static/js/bulma-carousel.min.js"></script>
-    <script src="./static/js/bulma-slider.min.js"></script>
-    <script src="./static/js/index.js"></script>
-    <script src="./static/js/video_comparison.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TDSM · Bridging the Skeleton-Text Modality Gap: Diffusion-Powered Modality Alignment for Zero-shot Skeleton-based Action Recognition</title>
+  <meta name="description" content="TDSM (Triplet Diffusion for Skeleton-Text Matching) is the first diffusion-based framework for zero-shot skeleton-based action recognition: skeleton features are denoised under text guidance into one unified skeleton-text latent space, trained with a triplet diffusion loss.">
+  <meta name="author" content="Jeonghyeok Do, Munchurl Kim">
+  <meta name="theme-color" content="#1082D9">
+  <link rel="canonical" href="https://kaist-viclab.github.io/TDSM_site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TDSM">
+  <meta property="og:title" content="TDSM · Bridging the Skeleton-Text Modality Gap: Diffusion-Powered Modality Alignment for Zero-shot Skeleton-based Action Recognition">
+  <meta property="og:description" content="Diffusion for alignment, not generation: TDSM denoises skeleton features under text guidance into one skeleton-text latent space for zero-shot action recognition (ICCV 2025).">
+  <meta property="og:url" content="https://kaist-viclab.github.io/TDSM_site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/TDSM_site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The TDSM logo, a skull, a bridge and a document, above the paper's first figure: previous methods align skeleton and text features directly, while TDSM denoises the skeleton feature under the text prompt in a unified latent space.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TDSM · Bridging the Skeleton-Text Modality Gap: Diffusion-Powered Modality Alignment for Zero-shot Skeleton-based Action Recognition">
+  <meta name="twitter:description" content="Diffusion for alignment, not generation: skeleton features denoised under text guidance for zero-shot action recognition (ICCV 2025).">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/TDSM_site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The TDSM logo, a skull, a bridge and a document, above the paper's first figure: previous methods align skeleton and text features directly, while TDSM denoises the skeleton feature under the text prompt in a unified latent space.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"], a[data-soon] { pointer-events: none; cursor: default; }</style></noscript>
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
 </head>
 <body>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-        </a>
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-supp" viewBox="0 0 24 24"><path d="M15 3H9.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H18a2 2 0 0 0 2-2V8z"/><path d="M15 3v5h5"/><path d="M4.5 7.5V19a2 2 0 0 0 2 2H15"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path d="M3.5 9.5L12 4l8.5 5.5M4.5 20h15M6.5 11.5v5.5M10 11.5v5.5M14 11.5v5.5M17.5 11.5v5.5"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3.5"/><path d="M10 9.3v5.4l4.6-2.7z"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16M7 16.5v-4.5M12 16.5V7M17 16.5v-7.5"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="TDSM, back to top"><img src="static/images/icon.png" width="481" height="84" alt=""><img class="topnav-mark" src="static/images/mark.png" width="71" height="84" alt=""><span class="wordmark" aria-hidden="true">TD<span>SM</span></span></a>
+    <div class="topnav-links">
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="#figures">Figures</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
+    <a class="topnav-cta" href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_Bridging_the_Skeleton-Text_Modality_Gap_Diffusion-Powered_Modality_Alignment_for_Zero-shot_ICCV_2025_paper.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
 </nav>
 
-
-<section class="hero">
-    <div class="hero-body">
-        <div class="container is-max-desktop">
-            <div class="columns is-centered">
-                <div class="column has-text-centered">
-                    <div class="title is-2 publication-title"><h1 style="display: inline; clear:none;"><img
-                            src="./static/image/skeleton_rev.png" width="270" , height="40"></font><br><b>Bridging</b> the <font
-                            color="#34a853"><b>Skeleton</b></font>-<font color="#1484d9"><b>Text</b></font> Modality Gap:<br><b>Diffusion-Powered</b> Modality Alignment<br>for Zero-shot Skeleton-based Action Recognition</h1>
-                    </div>
-                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo/">Jeonghyeok Do</a>&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ">Munchurl Kim</a><sup>†</sup>
-            </span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"> <sup>†</sup>Corresponding author</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block">Korea Advanced Institute of Science and Technology (KAIST), South Korea</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </div>
-                    <div class="is-size-4 publication-authors">
-                        <span class="author-block", style="color:#346dc2">ICCV 2025</span>
-                    </div>
-                    <div class="column has-text-centered">
-                        <div class="publication-links">
-                            <!-- PDF Link. -->
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_Bridging_the_Skeleton-Text_Modality_Gap_Diffusion-Powered_Modality_Alignment_for_Zero-shot_ICCV_2025_paper.pdf"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://openaccess.thecvf.com/content/ICCV2025/supplemental/Do_Bridging_the_Skeleton-Text_ICCV_2025_supplemental.pdf"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Supple</span>
-                </a>
-              </span>
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2411.10745"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-<!-- Video Link. -->
-              <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://youtu.be/QD8Kbo6Eh1I"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
-                            <!-- Code Link. -->
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/TDSM"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+<header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: Skeleton &amp; motion">
+    <p class="lineage-menu-head"><b>Research line</b>Skeleton &amp; motion</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/SkateFormer_site/"><span class="lineage-name">SkateFormer</span><span class="lineage-venue">ECCV 2024</span></a></li>
+      <li class="lineage-menu-stage"><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">TDSM</span><span class="lineage-venue">ICCV 2025</span></span></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/SLiM_site/"><span class="lineage-name">SLiM</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/SOfA_site/"><span class="lineage-name">SOfA</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/MotionMaestro_site/"><span class="lineage-name">MotionMaestro</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.svg" width="2602" height="410" alt="TDSM" fetchpriority="high">
+      <span class="hero-logo-note"><b>T</b>riplet <b>D</b>iffusion for <b>S</b>keleton-Text <b>M</b>atching</span>
+      <span class="hero-title">Bridging the <span class="nowrap"><span class="hero-accent-s">Skeleton</span>-<span class="hero-accent">Text</span></span> Modality Gap: <span class="nowrap">Diffusion-Powered</span> Modality Alignment for <span class="nowrap">Zero-shot</span> <span class="nowrap">Skeleton-based</span> <span class="nowrap">Action Recognition</span></span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>&dagger;</sup></span>
+    </p>
+    <p class="hero-affil">Korea Advanced Institute of Science and Technology (KAIST), South Korea</p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Corresponding author</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">ICCV 2025</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_Bridging_the_Skeleton-Text_Modality_Gap_Diffusion-Powered_Modality_Alignment_for_Zero-shot_ICCV_2025_paper.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://openaccess.thecvf.com/content/ICCV2025/supplemental/Do_Bridging_the_Skeleton-Text_ICCV_2025_supplemental.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-supp"/></svg>Supp</a>
+      <a class="btn" href="https://arxiv.org/abs/2411.10745" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
+      <a class="btn" href="https://youtu.be/QD8Kbo6Eh1I" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-video"/></svg>Video</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/TDSM" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="#results"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Results</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>In zero-shot skeleton-based action recognition (ZSAR), aligning skeleton features with the text features of action labels is essential for accurately predicting unseen actions. ZSAR faces a fundamental challenge in bridging the modality gap between the two-kind features, which severely limits generalization to unseen actions. Previous methods focus on direct alignment between skeleton and text latent spaces, but the modality gaps between these spaces hinder robust generalization learning. Motivated by the success of diffusion models in multi-modal alignment (e.g., text-to-image, text-to-video), we firstly present a diffusion-based skeleton-text alignment framework for ZSAR. Our approach, Triplet Diffusion for Skeleton-Text Matching (TDSM), focuses on cross-alignment power of diffusion models rather than their generative capability. Specifically, TDSM aligns skeleton features with text prompts by incorporating text features into the reverse diffusion process, where skeleton features are denoised under text guidance, forming a unified skeleton-text latent space for robust matching. To enhance discriminative power, we introduce a triplet diffusion (TD) loss that encourages our TDSM to correct skeleton-text matches while pushing them apart for different action classes. Our TDSM significantly outperforms very recent state-of-the-art methods with significantly large margins of 2.36%-point to 13.05%-point, demonstrating superior accuracy and scalability in zero-shot settings through effective skeleton-text matching.</p>
         </div>
-</section>
+      </div>
+    </details>
+  </div>
+</header>
 
-<!-- Motivation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/motivation.PNG" style="width: 80%; height: auto;"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Motivation of the our TDSM pipeline.</b> Previous methods rely on direct alignment
-                            between
-                            skeleton and text latent spaces, but suffer from modality gaps that limit generalization.
-                            Our TDSM
-                            overcomes this challenge by leveraging a reverse diffusion process to embed text prompts
-                            into the
-                            unified skeleton-text latent space, ensuring more effective cross-modal alignment.
-                        </p>
-                    </div>
-            </div>
-        </div>
+<main id="main">
+
+  <!-- Headline + first result: Table 1 (SynSE and PURLS benchmarks, eight NTU splits) -->
+  <section class="section section--headline" id="benchmarks" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">Diffusion for alignment, not generation</h2>
+        <p class="lead"><span class="nowrap">Text-guided</span> denoising forms one <span class="nowrap">skeleton&ndash;text</span> latent space: best on all eight NTU <span class="nowrap">zero-shot</span> splits, by up to <b>13.05</b>&nbsp;points.</p>
+      </header>
+<figure class="table-figure" id="table-1" data-src-table="tab-main">
+<figcaption><span class="fig-label">Table 1.</span> Top-1 accuracy results of various zero-shot skeleton-based action recognition (ZSAR) methods evaluated on the SynSE and PURLS benchmarks for the NTU-60 and NTU-120 datasets. Each split is denoted as X/Y, where X represents the number of seen classes and Y the number of unseen classes. For our TDSM framework, the reported accuracy is the average value obtained from 10 trials, each with different Gaussian noise.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 (scrolls horizontally)">
+<table class="results" id="tab-main-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-venue" rowspan="2">Venue</th><th class="col-group grp-start" colspan="4"><span>NTU-60</span></th><th class="col-group grp-start" colspan="4"><span>NTU-120</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric">48/12</th><th class="metric">40/20</th><th class="metric">30/30</th><th class="metric grp-start">110/10</th><th class="metric">96/24</th><th class="metric">80/40</th><th class="metric">60/60</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">ReViSE</td><td class="col-venue">ICCV 2017</td><td class="num grp-start">53.91</td><td class="num">17.49</td><td class="num">24.26</td><td class="num">14.81</td><td class="num grp-start">55.04</td><td class="num">32.38</td><td class="num">19.47</td><td class="num">8.27</td></tr>
+<tr><td class="col-method">JPoSE</td><td class="col-venue">ICCV 2019</td><td class="num grp-start">64.82</td><td class="num">28.75</td><td class="num">20.05</td><td class="num">12.39</td><td class="num grp-start">51.93</td><td class="num">32.44</td><td class="num">13.71</td><td class="num">7.65</td></tr>
+<tr><td class="col-method">CADA-VAE</td><td class="col-venue">CVPR 2019</td><td class="num grp-start">76.84</td><td class="num">28.96</td><td class="num">16.21</td><td class="num">11.51</td><td class="num grp-start">59.53</td><td class="num">35.77</td><td class="num">10.55</td><td class="num">5.67</td></tr>
+<tr><td class="col-method">SynSE</td><td class="col-venue">ICIP 2021</td><td class="num grp-start">75.81</td><td class="num">33.30</td><td class="num">19.85</td><td class="num">12.00</td><td class="num grp-start">62.69</td><td class="num">38.70</td><td class="num">13.64</td><td class="num">7.73</td></tr>
+<tr><td class="col-method">SMIE</td><td class="col-venue">ACM MM 2023</td><td class="num grp-start">77.98</td><td class="num">40.18</td><td class="na">–</td><td class="na">–</td><td class="num grp-start">65.74</td><td class="num">45.30</td><td class="na">–</td><td class="na">–</td></tr>
+<tr><td class="col-method">PURLS</td><td class="col-venue">CVPR 2024</td><td class="num grp-start">79.23</td><td class="num">40.99</td><td class="num second">31.05</td><td class="num second">23.52</td><td class="num grp-start second">71.95</td><td class="num second">52.01</td><td class="num second">28.38</td><td class="num second">19.63</td></tr>
+<tr><td class="col-method">SA-DVAE</td><td class="col-venue">ECCV 2024</td><td class="num grp-start second">82.37</td><td class="num">41.38</td><td class="na">–</td><td class="na">–</td><td class="num grp-start">68.77</td><td class="num">46.12</td><td class="na">–</td><td class="na">–</td></tr>
+<tr><td class="col-method">STAR</td><td class="col-venue">ACM MM 2024</td><td class="num grp-start">81.40</td><td class="num second">45.10</td><td class="na">–</td><td class="na">–</td><td class="num grp-start">63.30</td><td class="num">44.30</td><td class="na">–</td><td class="na">–</td></tr>
+<tr class="ours"><td class="col-method">TDSM (Ours)</td><td class="col-venue na">–</td><td class="num grp-start best">86.49</td><td class="num best">56.03</td><td class="num best">36.09</td><td class="num best">25.88</td><td class="num grp-start best">74.15</td><td class="num best">65.06</td><td class="num best">36.95</td><td class="num best">27.21</td></tr>
+</tbody>
+</table>
+</div></div>
+<p class="table-note">The SynSE splits (55/5, 48/12, 110/10, 96/24) are the standard settings; the PURLS splits (40/20, 30/30, 80/40, 60/60) hold out a larger share of unseen classes. Both use a <span class="nowrap">Shift-GCN</span> skeleton encoder, as in prior work.</p>
+</figure>
     </div>
-</section>
+  </section>
 
-<!-- Abstract. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <h2 class="title is-3">Abstract</h2>
-                <div class="content has-text-justified" style="margin-bottom: 40px;">
-                    <p>
-                        We <em>firstly</em> present a diffusion-based action recognition with zero-shot learning for
-                        skeleton inputs, called a <b>Triplet Diffusion for Skeleton-Text Matching (TDSM)</b>, which is
-                        the first
-                        framework to apply diffusion models and to implicitly align the skeleton features with text
-                        prompts by fully taking advantage of excellent text-image correspondence learning in
-                        generative diffusion processes, thus being able to learn fused discriminative features in a
-                        unified latent space.
-                    </p>
-                    <p>
-                        We propose a novel <b>triplet diffusion (TD) loss</b> to enhance the model's discriminative
-                        power by
-                        ensuring accurate denoising for correct skeleton-text pairs while suppressing incorrect pairs.
-                    </p>
-                    <p>
-                        Our TDSM <em>significantly</em> outperforms the very recent state-of-the-art (SOTA) methods with
-                        large margins of 2.36%-point to 13.05%-point across multiple benchmarks, demonstrating
-                        scalability and robustness under various seen-unseen split settings.
-                    </p>
-                </div>
-            </div>
+  <!-- Paper figures: figure carousel with a thumbnail strip -->
+  <section class="section section--band" id="figures" aria-labelledby="figures-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="figures-title">Paper figures</h2>
+        <p class="lead">Direct alignment versus <span class="nowrap">diffusion-based</span> alignment, accuracy across inference timesteps and noise draws (also when predicting <span class="bm">z</span><sub><i>x</i></sub>), <span class="nowrap">per-class</span> results on two SMIE splits, the inference pipeline and the CrossDiT block.</p>
+      </header>
+      <div class="carousel fig-carousel" data-switch>
+        <div class="carousel-nav">
+          <button type="button" class="carousel-btn" data-prev aria-label="Previous figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="thumbs hscroll thumbs--fig" role="tablist" aria-label="Paper figures">
+            <button type="button" class="thumb" role="tab" id="fig-t1" aria-controls="fig-1" aria-selected="true"><img src="static/images/motivation_thumb.jpg" alt="" width="480" height="233" loading="lazy" decoding="async"><span><b>Fig. 1</b> Previous vs. TDSM</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t4" aria-controls="fig-4" aria-selected="false"><img src="static/images/timestep_thumb.jpg" alt="" width="480" height="425" loading="lazy" decoding="async"><span><b>Fig. 4</b> Inference timestep</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t5" aria-controls="fig-5" aria-selected="false"><img src="static/images/predict_zx_thumb.jpg" alt="" width="480" height="410" loading="lazy" decoding="async"><span><b>Fig. 5</b> Predicting <span class="bm">z</span><sub><i>x</i></sub></span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t6" aria-controls="fig-6" aria-selected="false"><img src="static/images/confusion_ntu_thumb.jpg" alt="" width="480" height="513" loading="lazy" decoding="async"><span><b>Fig. 6</b> NTU-60 split&nbsp;2</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t7" aria-controls="fig-7" aria-selected="false"><img src="static/images/confusion_pku_thumb.jpg" alt="" width="480" height="514" loading="lazy" decoding="async"><span><b>Fig. 7</b> PKU-MMD split&nbsp;1</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t3" aria-controls="fig-3" aria-selected="false"><img src="static/images/inference_thumb.jpg" alt="" width="480" height="259" loading="lazy" decoding="async"><span><b>Fig. 3</b> Inference</span></button>
+            <button type="button" class="thumb" role="tab" id="fig-t8" aria-controls="fig-8" aria-selected="false"><img src="static/images/crossdit_thumb.jpg" alt="" width="480" height="206" loading="lazy" decoding="async"><span><b>Fig. 8</b> CrossDiT block</span></button>
+          </div>
+          <button type="button" class="carousel-btn" data-next aria-label="Next figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
         </div>
+        <div class="slides">
+          <figure class="figure slide slide--content" id="fig-1" role="tabpanel" aria-labelledby="fig-t1">
+            <a class="figure-media zoom" href="static/images/motivation_full.jpg" data-title="Direct alignment versus diffusion-based alignment">
+              <img src="static/images/motivation_2000.jpg" srcset="static/images/motivation_1200.jpg 1200w, static/images/motivation_1600.jpg 1600w, static/images/motivation_2000.jpg 2000w"
+                   sizes="(min-width: 1144px) 1080px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="969" loading="lazy" decoding="async"
+                   alt="Left: a skeleton sequence labelled Throw goes through a frozen skeleton encoder to the feature z_s, and the action label Throw goes through a frozen text encoder to the feature z_p. Top right, previous methods: z_s and z_p enter a direct-alignment block, and the skeleton latent and the text latent stay two separate, partly overlapping spaces that are pulled together. Bottom right, TDSM: noise is added to z_s, a diffusion process conditioned on the prompt z_p predicts the noise, and in one unified latent space the correct label Throw is separated from Non-Throw by the TD loss.">
+            </a>
+            <figcaption><b>Direct alignment versus <span class="nowrap">diffusion-based</span> alignment.</b> Previous methods align skeleton and text features in separate latent spaces; TDSM denoises the skeleton feature under the text prompt and, with the TD loss, separates correct and wrong labels in one unified latent space.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-4" role="tabpanel" aria-labelledby="fig-t4" hidden>
+            <a class="figure-media zoom" href="static/images/timestep_full.jpg" data-title="Effect of the inference timestep">
+              <img src="static/images/timestep_2400.jpg" srcset="static/images/timestep_1200.jpg 1200w, static/images/timestep_1600.jpg 1600w, static/images/timestep_2000.jpg 2000w, static/images/timestep_2400.jpg 2400w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2400" height="563" loading="lazy" decoding="async"
+                   alt="Four line plots of top-1 accuracy against the test timestep from 5 to 45, for NTU-60 55/5, NTU-60 48/12, NTU-120 110/10 and NTU-120 96/24. The red line (TDSM, mean of 10 noise draws) with an orange band (their range) lies well above the dashed blue line of the second-best method (SA-DVAE, STAR, PURLS, PURLS) on three splits; on NTU-120 110/10 it rises above PURLS from about t_test 10 on and peaks near 25.">
+            </a>
+            <figcaption><b>Effect of the inference timestep <i>t</i><sub>test</sub>.</b> Top-1 accuracy on four NTU splits: red, the mean of TDSM over 10 Gaussian noise draws; orange, their range; dashed blue, the second-best method. All experiments use <i>t</i><sub>test</sub>&nbsp;=&nbsp;25.</figcaption>
+          </figure>
+          <figure class="figure slide" id="fig-5" role="tabpanel" aria-labelledby="fig-t5" hidden>
+            <a class="figure-media zoom" href="static/images/predict_zx_full.jpg" data-title="Predicting zₓ instead of the noise">
+              <img src="static/images/predict_zx_2400.jpg" srcset="static/images/predict_zx_1200.jpg 1200w, static/images/predict_zx_1600.jpg 1600w, static/images/predict_zx_2000.jpg 2000w, static/images/predict_zx_2400.jpg 2400w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2400" height="513" loading="lazy" decoding="async"
+                   alt="The same four accuracy-versus-timestep plots for a TDSM variant that predicts z_x instead of the noise: the orange bands are much narrower, and the red line stays above the dashed blue second-best line on every split.">
+            </a>
+            <figcaption><b>Predicting <span class="bm">z</span><sub><i>x</i></sub> instead of the noise.</b> The same plots for a variant that predicts <span class="bm">z</span><sub><i>x</i></sub>: the <span class="nowrap">noise-induced</span> fluctuation shrinks by 5&times; with a minimal drop in accuracy, still at the <span class="nowrap">state-of-the-art</span> level.</figcaption>
+          </figure>
+          <figure class="figure slide slide--content" id="fig-6" role="tabpanel" aria-labelledby="fig-t6" hidden>
+            <a class="figure-media zoom" href="static/images/confusion_ntu_full.jpg" data-title="Confusion matrix and per-class accuracy, NTU-60 55/5 split 2">
+              <img src="static/images/confusion_ntu_2000.jpg" srcset="static/images/confusion_ntu_1200.jpg 1200w, static/images/confusion_ntu_1600.jpg 1600w, static/images/confusion_ntu_2000.jpg 2000w"
+                   sizes="(min-width: 1144px) 1080px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="919" loading="lazy" decoding="async"
+                   alt="Left: a 5 by 5 confusion matrix for the unseen classes wear a shoe, put on a hat/cap, kicking something, nausea or vomiting condition and kicking other person, with a strong diagonal (256, 266, 265, 246 and 255 correct). Right: per-class accuracy bars, all about 0.9 or higher.">
+            </a>
+            <figcaption><b>NTU-60 55/5, split 2.</b> Confusion matrix and <span class="nowrap">per-class</span> top-1 accuracy. The five unseen actions have clear, distinct motion patterns, and TDSM reaches 96.06% on this split (<a href="#table-10">Table&nbsp;10</a>).</figcaption>
+          </figure>
+          <figure class="figure slide slide--content" id="fig-7" role="tabpanel" aria-labelledby="fig-t7" hidden>
+            <a class="figure-media zoom" href="static/images/confusion_pku_full.jpg" data-title="Confusion matrix and per-class accuracy, PKU-MMD 46/5 split 1">
+              <img src="static/images/confusion_pku_2000.jpg" srcset="static/images/confusion_pku_1200.jpg 1200w, static/images/confusion_pku_1600.jpg 1600w, static/images/confusion_pku_2000.jpg 2000w"
+                   sizes="(min-width: 1144px) 1080px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="921" loading="lazy" decoding="async"
+                   alt="Left: a 5 by 5 confusion matrix for falling, make a phone call/answer phone, put on a hat/cap, taking a selfie and wear on glasses; only falling (101 of 108) and put on a hat/cap are mostly correct, while phone call and selfie are confused with each other and with the other hand actions. Right: per-class accuracy bars, high for falling, about 0.75 for the hat, about 0.55 for glasses and below 0.15 for phone call and selfie.">
+            </a>
+            <figcaption><b>PKU-MMD 46/5, split 1.</b> Confusion matrix and <span class="nowrap">per-class</span> accuracy. Except for falling, the unseen actions share upward hand movements with objects that the skeleton does not show, and accuracy drops to 57.40%.</figcaption>
+          </figure>
+          <figure class="figure slide slide--content" id="fig-3" role="tabpanel" aria-labelledby="fig-t3" hidden>
+            <a class="figure-media zoom" href="static/images/inference_full.jpg" data-title="Inference framework of TDSM">
+              <img src="static/images/inference_2000.jpg" srcset="static/images/inference_1200.jpg 1200w, static/images/inference_1600.jpg 1600w, static/images/inference_2000.jpg 2000w"
+                   sizes="(min-width: 1144px) 1080px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="1081" loading="lazy" decoding="async"
+                   alt="An unseen skeleton sequence X^u is encoded by the frozen skeleton encoder into z_x^u, and fixed noise epsilon_test is added at timestep t_test. Unseen labels such as Drop, Sit Down and Reading are turned into prompts and encoded by the frozen text encoder into global and local text features for each candidate. The frozen Diffusion Transformer predicts one noise per candidate, and the predicted label is the argmin over candidates of the distance between epsilon_test and the predicted noise.">
+            </a>
+            <figcaption><b>Inference.</b> Each candidate label&rsquo;s prompt conditions one denoising step of the unseen skeleton feature at a fixed <i>t</i><sub>test</sub>; the label whose predicted noise is closest to <span class="bm"><i>&#1013;</i></span><sub>test</sub> is the prediction.</figcaption>
+          </figure>
+          <figure class="figure slide slide--content" id="fig-8" role="tabpanel" aria-labelledby="fig-t8" hidden>
+            <a class="figure-media zoom" href="static/images/crossdit_full.jpg" data-title="CrossDiT block">
+              <img src="static/images/crossdit_2000.jpg" srcset="static/images/crossdit_1200.jpg 1200w, static/images/crossdit_1600.jpg 1600w, static/images/crossdit_2000.jpg 2000w"
+                   sizes="(min-width: 1144px) 1080px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="858" loading="lazy" decoding="async"
+                   alt="The CrossDiT block. Skeleton tokens and local text tokens each pass through layer norm, scale-shift modulation and a linear layer; they are concatenated token-wise, pass through multi-head self-attention, split again, scaled and added to the residual, then pass through layer norm, scale-shift, a feed-forward layer and a scale with a second residual. The modulation parameters alpha, beta and gamma come from the global text feature with the timestep.">
+            </a>
+            <figcaption><b>CrossDiT block.</b> Skeleton and local text tokens are modulated by the global text feature and the timestep, then attend to each other in one <span class="nowrap">multi-head</span> <span class="nowrap">self-attention</span>.</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
 
+  <!-- Quantitative results: Tables 2, 7-9 in tabs; ablations and appendix tables in disclosures -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead">Best on <span class="nowrap">NTU-60</span>, <span class="nowrap">NTU-120</span> and <span class="nowrap">PKU-MMD</span> under the SMIE benchmark, and on all eight <span class="nowrap">Kinetics-200/400</span> splits with a single text prompt per action.</p>
+      </header>
 
-<!-- Overview of TDSM. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Overview of TDSM</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/train.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <b>Training framework of our TDSM for zero-shot skeleton-based action recognition.</b> During
-                        training, the skeleton and its GT text prompt are treated as positive pairs to enhance
-                        accurate denoising, while the skeleton and wrong text prompts are treated as negative pairs
-                        to suppress denoising. This process is driven by the proposed TD loss, which
-                        operates within the reverse diffusion process to maximize the noise prediction discrepancy
-                        between positive and negative pairs, thereby improving the model's discriminative alignment
-                        between skeleton features and text prompts.
-                    </div>
-            </div>
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="true">SMIE benchmark<small>Table 2</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t7" aria-controls="panel-t7" aria-selected="false">Kinetics<small>Tables 7&ndash;8</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t9" aria-controls="panel-t9" aria-selected="false">Text + RGB<small>Table 9</small></button>
+          </div>
         </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/inference.PNG" style="width: 70%; height: auto;"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Inference framework of our TDSM for zero-shot skeleton-based action recognition.</b>
-                            During inference, the model evaluates all candidate text prompts for a given unseen skeleton
-                            sequence by comparing their predicted noises with a fixed Gaussian noise, and selects the
-                            candidate that best denoises as the predicted label.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1">
+<figure class="table-figure" id="table-2" data-src-table="tab-smie">
+<figcaption><span class="fig-label">Table 2.</span> Top-1 accuracy results of various ZSAR methods evaluated on the NTU-60, NTU-120, and PKU-MMD datasets under the SMIE benchmark. The reported values are the average performance across three splits.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (scrolls horizontally)">
+<table class="results" id="tab-smie-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start"><span>NTU-60</span></th><th class="col-group grp-start"><span>NTU-120</span></th><th class="col-group grp-start"><span>PKU-MMD</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric grp-start">110/10</th><th class="metric grp-start">46/5</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">ReViSE</td><td class="num grp-start">60.94</td><td class="num grp-start">44.90</td><td class="num grp-start">59.34</td></tr>
+<tr><td class="col-method">JPoSE</td><td class="num grp-start">59.44</td><td class="num grp-start">46.69</td><td class="num grp-start">57.17</td></tr>
+<tr><td class="col-method">CADA-VAE</td><td class="num grp-start">61.84</td><td class="num grp-start">45.15</td><td class="num grp-start">60.74</td></tr>
+<tr><td class="col-method">SynSE</td><td class="num grp-start">64.19</td><td class="num grp-start">47.28</td><td class="num grp-start">53.85</td></tr>
+<tr><td class="col-method">SMIE</td><td class="num grp-start">65.08</td><td class="num grp-start">46.40</td><td class="num grp-start">60.83</td></tr>
+<tr><td class="col-method">SA-DVAE</td><td class="num grp-start second">84.20</td><td class="num grp-start second">50.67</td><td class="num grp-start">66.54</td></tr>
+<tr><td class="col-method">STAR</td><td class="num grp-start">77.50</td><td class="na grp-start">–</td><td class="num grp-start second">70.60</td></tr>
+<tr class="ours"><td class="col-method">TDSM (Ours)</td><td class="num grp-start best">88.88</td><td class="num grp-start best">69.47</td><td class="num grp-start best">70.76</td></tr>
+</tbody>
+</table>
+</div></div>
+<p class="table-note">Average of three splits per dataset (each split: <a href="#table-10">Table&nbsp;10</a>), with an <span class="nowrap">ST-GCN</span> skeleton encoder, as in prior work.</p>
+</figure>
         </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t7" aria-labelledby="tab-t7" tabindex="-1" hidden>
+          <div class="table-grid">
+<figure class="table-figure" id="table-7" data-src-table="tab-kinetics200">
+<figcaption><span class="fig-label">Table 7.</span> Top-1 accuracy results of TDSM evaluated on the Kinetics-200 dataset under the PURLS benchmark.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 7 (scrolls horizontally)">
+<table class="results" id="tab-kinetics200-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="4"><span>Kinetics-200</span></th></tr>
+<tr><th class="metric grp-start">180/20</th><th class="metric">160/40</th><th class="metric">140/60</th><th class="metric">120/80</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">ReViSE</td><td class="num grp-start">24.95</td><td class="num">13.28</td><td class="num">8.14</td><td class="num">6.23</td></tr>
+<tr><td class="col-method">DeViSE</td><td class="num grp-start">22.22</td><td class="num">12.32</td><td class="num">7.97</td><td class="num">5.65</td></tr>
+<tr><td class="col-method">PURLS (1 text)</td><td class="num grp-start">25.96</td><td class="num">15.85</td><td class="num">10.23</td><td class="num">7.77</td></tr>
+<tr><td class="col-method">PURLS (7 text)</td><td class="num grp-start">32.22</td><td class="num">22.56</td><td class="num">12.01</td><td class="num">11.75</td></tr>
+</tbody>
+<tbody>
+<tr class="ours"><td class="col-method">TDSM (1 text)</td><td class="num grp-start best">38.18</td><td class="num best">24.43</td><td class="num best">15.28</td><td class="num best">13.09</td></tr>
+</tbody>
+</table>
+</div></div>
+
+</figure>
+
+<figure class="table-figure" id="table-8" data-src-table="tab-kinetics400">
+<figcaption><span class="fig-label">Table 8.</span> Top-1 accuracy results of TDSM evaluated on the Kinetics-400 dataset under the PURLS benchmark.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8 (scrolls horizontally)">
+<table class="results" id="tab-kinetics400-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="4"><span>Kinetics-400</span></th></tr>
+<tr><th class="metric grp-start">360/40</th><th class="metric">320/80</th><th class="metric">300/100</th><th class="metric">280/120</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">ReViSE</td><td class="num grp-start">20.84</td><td class="num">11.82</td><td class="num">9.49</td><td class="num">8.23</td></tr>
+<tr><td class="col-method">DeViSE</td><td class="num grp-start">18.37</td><td class="num">10.23</td><td class="num">9.47</td><td class="num">8.34</td></tr>
+<tr><td class="col-method">PURLS (1 text)</td><td class="num grp-start">22.50</td><td class="num">15.08</td><td class="num">11.44</td><td class="num">11.03</td></tr>
+<tr><td class="col-method">PURLS (7 text)</td><td class="num grp-start">34.51</td><td class="num">24.32</td><td class="num">16.99</td><td class="num">14.28</td></tr>
+</tbody>
+<tbody>
+<tr class="ours"><td class="col-method">TDSM (1 text)</td><td class="num grp-start best">38.92</td><td class="num best">26.24</td><td class="num best">18.45</td><td class="num best">16.10</td></tr>
+</tbody>
+</table>
+</div></div>
+
+</figure>
+          </div>
+          <p class="table-note results-note">TDSM uses a single text prompt per action; PURLS is shown with one and with seven text prompts.</p>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t9" aria-labelledby="tab-t9" tabindex="-1" hidden>
+<figure class="table-figure" id="table-9" data-src-table="tab-bszsl">
+<figcaption><span class="fig-label">Table 9.</span> Top-1 accuracy results of BSZSL evaluated on the SynSE and PURLS benchmarks for the NTU-60 and NTU-120 datasets.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 9 (scrolls horizontally)">
+<table class="results" id="tab-bszsl-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="2"><span>Modality</span></th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th><th class="col-group grp-start" colspan="2"><span>NTU-120</span></th></tr>
+<tr><th class="metric grp-start">Text</th><th class="metric">RGB</th><th class="metric grp-start">55/5</th><th class="metric">48/12</th><th class="metric grp-start">110/10</th><th class="metric">96/24</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">BSZSL</td><td class="mark-ok grp-start">✓</td><td class="mark-ok">✓</td><td class="num grp-start">83.04</td><td class="num">52.96</td><td class="num grp-start best">77.69</td><td class="num">56.12</td></tr>
+<tr class="ours"><td class="col-method">TDSM</td><td class="mark-ok grp-start">✓</td><td class="mark-no"></td><td class="num grp-start best">86.49</td><td class="num best">56.03</td><td class="num grp-start">74.15</td><td class="num best">65.06</td></tr>
+</tbody>
+</table>
+</div></div>
+<p class="table-note">BSZSL uses RGB video in addition to text; without RGB input, TDSM is better on three of the four splits.</p>
+</figure>
+        </div>
+      </div>
+
+      <div class="disclosures">
+      <details class="disclosure" id="ablations" data-animate>
+        <summary>Ablations <span class="summary-sub">Tables 3&ndash;6</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+            <div class="table-grid">
+<figure class="table-figure" id="table-3" data-src-table="tab-loss">
+<figcaption><span class="fig-label">Table 3.</span> Ablation study on loss function configurations. The results compare models trained with only the diffusion loss <i>ℒ</i><sub>diff</sub>, only the triplet diffusion loss <i>ℒ</i><sub>TD</sub>, and their combination.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (scrolls horizontally)">
+<table class="results results--checks" id="tab-loss-t0">
+<thead>
+<tr><th class="col-check" rowspan="2"><i>ℒ</i><sub>diff</sub></th><th class="col-check" rowspan="2"><i>ℒ</i><sub>TD</sub></th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th><th class="col-group grp-start" colspan="2"><span>NTU-120</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric">48/12</th><th class="metric grp-start">110/10</th><th class="metric">96/24</th></tr>
+</thead>
+<tbody>
+<tr><td class="mark-ok">✓</td><td class="mark-no"></td><td class="num grp-start">79.87</td><td class="num">53.03</td><td class="num grp-start">72.44</td><td class="num">57.65</td></tr>
+<tr><td class="mark-no"></td><td class="mark-ok">✓</td><td class="num grp-start">80.90</td><td class="num">54.36</td><td class="num grp-start">70.73</td><td class="num">60.95</td></tr>
+<tr class="ours"><td class="mark-ok">✓</td><td class="mark-ok">✓</td><td class="num grp-start best">86.49</td><td class="num best">56.03</td><td class="num grp-start best">74.15</td><td class="num best">65.06</td></tr>
+</tbody>
+</table>
+</div></div>
+
+</figure>
+
+<figure class="table-figure" id="table-4" data-src-table="tab-text">
+<figcaption><span class="fig-label">Table 4.</span> Ablation study on text feature types. The results compare models trained with only <span class="bm">z</span><sub><i>g</i></sub>, only <span class="bm">z</span><sub><i>l</i></sub>, and their combination.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (scrolls horizontally)">
+<table class="results results--checks" id="tab-text-t0">
+<thead>
+<tr><th class="col-check" rowspan="2">Global<br/><span class="bm">z</span><sub><i>g</i></sub></th><th class="col-check" rowspan="2">Local<br/><span class="bm">z</span><sub><i>l</i></sub></th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th><th class="col-group grp-start" colspan="2"><span>NTU-120</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric">48/12</th><th class="metric grp-start">110/10</th><th class="metric">96/24</th></tr>
+</thead>
+<tbody>
+<tr><td class="mark-ok">✓</td><td class="mark-no"></td><td class="num grp-start">83.41</td><td class="num">51.50</td><td class="num grp-start">70.14</td><td class="num">61.90</td></tr>
+<tr><td class="mark-no"></td><td class="mark-ok">✓</td><td class="num grp-start">83.33</td><td class="num">52.63</td><td class="num grp-start">69.95</td><td class="num">62.10</td></tr>
+<tr class="ours"><td class="mark-ok">✓</td><td class="mark-ok">✓</td><td class="num grp-start best">86.49</td><td class="num best">56.03</td><td class="num grp-start best">74.15</td><td class="num best">65.06</td></tr>
+</tbody>
+</table>
+</div></div>
+
+</figure>
+            </div>
+            <div class="table-grid">
+<figure class="table-figure" id="table-5" data-src-table="tab-timestep">
+<figcaption><span class="fig-label">Table 5.</span> Ablation study on the impact of total timesteps <i>T</i> in the training of the diffusion process.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 5 (scrolls horizontally)">
+<table class="results" id="tab-timestep-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Total <i>T</i></th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th><th class="col-group grp-start" colspan="2"><span>NTU-120</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric">48/12</th><th class="metric grp-start">110/10</th><th class="metric">96/24</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">1</td><td class="num grp-start">85.03</td><td class="num">44.10</td><td class="num grp-start">69.91</td><td class="num">60.35</td></tr>
+<tr><td class="col-method">10</td><td class="num grp-start">84.51</td><td class="num">50.89</td><td class="num grp-start">69.97</td><td class="num">62.04</td></tr>
+<tr class="ours"><td class="col-method">50</td><td class="num grp-start best">86.49</td><td class="num best">56.03</td><td class="num grp-start best">74.15</td><td class="num best">65.06</td></tr>
+<tr><td class="col-method">100</td><td class="num grp-start">83.48</td><td class="num">56.27</td><td class="num grp-start">71.05</td><td class="num">64.57</td></tr>
+<tr><td class="col-method">500</td><td class="num grp-start">81.34</td><td class="num">53.43</td><td class="num grp-start">71.93</td><td class="num">60.81</td></tr>
+</tbody>
+</table>
+</div></div>
+
+</figure>
+
+<figure class="table-figure" id="table-6" data-src-table="tab-fixed">
+<figcaption><span class="fig-label">Table 6.</span> Ablation study on the effect of noise <span class="bm"><i>ϵ</i></span> during training.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 6 (scrolls horizontally)">
+<table class="results" id="tab-fixed-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Gaussian<br/>noise <span class="bm"><i>ϵ</i></span></th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th><th class="col-group grp-start" colspan="2"><span>NTU-120</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric">48/12</th><th class="metric grp-start">110/10</th><th class="metric">96/24</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Fixed</td><td class="num grp-start">76.40</td><td class="num">44.25</td><td class="num grp-start">64.01</td><td class="num">52.21</td></tr>
+<tr class="ours"><td class="col-method">Random</td><td class="num grp-start best">86.49</td><td class="num best">56.03</td><td class="num grp-start best">74.15</td><td class="num best">65.06</td></tr>
+</tbody>
+</table>
+</div></div>
+
+</figure>
+            </div>
+            <p class="table-note">The tinted row is the final TDSM setting in each ablation: both losses (&lambda;&nbsp;=&nbsp;&tau;&nbsp;=&nbsp;1.0), global and local text features, <i>T</i>&nbsp;=&nbsp;50 and a new random noise at every training step.</p>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="per-split" data-animate>
+        <summary>Backbone and SMIE splits <span class="summary-sub">Tables 12 and 10</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+            <div class="table-grid">
+<figure class="table-figure" id="table-12" data-src-table="tab-unet">
+<figcaption><span class="fig-label">Table 12.</span> Diffusion backbone: U-Net versus DiT (TDSM).</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 12 (scrolls horizontally)">
+<table class="results" id="tab-unet-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Backbone</th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th><th class="col-group grp-start" colspan="2"><span>NTU-120</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric">48/12</th><th class="metric grp-start">110/10</th><th class="metric">96/24</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">U-Net</td><td class="num grp-start">82.40</td><td class="num">51.12</td><td class="num grp-start">70.03</td><td class="num">59.77</td></tr>
+<tr class="ours"><td class="col-method">DiT (TDSM)</td><td class="num grp-start best">86.49</td><td class="num best">56.03</td><td class="num grp-start best">74.15</td><td class="num best">65.06</td></tr>
+</tbody>
+</table>
+</div></div>
+<p class="table-note">The same framework with a <span class="nowrap">U-Net</span> denoiser instead of the DiT is lower on every split.</p>
+</figure>
+
+<figure class="table-figure" id="table-10" data-src-table="tab-smie-detail">
+<figcaption><span class="fig-label">Table 10.</span> Top-1 accuracy results of our TDSM evaluated on the NTU-60, NTU-120, and PKU-MMD datasets under the SMIE benchmark.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>Top-1 accuracy (%)</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 10 (scrolls horizontally)">
+<table class="results" id="tab-smie-detail-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">TDSM (Ours)</th><th class="col-group grp-start"><span>NTU-60</span></th><th class="col-group grp-start"><span>NTU-120</span></th><th class="col-group grp-start"><span>PKU-MMD</span></th></tr>
+<tr><th class="metric grp-start">55/5</th><th class="metric grp-start">110/10</th><th class="metric grp-start">46/5</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Split 1</td><td class="num grp-start">87.97</td><td class="num grp-start">74.45</td><td class="num grp-start">57.40 <a class="fig-ref" href="#fig-7">(Fig. 7)</a></td></tr>
+<tr><td class="col-method">Split 2</td><td class="num grp-start">96.06 <a class="fig-ref" href="#fig-6">(Fig. 6)</a></td><td class="num grp-start">63.91</td><td class="num grp-start">76.92</td></tr>
+<tr><td class="col-method">Split 3</td><td class="num grp-start">82.60</td><td class="num grp-start">70.04</td><td class="num grp-start">77.97</td></tr>
+</tbody>
+<tbody>
+<tr class="total"><td class="col-method">Average</td><td class="num grp-start">88.88</td><td class="num grp-start">69.47</td><td class="num grp-start">70.76</td></tr>
+</tbody>
+</table>
+</div></div>
+<p class="table-note">The unseen actions of <span class="nowrap">NTU-60</span> split&nbsp;2 have distinct motion patterns (<a href="#fig-6">Fig.&nbsp;6</a>); four of the five in <span class="nowrap">PKU-MMD</span> split&nbsp;1 share upward hand movements (<a href="#fig-7">Fig.&nbsp;7</a>).</p>
+</figure>
+            </div>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="paradigms" data-animate>
+        <summary>Comparison with previous ZSAR methods <span class="summary-sub">Table 11</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" id="table-11" data-src-table="tab-novelty">
+<figcaption><span class="fig-label">Table 11.</span> Comparison of our TDSM with existing ZSAR methods.</figcaption>
+<div class="table-meta table-meta--hint"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 11 (scrolls horizontally)">
+<table class="results results--text results--wrap" id="tab-novelty-t0">
+<thead>
+<tr><th class="col-method">Method</th><th class="col-text">Characteristics</th><th class="col-text">Limitations</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">VAE-based</td><td class="col-text">Reconstructs skeleton-text feature pairs via <b>cross-reconstruction,</b> recovering skeleton features from text and vice versa</td><td class="col-text" rowspan="2">Modality gap due to direct alignment</td></tr>
+<tr><td class="col-method">CL-based</td><td class="col-text">Aligns skeleton and text features by <b>minimizing feature distance</b> through contrastive learning</td></tr>
+</tbody>
+<tbody>
+<tr class="ours"><td class="col-method">TDSM (Ours)</td><td class="col-text">Denoises skeleton latents (i.e., estimates added noise in the forward diffusion) using <b>reverse diffusion</b>, conditioned on text embeddings, to naturally align both modalities in a <b>unified latent space</b></td><td class="col-text">Noise-sensitive performance</td></tr>
+</tbody>
+</table>
+</div></div>
+
+</figure>
+        </div></div>
+      </details>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- Performance Evaluation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Performance Evaluation</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/table1.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Evaluation on SynSE and PURLS benchmarks.</b> Top-1 accuracy of zero-shot skeleton-based
-                            action recognition methods. Each split is
-                            denoted as X/Y, where X represents the number of seen classes and Y the number of unseen
-                            classes.
-                        </p>
-                    </div>
-            </div>
-        </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/table2.PNG" style="width: 60%; height: auto;"><br>
-                    <div class="content has-text-justified">
-                        <p>
-                            <b>Evaluation on SMIE benchmark.</b> Top-1 accuracy of zero-shot skeleton-based action
-                            recognition methods. Each split is
-                            denoted as X/Y, where X represents the number of seen classes and Y the number of unseen
-                            classes.
-                        </p>
-                    </div>
-            </div>
-        </div>
+  <!-- Method (compact) -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">The right label denoises best</h2>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/train_full.jpg" data-title="Training framework of TDSM">
+          <img src="static/images/train_2000.jpg"
+               srcset="static/images/train_1200.jpg 1200w, static/images/train_1600.jpg 1600w, static/images/train_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="2000" height="883" loading="lazy" decoding="async"
+               alt="TDSM training. A seen skeleton sequence labelled Throw is encoded by a frozen skeleton encoder; noise epsilon is added at a random timestep t to give the noisy feature z_x,t. The ground-truth label Throw and a wrong label Pickup are turned into prompts and encoded by a frozen text encoder into global and local text features. A Diffusion Transformer with z_x, t, z_g and z_l embeddings, CrossDiT blocks, layer norm and a linear layer predicts the noise twice with shared weights: epsilon-hat_p for the positive prompt and epsilon-hat_n for the negative one. The diffusion loss is the distance between epsilon and epsilon-hat_p; the triplet diffusion loss is max of that distance minus the distance to epsilon-hat_n plus tau, and 0; the total loss is L_diff plus lambda L_TD.">
+        </a>
+        <figcaption><b>Training framework of TDSM.</b> The <span class="nowrap">ground-truth</span> prompt and a <span class="nowrap">wrong-label</span> prompt condition the same Diffusion Transformer; <i>&#8466;</i><sub>diff</sub> and <i>&#8466;</i><sub>TD</sub> reward accurate denoising for the correct pair only.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">01</span><b>Text-conditioned denoising.</b> Frozen skeleton (<span class="nowrap">Shift-GCN</span> or <span class="nowrap">ST-GCN</span>) and CLIP text encoders give the features; a Diffusion Transformer denoises the noisy skeleton feature conditioned on global and local text features, fusing both modalities in one latent space.</li>
+        <li><span class="kp-num">02</span><b>Triplet diffusion loss.</b> Next to <i>&#8466;</i><sub>diff</sub>, <span class="fx"><i>&#8466;</i><sub>TD</sub> = max(&Vert;<span class="bm"><i>&#1013;</i></span>&nbsp;&minus;&nbsp;<span class="bm"><i>&#1013;&#770;</i></span><sub><i>p</i></sub>&Vert;<sub>2</sub> &minus;</span> <span class="fx">&Vert;<span class="bm"><i>&#1013;</i></span>&nbsp;&minus;&nbsp;<span class="bm"><i>&#1013;&#770;</i></span><sub><i>n</i></sub>&Vert;<sub>2</sub> + <i>&tau;</i>,&nbsp;0)</span> rewards accurate denoising with the <span class="nowrap">ground-truth</span> prompt and suppresses it with a wrong one.</li>
+        <li><span class="kp-num">03</span><b>One-step inference.</b> Each candidate label&rsquo;s prompt conditions a single denoising step at a fixed <i>t</i><sub>test</sub>&nbsp;=&nbsp;25 and fixed noise <span class="bm"><i>&#1013;</i></span><sub>test</sub>; the label whose predicted noise lies closest to <span class="bm"><i>&#1013;</i></span><sub>test</sub> is the prediction.</li>
+      </ol>
     </div>
-</section>
+  </section>
 
-<!-- Ablation Studies. -->
-<head>
-    <script type="text/javascript" async
-            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-    </script>
-</head>
-<body>
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Ablation Studies</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/ablation3.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Left.</b> Effect of loss function design. <br>
-                            <b>Right.</b> Impact of total timesteps \( T \).
-                        </p>
-                    </div>
-            </div>
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
         </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/graph.PNG"><br>
-                    <div class="content has-text-justified">
-                        <p>
-                            <b>Impact of timestep \( t_{\text{test}} \) and noise \( \epsilon_{\text{test}} \) in
-                                inference.</b> Our TDSM shows consistently outperforming the state-of-the-art methods regardless of noise levels.
-                        </p>
-                    </div>
-            </div>
-        </div>
-    </div>
-</section>
-</body>
-
-<section class="section" id="BibTeX">
-    <div class="container is-max-desktop">
-        <h2 class="title">BibTeX</h2>
-        <pre><code>@InProceedings{Do_2025_ICCV,
-    author    = {Do, Jeonghyeok and Kim, Munchurl},
-    title     = {Bridging the Skeleton-Text Modality Gap: Diffusion-Powered Modality Alignment for Zero-shot Skeleton-based Action Recognition},
-    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-    month     = {October},
-    year      = {2025},
-    pages     = {12757-12768}
+<pre><code id="bibtex-code">@InProceedings{Do_2025_ICCV,
+  author={Do, Jeonghyeok and Kim, Munchurl},
+  title={Bridging the Skeleton-Text Modality Gap: Diffusion-Powered Modality Alignment for Zero-shot Skeleton-based Action Recognition},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  month={October},
+  year={2025},
+  pages={12757-12768}
 }</code></pre>
+      </div>
     </div>
-</section>
+  </section>
+
+</main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: Skeleton &amp; motion">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">Skeleton &amp; motion</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/SkateFormer_site/"><span class="lineage-name">SkateFormer</span><span class="lineage-venue">ECCV 2024</span></a></li>
+      <li class="lineage-stage"><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">TDSM</span><span class="lineage-venue">ICCV 2025</span></span></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/SLiM_site/"><span class="lineage-name">SLiM</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/SOfA_site/"><span class="lineage-name">SOfA</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/MotionMaestro_site/"><span class="lineage-name">MotionMaestro</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
 
 <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <a target="_blank" rel="noopener noreferrer" class="icon-link"
-               href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_Bridging_the_Skeleton-Text_Modality_Gap_Diffusion-Powered_Modality_Alignment_for_Zero-shot_ICCV_2025_paper.pdf">
-                <i class="fas fa-file-pdf"></i>
-            </a>
-            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab"
-               class="external-link" disabled>
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <div class="columns is-centered">
-            <div class="column is-8">
-                <div class="content">
-                    <p>
-                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
-                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> that
-                        kindly open sourced the template of this website.
-                        Please visit our <a target="_blank" rel="noopener noreferrer"
-                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
-                        researches.
-                    </p>
-                </div>
-            </div>
-            <a href="https://mapmyvisitors.com/web/1bwmk" title="Visit tracker"><img
-                    src="https://mapmyvisitors.com/map.png?d=IUq-qeoK8htQ5yBMPYD3ANBQGDxRWPSR6_LFXNUDPk4&cl=ffffff"/></a>
-        </div>
-    </div>
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.png" width="481" height="84" alt="" loading="lazy"><span class="wordmark">TD<span>SM</span></span></span>&nbsp;&middot; ICCV 2025&nbsp;&middot; Korea Advanced Institute of Science and Technology (KAIST)</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://openaccess.thecvf.com/content/ICCV2025/papers/Do_Bridging_the_Skeleton-Text_Modality_Gap_Diffusion-Powered_Modality_Alignment_for_Zero-shot_ICCV_2025_paper.pdf" target="_blank" rel="noopener">Paper</a>
+      <a href="https://arxiv.org/abs/2411.10745" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/KAIST-VICLab/TDSM" target="_blank" rel="noopener">Code</a>
+      <a href="mailto:ehwjdgur0913@kaist.ac.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
 </footer>
 
 </body>

@@ -1,44 +1,48 @@
-# SOfA — project page
+# SOfA project page
 
-Source for <https://kaist-viclab.github.io/SOfA_site/>, the project page for
-**"One for All: Generalist Foundation Model for Cross-Sensor Skeleton Representation Learning."**
+Source of the project page for **One for All: Generalist Foundation Model for Cross-Sensor Skeleton Representation Learning**
+(SOfA, Skeleton One for All; Jeonghyeok Do, Yun Chen, Munchurl Kim; KAIST; arXiv preprint, 2026).
 
-## Deploy
+- Live page: https://kaist-viclab.github.io/SOfA_site/
+- Paper: https://arxiv.org/abs/2609.07078
+- Code repository: https://github.com/KAIST-VICLab/SOfA
 
-This page lives as the `SOfA_site/` directory inside
-[`KAIST-VICLab/kaist-viclab.github.io`](https://github.com/KAIST-VICLab/kaist-viclab.github.io),
-the organization's Pages site — the same arrangement as `SLiM_site/` and the other project pages
-there. Publishing is just a commit to that repository's `main` branch:
+The page is plain HTML, CSS and JavaScript with no build step and no dependencies other than Google Fonts.
+GitHub Pages serves it from the repository root (`.nojekyll` turns off Jekyll processing).
+
+## Preview locally
+
+Serve the folder over HTTP rather than opening `index.html` from disk, so that every path resolves as it does on GitHub Pages:
 
 ```bash
-git clone https://github.com/KAIST-VICLab/kaist-viclab.github.io.git
-cp -r SOfA_site kaist-viclab.github.io/
-cd kaist-viclab.github.io
-git add SOfA_site && git commit -m "Update SOfA project page" && git push
+cd SOfA_site
+python3 -m http.server 8000
+# then open localhost:8000 in a browser
 ```
-
-It is served at <https://kaist-viclab.github.io/SOfA_site/> within a minute or two of the push.
 
 ## Layout
 
 ```
-index.html              the whole page — content, tables and captions live here
-static/css/sofa.css     paper-style tables (booktabs rules, yellow!15 highlight rows) + KPI cards
-static/css/index.css    Nerfies base styles
-static/image/           logo variants and figures exported from the paper PDFs
+index.html                the page (results first: headline figure, paper figures, quantitative results, then a compact method overview)
+static/css/family.css     styles shared with the GeoSET, GeoCR and MotionMaestro pages (the same file on every page of the series)
+static/js/family.js       scripts shared with those pages: navigation, abstract toggle, pending links, BibTeX copy,
+                          image lightbox, tabs, table scroll cues
+static/css/style.css      SOfA brand colours (top of the file) and the figure strip, table pairs and SOfA table rows
+static/js/main.js         paper-figure carousel (thumbnail strip with previous / next), strip edge fades, thumbnail loading
+static/images/            figures (web sizes + *_full.jpg for the lightbox, *_thumb.jpg for the strip), og.jpg (social preview)
+                          and the logo files
+static/paper/SOfA.pdf     the paper
 ```
 
-Figures are cropped PNG exports of the paper's `figures/*.pdf` and `figures_supple/*.pdf`.
-`datasets_2.png` and `datasets_3.png` are additional dataset visualizations that are exported
-but not currently placed in `index.html`.
+## Logo
 
-## Updating a result
+The SOfA logo is included: `static/images/logo.webp` is the hero title (the sofa mark and the "SOfA" wordmark of the
+original stacked logo, set side by side), `icon.png` is the navigation and footer mark, and `favicon-32.png`,
+`favicon-64.png` and `apple-touch-icon.png` are the browser and home-screen icons. The page title and headings use the
+typeface of the series, Outfit (loaded from Google Fonts), and the logo's colours (ink `#1C2738`, red `#CD3719`,
+green `#349028`).
 
-All numbers are native HTML tables in `index.html` — no images to re-render. Bold marks the best
-result (`<span class="best">`) and underline the second best (`<span class="second">`), matching
-the paper's convention. Rows for our method carry `class="ours"` for the yellow highlight.
+## Links
 
-## Credit
-
-Template adapted from [Nerfies](https://github.com/nerfies/nerfies.github.io), following
-[SLiM](https://kaist-viclab.github.io/SLiM_site/).
+The Paper button opens `static/paper/SOfA.pdf`; the arXiv button, the footer's arXiv link and the BibTeX entry use
+arXiv:2609.07078; the Code button links to https://github.com/KAIST-VICLab/SOfA.

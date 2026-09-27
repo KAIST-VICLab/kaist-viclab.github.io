@@ -1,321 +1,622 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="description"
-          content="Skeleton-based representation learning.">
-    <meta name="keywords"
-          content="Skeleton-based self-supervised learning, Decoder-free unified framework, Semantic tube masking, Skeleton-aware augmentation">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Less is More: Compact-Token Masked Feature Learning for Skeleton Representation Learning</title>
-    <style>
-    @keyframes shake {
-      0% {transform: translateX(0);}
-      10%, 90% {transform: translateX(-5px);}
-      20%, 80% {transform: translateX(5px);}
-      30%, 50%, 70% {transform: translateX(-5px);}
-      40%, 60% {transform: translateX(5px);}
-      100% {transform: translateX(0);}
-    }
-
-    #blur {
-      /* font-size: 60px; */
-      color: rgb(52,144,197);
-      filter: blur(3x);
-      -webkit-filter: blur(2.5px);
-      animation: shake 1s infinite;
-      display: inline-block;;
-      clear: none;
-    }
-    #shake {
-      /* font-size: 60px; */
-      animation: shake 1s infinite;
-      display: inline-block;;
-      clear: none;
-    }
-    </style>
-
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MQVFTG44');
-    </script>
-    <!-- End Google Tag Manager -->
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
-    <link rel="stylesheet" href="./static/css/bulma.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-    <link rel="stylesheet" href="./static/css/index.css">
-    <link rel="icon" sizes="256x256" href="./static/image/banner.png" type="image/png"/>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script defer src="./static/js/fontawesome.all.min.js"></script>
-    <script src="./static/js/bulma-carousel.min.js"></script>
-    <script src="./static/js/bulma-slider.min.js"></script>
-    <script src="./static/js/index.js"></script>
-    <script src="./static/js/video_comparison.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SLiM · Less is More: Compact-Token Masked Feature Prediction for Skeleton Representation Learning</title>
+  <meta name="description" content="SLiM (Skeleton Less is More) is a compact-token skeleton representation learning framework that unifies decoder-free masked feature prediction and contrastive learning in a shared encoder, with state-of-the-art accuracy at 7.89× lower inference computation than dense-token MAE baselines.">
+  <meta name="author" content="Jeonghyeok Do, Yun Chen, Geunhyuk Youk, Munchurl Kim">
+  <meta name="theme-color" content="#1692BA">
+  <link rel="canonical" href="https://kaist-viclab.github.io/SLiM_site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SLiM">
+  <meta property="og:title" content="SLiM · Less is More: Compact-Token Masked Feature Prediction for Skeleton Representation Learning">
+  <meta property="og:description" content="Decoder-free masked feature prediction and contrastive learning on a compact 8 × 25 token grid: state-of-the-art skeleton representations with 7.89× lower inference computation than dense-token MAE baselines. NeurIPS 2026.">
+  <meta property="og:url" content="https://kaist-viclab.github.io/SLiM_site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/SLiM_site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The SLiM logo, a skeleton riding a bird, above the paper's comparison of a dense-token coordinate-reconstruction MAE with SLiM's compact-token masked feature prediction.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SLiM · Less is More: Compact-Token Masked Feature Prediction for Skeleton Representation Learning">
+  <meta name="twitter:description" content="Decoder-free masked feature prediction and contrastive learning on a compact 8 × 25 token grid: state-of-the-art skeleton representations with 7.89× lower inference computation than dense-token MAE baselines.">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/SLiM_site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The SLiM logo, a skeleton riding a bird, above the paper's comparison of a dense-token coordinate-reconstruction MAE with SLiM's compact-token masked feature prediction.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"], a[data-soon] { pointer-events: none; cursor: default; }</style></noscript>
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
 </head>
 <body>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-        </a>
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path d="M3.5 9.5L12 4l8.5 5.5M4.5 20h15M6.5 11.5v5.5M10 11.5v5.5M14 11.5v5.5M17.5 11.5v5.5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-model" viewBox="0 0 24 24"><path d="M12 3.5l7.5 4.2v8.6L12 20.5l-7.5-4.2V7.7z"/><path d="M4.5 7.7L12 12l7.5-4.3M12 12v8.5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16M7 16.5v-4.5M12 16.5V7M17 16.5v-7.5"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="SLiM, back to top"><img src="static/images/icon.png" width="122" height="84" alt=""><span class="wordmark" aria-hidden="true">S<span>LiM</span></span></a>
+    <div class="topnav-links">
+      <a href="#tradeoff">Trade-off</a>
+      <a href="#figures">Figures</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
+    <a class="topnav-cta" href="#" data-soon><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
 </nav>
 
-<section class="hero">
-    <div class="hero-body">
-        <div class="container is-max-desktop">
-            <div class="columns is-centered">
-                <div class="column has-text-centered">
-                    <div class="title is-2 publication-title"><h1 style="display: inline; clear:none;"><img
-                            src="./static/image/logo.png" width="250", height="40"><br><br><b><font
-                            color="#1792B9">L</font>ess <font
-                            color="#1792B9">i</font>s <font
-                            color="#1792B9">M</font>ore</b>: Compact-Token Masked Feature Learning<br>for <font
-                            color="#EB5F39"><b>S</b></font>keleton Representation Learning</h1>
-                    </div>
-                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo">Jeonghyeok Do</a>&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://scholar.google.com/citations?user=vAUNfCcAAAAJ">Yun Chen</a>&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/geunhyukyouk">Geunhyuk Youk</a>&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://scholar.google.com/citations?user=bGXte_4AAAAJ">Munchurl Kim</a><sup>†</sup>
-            </span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"> <sup>†</sup>Corresponding author</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block">Korea Advanced Institute of Science and Technology (KAIST), South Korea</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </div>
-                    <div class="is-size-4 publication-authors">
-                        <span class="author-block" style="color:#346dc2">NeurIPS 2026</span>
-                    </div>
-                    <div class="column has-text-centered">
-                        <div class="publication-links">
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2603.10648"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-                            <!-- Code Link. -->
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/SLiM"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+<header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: Skeleton &amp; motion">
+    <p class="lineage-menu-head"><b>Research line</b>Skeleton &amp; motion</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/SkateFormer_site/"><span class="lineage-name">SkateFormer</span><span class="lineage-venue">ECCV 2024</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/TDSM_site/"><span class="lineage-name">TDSM</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-menu-stage"><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">SLiM</span><span class="lineage-venue">NeurIPS 2026</span></span></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/SOfA_site/"><span class="lineage-name">SOfA</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/MotionMaestro_site/"><span class="lineage-name">MotionMaestro</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.webp" width="719" height="223" alt="SLiM" fetchpriority="high">
+      <span class="hero-title"><span class="hero-accent nowrap">Less is More</span>: Compact-Token Masked Feature Prediction for <span class="nowrap"><span class="hero-accent-s">Skeleton</span> Representation</span> Learning</span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a></span>
+      <span class="author"><a href="https://therealchenyun.github.io/" target="_blank" rel="noopener">Yun Chen</a></span>
+      <span class="author"><a href="https://geunhyukyouk.github.io/" target="_blank" rel="noopener">Geunhyuk Youk</a></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>&dagger;</sup></span>
+    </p>
+    <p class="hero-affil">Korea Advanced Institute of Science and Technology (KAIST), South Korea</p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Corresponding author</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:cyruby@kaist.ac.kr">cyruby@kaist.ac.kr</a><a href="mailto:rmsgurkjg@kaist.ac.kr">rmsgurkjg@kaist.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">NeurIPS 2026</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="#" data-soon><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://arxiv.org/abs/2603.10648" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/SLiM" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="https://huggingface.co/JeonghyeokDo/SLiM" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-model"/></svg>Models</a>
+      <a class="btn" href="#results"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Results</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>Current skeleton representation learning paradigms face distinct limitations: Contrastive Learning (CL) often overlooks fine-grained motion details, while Masked Auto-Encoders (MAE) rely on coordinate-level reconstruction. This reconstruction inherently demands dense token sequences and heavy decoders, wasting pre-training computation on discarded components and forcing downstream inference to process dense token grids. To resolve these bottlenecks, we propose <b>SLiM</b> (<b>S</b>keleton <b>L</b>ess <b>i</b>s <b>M</b>ore), a compact-token framework that unifies masked feature prediction and contrastive learning via a shared encoder. By shifting the objective from raw coordinate reconstruction to decoder-free, teacher-guided feature prediction, SLiM breaks the reliance on dense tokenization and enables effective learning with a highly compact token grid. Crucially, to prevent trivial shortcut learning arising from strong inter-joint dependencies of human, we introduce Semantic Tube Masking together with Skeleton-Aware Augmentations to enforce deep skeletal-temporal reasoning and anatomical consistency. Extensive experiments across multiple downstream protocols demonstrate that SLiM achieves state-of-the-art performance while structurally reducing inference computation by 7.89&times; compared to dense-token MAE baselines.</p>
         </div>
-</section>
+      </div>
+    </details>
+  </div>
+</header>
 
-<!-- Motivation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Rethinking Masked Modeling for Skeletons</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/motivation.png" style="width: 100%; height: auto;"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Top</b>: Standard Masked Auto-Encoder (MAE) methods suffer from a 14.38&times;
-                            computational surge during inference relative to pre-training due to asymmetric full-sequence processing.<br>
-                            <b>Bottom</b>: SLiM synergizes masked modeling with contrastive learning (CL) in a decoder-free framework.
-                            This symmetric design achieves a 7.89&times; reduction in inference cost compared to MAE baselines.
-                        </p>
-                    </div>
-            </div>
-        </div>
+<main id="main">
+
+  <!-- Headline + first result: paper Fig. 1 (accuracy-efficiency trade-off) next to Table 3 (token budget and cost) -->
+  <section class="section section--headline" id="tradeoff" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">Fewer tokens, higher accuracy</h2>
+        <p class="lead">A compact <span class="nowrap">8&thinsp;&times;&thinsp;25</span> token grid: <span class="nowrap">state-of-the-art</span> accuracy with <span class="nowrap">7.89&times;</span> less inference computation than <span class="nowrap">dense-token</span> MAEs.</p>
+      </header>
+      <div class="tradeoff">
+        <figure class="figure tradeoff-fig">
+          <a class="figure-media zoom" href="static/images/tradeoff_full.jpg" data-title="Accuracy–efficiency trade-off on NTU-60">
+            <img src="static/images/tradeoff_1200.jpg"
+                 srcset="static/images/tradeoff_900.jpg 900w, static/images/tradeoff_1200.jpg 1200w, static/images/tradeoff_1600.jpg 1600w"
+                 sizes="(min-width: 1304px) 650px, (min-width: 1180px) 51vw, min(760px, calc(100vw - 2 * clamp(16px, 4vw, 32px)))"
+                 width="1200" height="814" fetchpriority="high" decoding="async"
+                 alt="Line plot of NTU-60 accuracy (averaged over X-Sub and X-View) against downstream inference GFLOPs. SLiM-8, SLiM-15 and SLiM-30 stay between 90.55 and 90.90 percent from 3.59 to 28.32 GFLOPs, above the previous best GFP-30 at 28.32 GFLOPs; MAMP and SkeletonMAE drop sharply when their temporal token budget falls from 30 to 15 and 8.">
+          </a>
+          <figcaption><b>Accuracy&ndash;efficiency trade-off on NTU-60.</b> Mean of <span class="nowrap">X-Sub</span> and <span class="nowrap">X-View</span> vs. inference GFLOPs; the suffix is the temporal token budget <i>N</i><sub>T</sub>.</figcaption>
+        </figure>
+<figure class="table-figure" id="table-3" data-src-table="tab-flops">
+<figcaption><span class="fig-label">Table 3.</span> Token budget and computational cost comparison on NTU-60 (<i>N</i><sub>T</sub>&#8239;&times;&#8239;<i>N</i><sub>J</sub>: encoder token grid after patchification).</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-cell"><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (scrolls horizontally)">
+<table class="results" id="tab-flops-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="1"><span>Tokens</span></th><th class="col-group grp-start" colspan="1"><span>Inference <span class="th-note">(GFLOPs)</span></span></th><th class="col-group grp-start" colspan="2"><span>Training <span class="th-note">(GFLOPs)</span></span></th></tr>
+<tr><th class="metric grp-start"><i>N</i><sub>T</sub> × <i>N</i><sub>J</sub></th><th class="metric grp-start">Encoder</th><th class="metric grp-start">Encoder</th><th class="metric">Decoder</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">SkeletonMAE</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">17.70</td></tr>
+<tr><td class="col-method">MAMP</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">17.70</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">17.70</td></tr>
+<tr><td class="col-method">GFP</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">1.57</td></tr>
+<tr class="ours"><td class="col-method">SLiM (Ours)</td><td class="num grp-start">8 × 25</td><td class="num grp-start best">3.59</td><td class="num grp-start">3.59</td><td class="na">–</td></tr>
+</tbody>
+</table>
+</div></div></div>
+
+</figure>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- Abstract. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <h2 class="title is-3">Abstract</h2>
-                <div class="content has-text-justified" style="margin-bottom: 40px;">
-                    <p>We introduce <strong>SLiM</strong>, a novel <i>decoder-free</i> framework. By eliminating the
-                        heavy reconstruction decoder and adopting a symmetric token processing design, SLiM
-                        fundamentally resolves the <i>computational asymmetry</i> and inference overhead inherent in
-                        standard MAE architectures.</p>
-                    <p>We propose a <i>unified representation learning architecture</i> that synergizes the global
-                        discriminative power of contrastive learning with the local context sensitivity of masked
-                        modeling through a single, shared encoder.</p>
-                    <p>To mitigate shortcut reconstruction caused by the high correlation among skeletal joints, we
-                        adopt <strong>Semantic Tube Masking</strong> alongside refined <strong>Skeleton-Aware
-                            Augmentations</strong>, which force the encoder to capture deeper action semantics.</p>
-                    <p>Extensive experiments demonstrate that our SLiM consistently achieves state-of-the-art
-                        performance <i>across all downstream protocols</i>, while simultaneously providing a <i>7.89&times;
-                            reduction</i> in inference computational cost compared to existing MAE methods.</p>
-                </div>
-            </div>
+  <!-- Paper figures: Fig. 2 (MAE vs. SLiM) and Fig. 4 (masking and augmentations) -->
+  <section class="section section--band" id="figures" aria-labelledby="figures-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="figures-title">Paper figures</h2>
+        <p class="lead">Feature prediction needs neither dense tokens nor a reconstruction decoder; Semantic Tube Masking and <span class="nowrap">Skeleton-Aware</span> Augmentations prevent shortcut learning.</p>
+      </header>
+      <div class="tabs fig-tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Paper figures">
+            <button class="tab" role="tab" type="button" id="ft-motiv" aria-controls="fp-motiv" aria-selected="true">MAE vs. SLiM<small>Fig. 2</small></button>
+            <button class="tab" role="tab" type="button" id="ft-aug" aria-controls="fp-aug" aria-selected="false">Masking &amp; augmentations<small>Fig. 4</small></button>
+          </div>
         </div>
+        <div class="tabpanel" role="tabpanel" id="fp-motiv" aria-labelledby="ft-motiv" tabindex="-1">
+          <figure class="figure" id="fig-2">
+            <a class="figure-media zoom" href="static/images/motivation_full.jpg" data-title="Coordinate-reconstruction MAE vs. SLiM">
+              <img src="static/images/motivation_2000.jpg"
+                   srcset="static/images/motivation_1200.jpg 1200w, static/images/motivation_1600.jpg 1600w, static/images/motivation_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="797" loading="lazy" decoding="async"
+                   alt="Two rows. (a) MAE: a 120 by J clip is patchified into 30 by J tokens, 90 percent are masked, an encoder and a heavy decoder restore all tokens by coordinate reconstruction, and inference encodes 30 by J tokens at heavy cost. (b) SLiM: a 64 by J clip becomes 8 by J compact tokens, 50 to 90 percent are corrupted, the encoder predicts teacher features (masked prediction) and aligns a contrastive view, and inference encodes 8 by J tokens, 7.89 times lighter.">
+            </a>
+            <figcaption><b>MAE vs. SLiM.</b> (a)&nbsp;Dense 30&#8239;&times;&#8239;<i>J</i> tokens and a decoder that reconstructs coordinates; (b)&nbsp;decoder-free feature prediction on compact 8&#8239;&times;&#8239;<i>J</i> tokens.</figcaption>
+          </figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="fp-aug" aria-labelledby="ft-aug" tabindex="-1" hidden>
+          <figure class="figure" id="fig-4">
+            <a class="figure-media zoom" href="static/images/augmentation_full.jpg" data-title="Masking and augmentation strategies">
+              <img src="static/images/augmentation_2000.jpg"
+                   srcset="static/images/augmentation_1200.jpg 1200w, static/images/augmentation_1600.jpg 1600w, static/images/augmentation_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="967" loading="lazy" decoding="async"
+                   alt="Top row, previous methods: (a) independent joint masking, (b) uniform rotation limited to 30 degrees on every axis, (c) index swapping that gives an unnatural pose with a knee bending backward, (d) naive scaling that stretches the skeleton along one axis. Bottom row, SLiM: (e) Semantic Tube Masking of a connected limb over time, (f) skeleton-aware rotation with 360 degrees about the vertical axis and 30-degree tilts, (g) skeleton-aware mirroring that keeps the front orientation, (h) bone-aware scaling of bone lengths.">
+            </a>
+            <figcaption><b>Masking and augmentations.</b> (a&ndash;d)&nbsp;Conventional strategies may allow interpolation shortcuts or distort the skeleton; (e&ndash;h)&nbsp;SLiM&rsquo;s avoid both.</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- Overview of SLiM. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Overview of SLiM</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/overview.png"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        Our decoder-free teacher-student architecture unifies Masked
-                        Feature Modeling and Global-Local Contrastive Learning. By simultaneously minimizing feature
-                        reconstruction error (&#8466;<sub>MFM</sub>) and contrastive loss (&#8466;<sub>GLCL</sub>)
-                        across diverse temporal views, SLiM effectively captures both fine-grained local patterns and
-                        global semantics.
-                    </div>
-            </div>
+  <!-- Quantitative results -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead">Best on <b>four of five</b> linear-evaluation protocols, three of four semi-supervised settings and both retrieval protocols, using a single 3D joint stream.</p>
+      </header>
+
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t1" aria-controls="panel-t1" aria-selected="true">Linear evaluation<small>Table 1</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="false">Semi-supervised &amp; retrieval<small>Table 2</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t9" aria-controls="panel-t9" aria-selected="false">Transfer<small>Table 9</small></button>
+          </div>
         </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t1" aria-labelledby="tab-t1" tabindex="-1">
+<figure class="table-figure table-figure--t1" id="table-1" data-src-table="tab-linear">
+<figcaption><span class="fig-label">Table 1.</span> Linear evaluation on NTU-60, NTU-120, and PKU-MMD II. We report Top-1 accuracy (%) using the joint modality.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-cell"><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 (scrolls horizontally)">
+<table class="results" id="tab-linear-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-venue" rowspan="2">Venue</th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th><th class="col-group grp-start" colspan="2"><span>NTU-120</span></th><th class="col-group grp-start" colspan="1"><span>PKU-MMD II</span></th></tr>
+<tr><th class="metric grp-start">X-Sub</th><th class="metric">X-View</th><th class="metric grp-start">X-Sub</th><th class="metric">X-Set</th><th class="metric grp-start">X-Sub</th></tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="7"><span class="group-label">Other skeleton SSL baselines</span></td></tr>
+<tr><td class="col-method">GL-Transformer</td><td class="col-venue">ECCV'22</td><td class="num grp-start">76.3</td><td class="num">83.8</td><td class="num grp-start">66.0</td><td class="num">68.7</td><td class="na grp-start">–</td></tr>
+<tr><td class="col-method">MacDiff</td><td class="col-venue">ECCV'24</td><td class="num grp-start">86.4</td><td class="num">91.0</td><td class="num grp-start">79.4</td><td class="num">80.2</td><td class="na grp-start">–</td></tr>
+<tr><td class="col-method">IGM</td><td class="col-venue">ECCV'24</td><td class="num grp-start">86.2</td><td class="num">91.2</td><td class="num grp-start">80.0</td><td class="num">81.4</td><td class="na grp-start">–</td></tr>
+<tr><td class="col-method">USDRL</td><td class="col-venue">AAAI'25</td><td class="num grp-start">85.2</td><td class="num">91.7</td><td class="num grp-start">76.6</td><td class="num">78.1</td><td class="num grp-start">54.4</td></tr>
+<tr><td class="col-method">HSP</td><td class="col-venue">CVPR'25</td><td class="num grp-start">80.7</td><td class="num">88.0</td><td class="num grp-start">71.0</td><td class="num">73.2</td><td class="num grp-start">48.9</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="7"><span class="group-label">Contrastive learning (CL)</span></td></tr>
+<tr><td class="col-method">CPM</td><td class="col-venue">ECCV'22</td><td class="num grp-start">78.7</td><td class="num">84.9</td><td class="num grp-start">68.7</td><td class="num">69.6</td><td class="num grp-start">48.3</td></tr>
+<tr><td class="col-method">CMD</td><td class="col-venue">ECCV'22</td><td class="num grp-start">79.8</td><td class="num">86.9</td><td class="num grp-start">70.3</td><td class="num">71.5</td><td class="num grp-start">43.0</td></tr>
+<tr><td class="col-method">AimCLR</td><td class="col-venue">AAAI'22</td><td class="num grp-start">74.3</td><td class="num">79.7</td><td class="num grp-start">63.4</td><td class="num">63.4</td><td class="na grp-start">–</td></tr>
+<tr><td class="col-method">RVTCLR</td><td class="col-venue">ICCV'23</td><td class="num grp-start">74.7</td><td class="num">79.1</td><td class="na grp-start">–</td><td class="na">–</td><td class="na grp-start">–</td></tr>
+<tr><td class="col-method">PTSL</td><td class="col-venue">AAAI'23</td><td class="num grp-start">77.3</td><td class="num">81.8</td><td class="num grp-start">66.2</td><td class="num">67.7</td><td class="num grp-start">49.3</td></tr>
+<tr><td class="col-method">HYSP</td><td class="col-venue">ICLR'23</td><td class="num grp-start">78.2</td><td class="num">82.6</td><td class="num grp-start">61.8</td><td class="num">64.6</td><td class="na grp-start">–</td></tr>
+<tr><td class="col-method">HaLP</td><td class="col-venue">CVPR'23</td><td class="num grp-start">79.7</td><td class="num">86.8</td><td class="num grp-start">71.1</td><td class="num">72.2</td><td class="num grp-start">43.5</td></tr>
+<tr><td class="col-method">ActCLR</td><td class="col-venue">CVPR'23</td><td class="num grp-start">80.9</td><td class="num">86.7</td><td class="num grp-start">69.0</td><td class="num">70.5</td><td class="na grp-start">–</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="7"><span class="group-label">Masked / predictive modeling</span></td></tr>
+<tr><td class="col-method">SkeletonMAE</td><td class="col-venue">ICMEW'23</td><td class="num grp-start">74.8</td><td class="num">77.7</td><td class="num grp-start">72.5</td><td class="num">73.5</td><td class="num grp-start">36.1</td></tr>
+<tr><td class="col-method">MAMP</td><td class="col-venue">ICCV'23</td><td class="num grp-start">84.9</td><td class="num">89.1</td><td class="num grp-start">78.6</td><td class="num">79.1</td><td class="num grp-start">53.8</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="col-venue">ECCV'24</td><td class="num grp-start">85.3</td><td class="num">89.8</td><td class="num grp-start">79.6</td><td class="num">79.9</td><td class="num grp-start">53.5</td></tr>
+<tr><td class="col-method">GFP</td><td class="col-venue">ICCV'25</td><td class="num grp-start">85.9</td><td class="num">92.0</td><td class="num grp-start">79.1</td><td class="num">80.3</td><td class="num grp-start">56.2</td></tr>
+<tr><td class="col-method">AMR</td><td class="col-venue">CVPR'26</td><td class="num grp-start second">87.4</td><td class="num second">92.3</td><td class="num grp-start second">81.1</td><td class="num second">81.9</td><td class="num grp-start best">60.3</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="7"><span class="group-label">Unified MFP + CL</span></td></tr>
+<tr class="ours"><td class="col-method">SLiM (Ours)</td><td class="col-venue na">–</td><td class="num grp-start best">87.9</td><td class="num best">93.2</td><td class="num grp-start best">81.2</td><td class="num best">83.6</td><td class="num grp-start second">59.7</td></tr>
+</tbody>
+</table>
+</div></div></div>
+<p class="table-note">Including the concurrent AMR, SLiM is best on four of five protocols; on PKU-MMD&nbsp;II it ranks second, 0.6&nbsp;points below AMR. All results use the joint modality only, without bone or motion streams.</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1" hidden>
+<figure class="table-figure" id="table-2" data-src-table="tab-semi-retrieval">
+<figcaption><span class="fig-label">Table 2.</span> Additional downstream evaluations on NTU-60. (a) Semi-supervised action recognition using 1% and 10% labeled data. (b) Action retrieval using <i>k</i>-NN with <i>k</i> = 1.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-pair table-pair--wide-left"><div class="table-cell"><p class="table-subcap">(a) Semi-supervised learning</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (a) (scrolls horizontally)">
+<table class="results" id="tab-semi-retrieval-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="2"><span>X-Sub</span></th><th class="col-group grp-start" colspan="2"><span>X-View</span></th></tr>
+<tr><th class="metric grp-start">1%</th><th class="metric">10%</th><th class="metric grp-start">1%</th><th class="metric">10%</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">CPM</td><td class="num grp-start">56.7</td><td class="num">73.0</td><td class="num grp-start">57.5</td><td class="num">77.1</td></tr>
+<tr><td class="col-method">CMD</td><td class="num grp-start">50.6</td><td class="num">75.4</td><td class="num grp-start">53.0</td><td class="num">80.2</td></tr>
+<tr><td class="col-method">HYSP</td><td class="na grp-start">–</td><td class="num">76.2</td><td class="na grp-start">–</td><td class="num">80.4</td></tr>
+<tr><td class="col-method">HaLP</td><td class="num grp-start">46.6</td><td class="num">72.6</td><td class="num grp-start">48.7</td><td class="num">77.1</td></tr>
+<tr><td class="col-method">HiCo</td><td class="num grp-start">54.4</td><td class="num">73.0</td><td class="num grp-start">54.8</td><td class="num">78.3</td></tr>
+<tr><td class="col-method">USDRL</td><td class="num grp-start">57.3</td><td class="num">80.2</td><td class="num grp-start">60.7</td><td class="num">84.0</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">SkeletonMAE</td><td class="num grp-start">54.4</td><td class="num">80.6</td><td class="num grp-start">54.6</td><td class="num">83.5</td></tr>
+<tr><td class="col-method">MAMP</td><td class="num grp-start">66.0</td><td class="num">88.0</td><td class="num grp-start">68.7</td><td class="num">91.5</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="num grp-start">67.5</td><td class="num">88.4</td><td class="num grp-start">69.1</td><td class="num">91.4</td></tr>
+<tr><td class="col-method">GFP</td><td class="num grp-start second">71.8</td><td class="num second">88.7</td><td class="num grp-start second">72.9</td><td class="num best">92.1</td></tr>
+</tbody>
+<tbody>
+<tr class="ours"><td class="col-method">SLiM (Ours)</td><td class="num grp-start best">72.1</td><td class="num best">88.8</td><td class="num grp-start best">75.8</td><td class="num second">91.9</td></tr>
+</tbody>
+</table>
+</div></div></div><div class="table-cell"><p class="table-subcap">(b) Action retrieval</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (b) (scrolls horizontally)">
+<table class="results" id="tab-semi-retrieval-t1">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="2"><span>NTU-60</span></th></tr>
+<tr><th class="metric grp-start">X-Sub</th><th class="metric">X-View</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">LongT-GAN</td><td class="num grp-start">39.1</td><td class="num">48.1</td></tr>
+<tr><td class="col-method">P&amp;C</td><td class="num grp-start">50.7</td><td class="num">76.3</td></tr>
+<tr><td class="col-method">ISC</td><td class="num grp-start">62.5</td><td class="num">82.6</td></tr>
+<tr><td class="col-method">HaLP</td><td class="num grp-start">65.8</td><td class="num">83.6</td></tr>
+<tr><td class="col-method">HiCo</td><td class="num grp-start">68.3</td><td class="num">84.8</td></tr>
+<tr><td class="col-method">SkeAttnCLR</td><td class="num grp-start">69.4</td><td class="num">76.8</td></tr>
+<tr><td class="col-method">UmURL</td><td class="num grp-start second">71.3</td><td class="num second">88.3</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">MAMP</td><td class="num grp-start">62.0</td><td class="num">70.0</td></tr>
+<tr><td class="col-method">GFP</td><td class="num grp-start">70.9</td><td class="num">87.1</td></tr>
+</tbody>
+<tbody>
+<tr class="ours"><td class="col-method">SLiM (Ours)</td><td class="num grp-start best">72.5</td><td class="num best">89.9</td></tr>
+</tbody>
+</table>
+</div></div></div></div>
+<p class="table-note">With 1% labels SLiM improves the previous best by 0.3 (X-Sub) and 2.9 (X-View) points. Retrieval uses the frozen features without training a classifier.</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t9" aria-labelledby="tab-t9" tabindex="-1" hidden>
+<figure class="table-figure table-figure--t9" id="table-9" data-src-table="tab-transfer">
+<figcaption><span class="fig-label">Table 9.</span> Transfer learning performance on PKU-MMD II. We pre-train on the X-Sub splits of NTU-60 or NTU-120 and evaluate frozen representations on PKU-MMD II X-Sub with a linear classifier.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-cell"><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 9 (scrolls horizontally)">
+<table class="results" id="tab-transfer-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="2"><span>To PKU-II</span></th></tr>
+<tr><th class="metric grp-start">NTU-60</th><th class="metric">NTU-120</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">LongT-GAN</td><td class="num grp-start">44.8</td><td class="na">–</td></tr>
+<tr><td class="col-method">ISC</td><td class="num grp-start">51.1</td><td class="num">52.3</td></tr>
+<tr><td class="col-method">CMD</td><td class="num grp-start">56.0</td><td class="num">57.0</td></tr>
+<tr><td class="col-method">MacDiff</td><td class="num grp-start second">72.2</td><td class="num">73.4</td></tr>
+<tr><td class="col-method">IGM</td><td class="num grp-start">59.8</td><td class="na">–</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">SkeletonMAE</td><td class="num grp-start">58.4</td><td class="num">61.0</td></tr>
+<tr><td class="col-method">MAMP</td><td class="num grp-start">70.6</td><td class="num">73.2</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="num grp-start">71.4</td><td class="num second">74.2</td></tr>
+</tbody>
+<tbody>
+<tr class="ours"><td class="col-method">SLiM (Ours)</td><td class="num grp-start best">72.7</td><td class="num best">75.3</td></tr>
+</tbody>
+</table>
+</div></div></div>
+
+</figure>
+        </div>
+      </div>
+
+      <div class="disclosures">
+      <details class="disclosure" id="ablations" data-animate>
+        <summary>Ablations <span class="summary-sub">Tables 4 and 5</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure table-figure--t4" id="table-4" data-src-table="tab-ablation-loss">
+<figcaption><span class="fig-label">Table 4.</span> Ablation studies for the objective functions on NTU-60. <i>ℒ</i><sub>CL</sub> represents a standard CL loss without temporal diversity.</figcaption>
+<div class="table-meta"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-cell"><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (scrolls horizontally)">
+<table class="results results--checks" id="tab-ablation-loss-t0">
+<thead>
+<tr><th class="col-group" colspan="3"><span>Objective</span></th><th class="col-group grp-major" colspan="2"><span>NTU-60</span></th></tr>
+<tr><th class="metric"><i>ℒ</i><sub>MFP</sub></th><th class="metric grp-start"><i>ℒ</i><sub>CL</sub></th><th class="metric"><i>ℒ</i><sub>GLCL</sub></th><th class="metric grp-major">X-Sub</th><th class="metric">X-View</th></tr>
+</thead>
+<tbody>
+<tr><td class="no">✗</td><td class="yes grp-start">✓</td><td class="no">✗</td><td class="num grp-major">73.6</td><td class="num">78.9</td></tr>
+<tr><td class="no">✗</td><td class="no grp-start">✗</td><td class="yes">✓</td><td class="num grp-major">75.3</td><td class="num">80.1</td></tr>
+<tr><td class="yes">✓</td><td class="no grp-start">✗</td><td class="no">✗</td><td class="num grp-major">85.3</td><td class="num">90.6</td></tr>
+<tr><td class="yes">✓</td><td class="yes grp-start">✓</td><td class="no">✗</td><td class="num grp-major">86.2</td><td class="num">91.3</td></tr>
+<tr class="ours"><td class="yes">✓</td><td class="no grp-start">✗</td><td class="yes">✓</td><td class="num grp-major">87.7</td><td class="num">92.7</td></tr>
+</tbody>
+</table>
+</div></div></div>
+<p class="table-note"><i>&#8466;</i><sub>MFP</sub> alone reaches 85.3% on X-Sub; adding a standard CL loss gives 86.2%, and <i>&#8466;</i><sub>GLCL</sub> instead gives 87.7%. Ablation models are pre-trained for 100 epochs (final model: 150).</p>
+</figure>
+
+<figure class="table-figure" id="table-5" data-src-table="tab-ablation-stm-saa">
+<figcaption><span class="fig-label">Table 5.</span> Ablation studies on NTU-60. (a) Dual-role Semantic Tube Masking (STM) for the global masked-view branch and local contrastive-view branch. (b) Skeleton-Aware Augmentations (SAA), including rotation, mirroring, and scaling. Limited denotes the corresponding conventional masking or augmentation strategy.</figcaption>
+<div class="table-meta"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-pair table-pair--even"><div class="table-cell"><p class="table-subcap">(a) Semantic Tube Masking</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 5 (a) (scrolls horizontally)">
+<table class="results results--checks" id="tab-ablation-stm-saa-t0">
+<thead>
+<tr><th class="col-group" colspan="2"><span>Masking</span></th><th class="col-group grp-major" colspan="2"><span>NTU-60</span></th></tr>
+<tr><th class="metric">Global view</th><th class="metric">Local view</th><th class="metric grp-major">X-Sub</th><th class="metric">X-View</th></tr>
+</thead>
+<tbody>
+<tr><td class="no">✗</td><td class="yes">✓</td><td class="num grp-major">75.3</td><td class="num">80.1</td></tr>
+<tr><td class="yes">✓ <span class="ck-note">(Limited)</span></td><td class="yes">✓</td><td class="num grp-major">84.2</td><td class="num">90.4</td></tr>
+<tr><td class="yes">✓</td><td class="no">✗</td><td class="num grp-major">83.3</td><td class="num">89.4</td></tr>
+<tr><td class="yes">✓</td><td class="yes">✓ <span class="ck-note">(Limited)</span></td><td class="num grp-major">85.7</td><td class="num">89.9</td></tr>
+</tbody>
+<tbody>
+<tr><td class="yes">✓ <span class="ck-note">(90%)</span></td><td class="yes">✓ <span class="ck-note">(90%)</span></td><td class="num grp-major">86.8</td><td class="num">92.1</td></tr>
+<tr><td class="yes">✓ <span class="ck-note">(0–50%)</span></td><td class="yes">✓ <span class="ck-note">(0–50%)</span></td><td class="num grp-major">84.5</td><td class="num">89.6</td></tr>
+<tr class="ours"><td class="yes">✓ <span class="ck-note">(50–90%)</span></td><td class="yes">✓ <span class="ck-note">(50–90%)</span></td><td class="num grp-major">87.7</td><td class="num">92.7</td></tr>
+</tbody>
+</table>
+</div></div></div><div class="table-cell"><p class="table-subcap">(b) Skeleton-Aware Augmentations</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 5 (b) (scrolls horizontally)">
+<table class="results results--checks" id="tab-ablation-stm-saa-t1">
+<thead>
+<tr><th class="metric">Rotation</th><th class="metric">Mirroring</th><th class="metric">Scaling</th><th class="metric grp-major">X-Sub</th><th class="metric">X-View</th></tr>
+</thead>
+<tbody>
+<tr><td class="no">✗</td><td class="yes">✓</td><td class="yes">✓</td><td class="num grp-major">81.6</td><td class="num">86.9</td></tr>
+<tr><td class="yes">✓ <span class="ck-note">(Limited)</span></td><td class="yes">✓</td><td class="yes">✓</td><td class="num grp-major">84.8</td><td class="num">89.9</td></tr>
+<tr><td class="yes">✓</td><td class="no">✗</td><td class="yes">✓</td><td class="num grp-major">85.3</td><td class="num">90.6</td></tr>
+<tr><td class="yes">✓</td><td class="yes">✓ <span class="ck-note">(Limited)</span></td><td class="yes">✓</td><td class="num grp-major">85.9</td><td class="num">91.0</td></tr>
+<tr><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="num grp-major">84.4</td><td class="num">90.0</td></tr>
+<tr><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ <span class="ck-note">(Limited)</span></td><td class="num grp-major">86.4</td><td class="num">91.7</td></tr>
+<tr class="ours"><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="num grp-major">87.7</td><td class="num">92.7</td></tr>
+</tbody>
+</table>
+</div></div></div></div>
+<p class="table-note">Replacing STM with conventional joint masking in either role lowers X-Sub by up to 3.5&nbsp;points (87.7 vs. 84.2); the stochastic 50&ndash;90% ratio beats a fixed 90% by 0.9 and 0&ndash;50% by 3.2&nbsp;points. <i>Limited</i> is the conventional counterpart shown in <a href="#fig-4">Fig.&nbsp;4</a>&nbsp;(a)&ndash;(d).</p>
+</figure>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="token-budget" data-animate>
+        <summary>Token budget and cost <span class="summary-sub">Tables 7 and 8</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-7" data-src-table="tab-token-budget">
+<figcaption><span class="fig-label">Table 7.</span> Token-budget configurations and average accuracy on NTU-60. <i>T</i> denotes the sampled clip length, <i>P</i><sub>T</sub> denotes the temporal patch size, and <i>N</i><sub>T</sub> = <i>T</i>/<i>P</i><sub>T</sub> is the number of temporal tokens. All settings use <i>J</i> = 25 joints and <i>P</i><sub>J</sub> = 1. Accuracy is averaged over the X-Sub and X-View protocols under linear evaluation. Inference GFLOPs are measured for the downstream encoder. SLiM-8 uses the default total batch size of 768 unless otherwise specified.</figcaption>
+<div class="table-meta"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-cell"><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 7 (scrolls horizontally)">
+<table class="results" id="tab-token-budget-t0">
+<thead>
+<tr><th class="col-method">Method</th><th class="metric grp-start">Clip <i>T</i></th><th class="metric">Patch <i>P</i><sub>T</sub></th><th class="metric">Tokens <i>N</i><sub>T</sub> × <i>N</i><sub>J</sub></th><th class="metric grp-start">Inference GFLOPs</th><th class="metric grp-start">Avg. Acc. (%)</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">SkeletonMAE-8</td><td class="num grp-start">64</td><td class="num">8</td><td class="num">8 × 25</td><td class="num grp-start">3.59</td><td class="num grp-start">70.50</td></tr>
+<tr><td class="col-method">SkeletonMAE-15</td><td class="num grp-start">120</td><td class="num">8</td><td class="num">15 × 25</td><td class="num grp-start">8.36</td><td class="num grp-start">74.00</td></tr>
+<tr><td class="col-method">SkeletonMAE-30</td><td class="num grp-start">120</td><td class="num">4</td><td class="num">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">76.25</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">MAMP-8</td><td class="num grp-start">64</td><td class="num">8</td><td class="num">8 × 25</td><td class="num grp-start">3.59</td><td class="num grp-start">80.90</td></tr>
+<tr><td class="col-method">MAMP-15</td><td class="num grp-start">120</td><td class="num">8</td><td class="num">15 × 25</td><td class="num grp-start">8.36</td><td class="num grp-start">85.50</td></tr>
+<tr><td class="col-method">MAMP-30</td><td class="num grp-start">120</td><td class="num">4</td><td class="num">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">87.00</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">S-JEPA</td><td class="num grp-start">120</td><td class="num">4</td><td class="num">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">87.55</td></tr>
+<tr><td class="col-method">GFP</td><td class="num grp-start">120</td><td class="num">4</td><td class="num">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">88.95</td></tr>
+</tbody>
+<tbody>
+<tr class="ours"><td class="col-method">SLiM-8 (Batch 384)</td><td class="num grp-start">64</td><td class="num">8</td><td class="num">8 × 25</td><td class="num grp-start">3.59</td><td class="num grp-start">89.60</td></tr>
+<tr class="ours"><td class="col-method">SLiM-8 (Batch 768)</td><td class="num grp-start">64</td><td class="num">8</td><td class="num">8 × 25</td><td class="num grp-start">3.59</td><td class="num grp-start">90.55</td></tr>
+<tr class="ours"><td class="col-method">SLiM-15</td><td class="num grp-start">120</td><td class="num">8</td><td class="num">15 × 25</td><td class="num grp-start">8.36</td><td class="num grp-start">90.75</td></tr>
+<tr class="ours"><td class="col-method">SLiM-30</td><td class="num grp-start">120</td><td class="num">4</td><td class="num">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">90.90</td></tr>
+</tbody>
+</table>
+</div></div></div>
+<p class="table-note">Cutting the temporal tokens from 30 to 8 drops SkeletonMAE from 76.25% to 70.50% and MAMP from 87.00% to 80.90%, while SLiM (batch 768) reaches 90.55%, 90.75% and 90.90% with 8, 15 and 30 tokens. Every row except SLiM-8 (batch 384) is a point of the <a href="#tradeoff">trade-off plot</a>.</p>
+</figure>
+
+<figure class="table-figure" id="table-8" data-src-table="tab-flops-detail">
+<figcaption><span class="fig-label">Table 8.</span> Detailed cost comparison on NTU-60. <i>N</i><sub>T</sub> × <i>N</i><sub>J</sub> denotes the encoder token grid after patchification. Inference GFLOPs are measured for the downstream encoder. Module-level GFLOPs are separated into student encoder, decoder, and target/auxiliary branches for one forward view. The target/auxiliary branch includes target generation networks for prior methods when used, and the EMA teacher forward for SLiM. These values do not aggregate SLiM's multi-view student/teacher forwards and therefore are not a total per-iteration pre-training comparison. Training resources are reported as implementation context and are not intended as a controlled hardware comparison.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-cell"><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8 (scrolls horizontally)">
+<table class="results" id="tab-flops-detail-t0">
+<thead>
+<tr><th class="col-method" rowspan="2">Method</th><th class="col-group grp-start" colspan="1"><span>Tokens</span></th><th class="col-group grp-start" colspan="1"><span>Inference GFLOPs</span></th><th class="col-group grp-start" colspan="3"><span>Single-view module GFLOPs</span></th><th class="col-group grp-start" colspan="2"><span>Reported training resource</span></th></tr>
+<tr><th class="metric grp-start"><i>N</i><sub>T</sub> × <i>N</i><sub>J</sub></th><th class="metric grp-start">Enc.</th><th class="metric grp-start">Enc.</th><th class="metric">Dec.</th><th class="metric">Target/Aux.</th><th class="metric grp-start">GPU type</th><th class="metric">Batch size</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">SkeletonMAE</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">17.70</td><td class="na">–</td><td class="grp-start">8×A6000</td><td class="num">64</td></tr>
+<tr><td class="col-method">MAMP</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">17.70</td><td class="na">–</td><td class="grp-start">4×RTX3090</td><td class="num">128</td></tr>
+<tr><td class="col-method">S-JEPA</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">17.70</td><td class="num">28.32</td><td class="grp-start">8×A100</td><td class="num">256</td></tr>
+<tr><td class="col-method">GFP</td><td class="num grp-start">30 × 25</td><td class="num grp-start">28.32</td><td class="num grp-start">1.97</td><td class="num">1.57</td><td class="num">0.64</td><td class="na grp-start">–</td><td class="na">–</td></tr>
+<tr class="ours"><td class="col-method">SLiM (Ours)</td><td class="num grp-start">8 × 25</td><td class="num grp-start best">3.59</td><td class="num grp-start">3.59</td><td class="na">–</td><td class="num">3.59</td><td class="grp-start">4×A6000</td><td class="num">768</td></tr>
+</tbody>
+</table>
+</div></div></div>
+<p class="table-note">The 7.89&times; figure concerns the downstream encoder, where every method processes its full unmasked token grid; single-view module GFLOPs are not aggregate pre-training-cost ratios.</p>
+</figure>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="analysis" data-animate>
+        <summary>Prediction target and robustness <span class="summary-sub">Tables 10 and 11</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-10" data-src-table="tab-target">
+<figcaption><span class="fig-label">Table 10.</span> Matched comparison of masked-prediction targets on NTU-60. The uncertainty shown for the proposed variant is the sample standard deviation over three independently trained linear probes on one fixed pre-trained checkpoint; it is not pre-training-run variability.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-cell"><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 10 (scrolls horizontally)">
+<table class="results" id="tab-target-t0">
+<thead>
+<tr><th class="col-method">MFP target</th><th class="metric col-text">Loss</th><th class="metric col-text">Target-specific module</th><th class="metric grp-start">X-Sub</th><th class="metric">X-View</th><th class="metric">Avg.</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Raw joint coordinates</td><td class="col-text">MSE</td><td class="col-text">5-block decoder</td><td class="num grp-start">84.30</td><td class="num">89.62</td><td class="num">86.96</td></tr>
+<tr><td class="col-method">Teacher-projected features</td><td class="col-text">MSE</td><td class="col-text">None</td><td class="num grp-start">84.53</td><td class="num">89.32</td><td class="num">86.92</td></tr>
+<tr><td class="col-method">Teacher-projected features</td><td class="col-text">MSE</td><td class="col-text">Predictor head</td><td class="num grp-start">85.07</td><td class="num">90.12</td><td class="num">87.59</td></tr>
+<tr class="ours"><td class="col-method">Teacher prototype distribution</td><td class="col-text">Cross-entropy</td><td class="col-text">None</td><td class="num grp-start">87.66<span class="pm">±0.11</span></td><td class="num">92.68<span class="pm">±0.09</span></td><td class="num best">90.17</td></tr>
+</tbody>
+</table>
+</div></div></div>
+<p class="table-note">Coordinate reconstruction and direct feature regression perform almost identically (86.96 vs. 86.92 average accuracy): removing the decoder or predicting features is not by itself the source of the gain, which the paper attributes to the complete prototype-assignment design.</p>
+</figure>
+
+<figure class="table-figure" id="table-11" data-src-table="tab-robust">
+<figcaption><span class="fig-label">Table 11.</span> Test-time robustness on NTU-60. (a) Declared missing joints and localization noise, where <i>σ</i> is normalized by each sequence's mean bone length. (b) Unflagged missing joints on X-Sub. The same selected joints are absent throughout a clip. Each ± value is the sample standard deviation over three corruption draws, not pre-training variability.</figcaption>
+<div class="table-meta"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-pair table-pair--even"><div class="table-cell"><p class="table-subcap">(a) Declared missingness and noise</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 11 (a) (scrolls horizontally)">
+<table class="results" id="tab-robust-t0">
+<thead>
+<tr><th class="col-method">Condition</th><th class="metric">Severity</th><th class="metric grp-start">X-Sub</th><th class="metric">X-View</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Clean</td><td class="na">–</td><td class="num grp-start">87.9</td><td class="num">93.2</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">Declared missing</td><td class="num">3/25</td><td class="num grp-start">87.86<span class="pm">±0.06</span></td><td class="num">92.94<span class="pm">±0.03</span></td></tr>
+<tr><td class="col-method">Declared missing</td><td class="num">5/25</td><td class="num grp-start">87.69<span class="pm">±0.12</span></td><td class="num">92.68<span class="pm">±0.09</span></td></tr>
+<tr><td class="col-method">Declared missing</td><td class="num">8/25</td><td class="num grp-start">87.23<span class="pm">±0.01</span></td><td class="num">92.14<span class="pm">±0.01</span></td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">Gaussian noise</td><td class="num"><i>σ</i> = 0.01</td><td class="num grp-start">87.78<span class="pm">±0.04</span></td><td class="num">93.18<span class="pm">±0.02</span></td></tr>
+<tr><td class="col-method">Gaussian noise</td><td class="num"><i>σ</i> = 0.03</td><td class="num grp-start">87.71<span class="pm">±0.05</span></td><td class="num">93.01<span class="pm">±0.02</span></td></tr>
+<tr><td class="col-method">Gaussian noise</td><td class="num"><i>σ</i> = 0.05</td><td class="num grp-start">87.62<span class="pm">±0.02</span></td><td class="num">92.84<span class="pm">±0.03</span></td></tr>
+</tbody>
+</table>
+</div></div></div><div class="table-cell"><p class="table-subcap">(b) Missing-joint representation (X-Sub)</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 11 (b) (scrolls horizontally)">
+<table class="results" id="tab-robust-t1">
+<thead>
+<tr><th class="col-method" rowspan="2">Representation</th><th class="col-group grp-start" colspan="3"><span>Missing joints / 25</span></th></tr>
+<tr><th class="metric grp-start">3</th><th class="metric">5</th><th class="metric">8</th></tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Declared mask token</td><td class="num grp-start">87.86</td><td class="num">87.69</td><td class="num">87.23</td></tr>
+<tr><td class="col-method">Parent-joint fill</td><td class="num grp-start">81.30<span class="pm">±0.29</span></td><td class="num">76.41<span class="pm">±0.06</span></td><td class="num">66.51<span class="pm">±0.07</span></td></tr>
+<tr><td class="col-method">Zero fill</td><td class="num grp-start">72.20<span class="pm">±0.18</span></td><td class="num">62.23<span class="pm">±0.21</span></td><td class="num">49.63<span class="pm">±0.23</span></td></tr>
+</tbody>
+</table>
+</div></div></div></div>
+<p class="table-note">With eight declared missing joints, accuracy remains 87.23/92.14; presenting parent-joint or zero-filled coordinates as valid input degrades it much more.</p>
+</figure>
+          </div>
+        </div></div>
+      </details>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- Augmentation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Masking and Augmentations</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/augmentation.png" style="width: 100%; height: auto;"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p><b>Top</b>: Previous masking (a) and augmentations (b-d) often result in trivial solutions or
-                            physically
-                            implausible poses. <br><b>Bottom</b>: Our Semantic Tube Masking (e) and Skeletal-Aware
-                            Augmentations (f-h) ensure anatomical and physical consistency through skeleton-aware
-                            designs.</p>
-                    </div>
-            </div>
-        </div>
+  <!-- Method (compact) -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">Predict features, not coordinates</h2>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/framework_full.jpg" data-title="Overview of SLiM">
+          <img src="static/images/framework_1600.jpg"
+               srcset="static/images/framework_1200.jpg 1200w, static/images/framework_1600.jpg 1600w, static/images/framework_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="865" loading="lazy" decoding="async"
+               alt="SLiM framework. Left: multi-view generation, with a primary interval re-sampled into global view XG1 (64 frames) and local views XL1 to XL3 (32, 16 and 8 frames), and a secondary interval giving global view XG2. Views pass Skeleton-Aware Augmentations, patchify and joint embedding. The teacher network, updated by EMA, encodes the unmasked anchor view; Semantic Tube Masking produces the masked tokens for the student network, whose ViT encoder feeds a masked feature prediction head and a contrastive head. Losses: masked feature prediction against the teacher's patch features and global-local contrastive learning against the teacher's class token. The encoder output W is used for downstream tasks.">
+        </a>
+        <figcaption><b>Overview of SLiM.</b> Masked feature prediction (MFP) and global&ndash;local contrastive learning (GLCL) with one <span class="nowrap">compact-token</span> encoder.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">01</span><b>Decoder-free masked feature prediction.</b> The student predicts the EMA teacher&rsquo;s features at masked tokens, without a reconstruction decoder.</li>
+        <li><span class="kp-num">02</span><b>Semantic Tube Masking.</b> Masks connected body parts over time at a 50&ndash;90% ratio, forcing inference from broader body context.</li>
+        <li><span class="kp-num">03</span><b>Skeleton-Aware Augmentations.</b> 360&deg; vertical-axis rotation, left&ndash;right mirroring and bone-length scaling keep views anatomically valid.</li>
+      </ol>
     </div>
-</section>
+  </section>
 
-<!-- Performance Evaluation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Performance Evaluation</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/main_table.png" style="width: 80%; height: auto;"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p><strong>Linear evaluation results.</strong> Comparison with state-of-the-art methods on
-                            NTU-60, NTU-120, and PKU-MMD II datasets. Performance is reported as Top-1 accuracy (%).
-                            <strong>Bold</strong> indicates the best result, and <u>underline</u> indicates the second
-                            best.</p>
-                    </div>
-            </div>
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
         </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/table.png" style="width: 100%; height: auto;"><br>
-                    <div class="content has-text-justified">
-                        <p><strong>Efficiency and performance comparison.</strong> SLiM achieves
-                            state-of-the-art accuracy while reducing inference computational cost by 7.89&times;
-                            compared to MAE methods. TGN: Target Generation Network. <strong>Bold</strong> indicates the
-                            best result.</p>
-                    </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Ablation Studies. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Ablation Studies</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/ablation.png" style="width: 80%; height: auto;"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <i>Note that all ablation models are pre-trained for 100 epochs, whereas our final full
-                                model is trained for 150 epochs.</i><br>
-                            <strong>Left</strong>: Effect of objective functions. &#8466;<sub>MFM</sub> denotes
-                            the MFM loss, &#8466;<sub>CL</sub> represents a standard CL loss <i>without temporal
-                            diversity</i>, while &#8466;<sub>GLCL</sub> incorporates diverse temporal sampling.
-                            <br><strong>Right</strong>:
-                            Ablation for the dual-role masking strategies within STM. We evaluate the synergy between
-                            applying masked modeling to the <i>Global View</i> and utilizing augmented <i>Local
-                            Views</i>
-                            for contrastive learning (Limited: previous motion-aware masking).</p>
-                    </div>
-            </div>
-        </div>
-    </div>
-</section>
-</body>
-
-<section class="section" id="BibTeX">
-    <div class="container is-max-desktop">
-        <h2 class="title">BibTeX</h2>
-        <pre><code>@inproceedings{do2026less,
-  title={Less is More: Compact-Token Masked Feature Learning for Skeleton Representation Learning},
+<pre><code id="bibtex-code">@inproceedings{do2026less,
+  title={Less is More: Compact-Token Masked Feature Prediction for Skeleton Representation Learning},
   author={Do, Jeonghyeok and Chen, Yun and Youk, Geunhyuk and Kim, Munchurl},
   booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
   year={2026}
 }</code></pre>
+      </div>
     </div>
-</section>
+  </section>
+
+</main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: Skeleton &amp; motion">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">Skeleton &amp; motion</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/SkateFormer_site/"><span class="lineage-name">SkateFormer</span><span class="lineage-venue">ECCV 2024</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/TDSM_site/"><span class="lineage-name">TDSM</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-stage"><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">SLiM</span><span class="lineage-venue">NeurIPS 2026</span></span></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/SOfA_site/"><span class="lineage-name">SOfA</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/MotionMaestro_site/"><span class="lineage-name">MotionMaestro</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
 
 <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <a target="_blank" rel="noopener noreferrer" class="icon-link"
-               href="https://arxiv.org/abs/2603.10648">
-                <i class="fas fa-file-pdf"></i>
-            </a>
-            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab"
-               class="external-link" disabled>
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <div class="columns is-centered">
-            <div class="column is-8">
-                <div class="content">
-                    <p>
-                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
-                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> that
-                        kindly open sourced the template of this website.
-                        Please visit our <a target="_blank" rel="noopener noreferrer"
-                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
-                        researches.
-                    </p>
-                </div>
-            </div>
-            <a href="https://mapmyvisitors.com/web/1c34y" title="Visit tracker"><img
-                    src="https://mapmyvisitors.com/map.png?d=-AsNwEQi8CbdebW93FW143TOnQ5JyPxP0VMwkR9e76g&cl=ffffff"/></a>
-        </div>
-    </div>
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.png" width="122" height="84" alt="" loading="lazy"><span class="wordmark">S<span>LiM</span></span></span>&nbsp;&middot; NeurIPS 2026&nbsp;&middot; Korea Advanced Institute of Science and Technology (KAIST)</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://arxiv.org/abs/2603.10648" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/KAIST-VICLab/SLiM" target="_blank" rel="noopener">Code</a>
+      <a href="https://huggingface.co/JeonghyeokDo/SLiM" target="_blank" rel="noopener">Models</a>
+      <a href="mailto:ehwjdgur0913@kaist.ac.kr,cyruby@kaist.ac.kr,rmsgurkjg@kaist.ac.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
 </footer>
 
 </body>

@@ -1,670 +1,722 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description"
-        content="Pansharpening Diffusion model.">
-  <meta name="keywords" content="U-Know-DiffPAN, Super-Resolution, Pansharpening, Diffusion, Knowledge distillation">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>U-Know-DiffPAN: An Uncertainty-aware Knowledge Distillation Diffusion Framework with Details Enhancement for PAN-Sharpening</title>
-  <style>
-    @keyframes shake {
-      0% {transform: translateX(0);}
-      10%, 90% {transform: translateX(-5px);}
-      20%, 80% {transform: translateX(5px);}
-      30%, 50%, 70% {transform: translateX(-5px);}
-      40%, 60% {transform: translateX(5px);}
-      100% {transform: translateX(0);}
-    }
-
-    #blur {
-      /* font-size: 60px; */
-      color: rgb(52,144,197);
-      filter: blur(3x);
-      -webkit-filter: blur(2.5px);
-      animation: shake 1s infinite;
-      display: inline-block;;
-      clear: none;
-    }
-    #shake {
-      /* font-size: 60px; */
-      animation: shake 1s infinite;
-      display: inline-block;;
-      clear: none;
-    }
-  </style>
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HR3PWVQLH2"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-HR3PWVQLH2');
-  </script>
-
-  <!-- <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css"> 
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-    
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
-  <script src="./static/js/video_comparison.js"></script> -->
-    
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-  rel="stylesheet">
-  
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-  <!-- <link rel="icon" href="./images/logo.svg"> -->
-  <link rel="icon" sizes="256x256" href="./static/image/globe.png" type="image/png"/>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
-
-  <!-- Vendor Stylesheets -->
-  <!--=================js==========================-->
-  <link rel="stylesheet" href="./static/css/tab_gallery.css">
-  <link rel="stylesheet" href="./static/css/juxtapose.css">
-  <!-- <script src="./static/js/index.js"></script> -->
-  <!-- <link rel="stylesheet" href="./menlo"> -->
-  <link rel="stylesheet" href="./static/css/image_card_fader.css">
-  <link rel="stylesheet" href="./static/css/image_card_slider.css">  
+  <meta name="description" content="U-Know-DiffPAN is a diffusion framework for PAN-sharpening: a frequency-selective teacher distills frequency-rich features into a lightweight student, guided by a pixel-wise uncertainty map that points the student to difficult image regions (CVPR 2025).">
+  <meta name="author" content="Sungpyo Kim, Jeonghyeok Do, Jaehyup Lee, Munchurl Kim">
+  <meta name="theme-color" content="#1D5CAB">
+  <link rel="canonical" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="U-Know-DiffPAN">
+  <meta property="og:title" content="U-Know-DiffPAN: An Uncertainty-aware Knowledge Distillation Diffusion Framework with Details Enhancement for PAN-Sharpening">
+  <meta property="og:description" content="U-Know-DiffPAN is a diffusion framework for PAN-sharpening: a frequency-selective teacher distills frequency-rich features into a lightweight student, guided by a pixel-wise uncertainty map that points the student to difficult image regions (CVPR 2025).">
+  <meta property="og:url" content="https://kaist-viclab.github.io/U-Know-DiffPAN-site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/U-Know-DiffPAN-site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The U-Know-DiffPAN logo above a full-resolution WorldView-3 comparison: LRMS and PAN crops, PanDiff, TMDiff, CANConv and U-Know-DiffPAN.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="U-Know-DiffPAN: An Uncertainty-aware Knowledge Distillation Diffusion Framework with Details Enhancement for PAN-Sharpening">
+  <meta name="twitter:description" content="An uncertainty map from a diffusion teacher guides a lightweight student to difficult regions; best reduced-resolution scores on WV3, QB and GF2 (CVPR 2025).">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/U-Know-DiffPAN-site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The U-Know-DiffPAN logo above a full-resolution WorldView-3 comparison: LRMS and PAN crops, PanDiff, TMDiff, CANConv and U-Know-DiffPAN.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"], a[data-soon] { pointer-events: none; cursor: default; }</style></noscript>
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
 </head>
 <body>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <!--<div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://www.viclab.kaist.ac.kr">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-supp" viewBox="0 0 24 24"><path d="M15 3H9.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H18a2 2 0 0 0 2-2V8z"/><path d="M15 3v5h5"/><path d="M4.5 7.5V19a2 2 0 0 0 2 2H15"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path d="M3.5 9.5L12 4l8.5 5.5M4.5 20h15M6.5 11.5v5.5M10 11.5v5.5M14 11.5v5.5M17.5 11.5v5.5"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3.5"/><path d="M10 9.3v5.4l4.6-2.7z"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-gallery" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
 
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          Related Works
-        </a>
-        <div class="navbar-dropdown">
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://hangg7.com/dycheck/">
-            Dycheck (Neurips 2022)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://robust-dynrf.github.io/">
-            RoDynRF (CVPR 2023)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://caoang327.github.io/HexPlane/">
-            HexPlane (CVPR 2023)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://wangpeng000.github.io/BAD-NeRF/">
-            BAD-NeRF (CVPR 2023)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://dogyoonlee.github.io/dpnerf/">
-            DP-NeRF (CVPR 2023)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://jaminfong.cn/tineuvox/">
-            TiNeuVox (ACM SIGGRAPH Asia 2022)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://hypernerf.github.io/">
-            HyperNeRF (ACM Trans. Graph. 2021)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://nerfies.github.io/">
-            Nerfies (ICCV 2021)
-          </a>
-          <a target="_blank" rel="noopener noreferrer" class="navbar-item" href="https://www.cs.cornell.edu/~zl548/NSFF/">
-            NSFF (CVPR 2021)
-          </a>
-        </div>
-      </div>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="U-Know-DiffPAN, back to top"><img src="static/images/icon.png" width="78" height="84" alt=""><span class="wordmark" aria-hidden="true">U-Know-Diff<span>PAN</span></span></a>
+    <div class="topnav-links">
+      <a href="#gallery">Gallery</a>
+      <a href="#figures">Figures</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
-
-  </div>-->
+    <a class="topnav-cta" href="https://openaccess.thecvf.com/content/CVPR2025/papers/Kim_U-Know-DiffPAN_An_Uncertainty-aware_Knowledge_Distillation_Diffusion_Framework_with_Details_Enhancement_CVPR_2025_paper.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
 </nav>
 
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <div class="title is-2 publication-title">
-            <h1 style="display: inline; clear: none;">
-              <img src="./static/image/globe.png" width="40" height="40">
-              <font color="#d91421"><b>U</b></font>-
-              <font color="#008000"><b>Know</b></font>-
-              <font color="#00BFFF"><b>Diff</b></font>-<b>PAN</b>:
-              <font color="#d91421"><b>U</b></font>ncertainty-aware 
-              <font color="#008000"><b>Know</b></font>ledge Distillation
-              <font color="#00BFFF"><b>Diff</b></font>usion Framework with Details Enhancement for <b>PAN</b>-Sharpening
-            </h1>
-          </div>  <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://www.viclab.kaist.ac.kr/">Sungpyo Kim</a><sup> 1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
-            </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo">Jeonghyeok Do</a><sup> 1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
-            </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/knuairlab/">Jaehyup Lee</a><sup>† 2</sup>
-            </span>
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ">Munchurl Kim</a><sup>† 1</sup>
-            </span>
-          </div>
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"> <sup>†</sup>Co-corresponding authors</span>
-            <!-- <span class="author-block"><sup>†</sup>Corresponding author</span> -->
-          </div>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Korea Advanced Institute of Science and Technology, South Korea</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          </div>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>2</sup> Kyungpook National University, South Korea</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          </div>
-          <!-- <div class="is-size-4 publication-authors">
-            <span class="author-block", style="color:#346dc2">CVPR 2024 Oral</span>
-          </div> -->
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-
-              <!-- PDF Link. -->
-              <span class="link-block"> -->
-                <a target="_blank" rel="noopener noreferrer" href="https://openaccess.thecvf.com/content/CVPR2025/html/Kim_U-Know-DiffPAN_An_Uncertainty-aware_Knowledge_Distillation_Diffusion_Framework_with_Details_Enhancement_CVPR_2025_paper.html"
-                <!-- <a target="_blank" rel="noopener noreferrer" href="https://xxxx.html"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-
-              <!-- Arxiv Link -->
-              <span class="link-block">
-                <!-- <a target="_blank" rel="noopener noreferrer" href="http://arxiv.org/abs/2401.03707" -->
-                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2412.06243"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-
-              <!-- Video Link. -->
-              <!-- <span class="link-block"> -->
-                <!-- <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=kO7KavOH6vw" -->
-                <!-- <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/xxxxxxxx"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span> -->
-
-              <!-- Code Link. -->
-              <span class="link-block">
-                <!-- <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/FMA-Net" -->
-                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-
-            </div>
-
-          </div>
+<header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: PAN-sharpening">
+    <p class="lineage-menu-head"><b>Research line</b>PAN-sharpening</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></span></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.svg" width="3017.11" height="410" alt="U-Know-DiffPAN:" fetchpriority="high">
+      <span class="hero-title">An <span class="nowrap"><span class="hero-accent">U</span>ncertainty-aware</span> <span class="nowrap"><span class="hero-accent">Know</span>ledge Distillation</span> <span class="nowrap"><span class="hero-accent">Diff</span>usion Framework</span> with Details Enhancement for <span class="nowrap"><span class="hero-accent-s">PAN</span>-Sharpening</span></span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Sungpyo Kim</a><sup>1</sup></span>
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a><sup>1</sup></span>
+      <span class="author"><a href="https://sites.google.com/view/jaehyup-lee" target="_blank" rel="noopener">Jaehyup Lee</a><sup>2,&dagger;</sup></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>1,&dagger;</sup></span>
+    </p>
+    <p class="hero-affil"><span><sup>1</sup>Korea Advanced Institute of Science and Technology (KAIST), South Korea</span><span><sup>2</sup>Kyungpook National University, South Korea</span></p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Co-corresponding authors</span><span class="mono mail"><a href="mailto:ksp04204@kaist.ac.kr">ksp04204@kaist.ac.kr</a><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:jaehyuplee@knu.ac.kr">jaehyuplee@knu.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">CVPR 2025</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="https://openaccess.thecvf.com/content/CVPR2025/papers/Kim_U-Know-DiffPAN_An_Uncertainty-aware_Knowledge_Distillation_Diffusion_Framework_with_Details_Enhancement_CVPR_2025_paper.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://openaccess.thecvf.com/content/CVPR2025/supplemental/Kim_U-Know-DiffPAN_An_Uncertainty-aware_CVPR_2025_supplemental.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-supp"/></svg>Supp</a>
+      <a class="btn" href="https://arxiv.org/abs/2412.06243" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
+      <a class="btn" href="https://www.youtube.com/watch?v=kO7KavOH6vw" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-video"/></svg>Video</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/U-Know-DiffPAN" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="#gallery"><svg class="icon" aria-hidden="true"><use href="#i-gallery"/></svg>Gallery</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>Conventional methods for PAN-sharpening often struggle to restore fine details due to limitations in leveraging high-frequency information. Moreover, diffusion-based approaches lack sufficient conditioning to fully utilize Panchromatic (PAN) images and low-resolution multispectral (LRMS) inputs effectively. To address these challenges, we propose an uncertainty-aware knowledge distillation diffusion framework with details enhancement for PAN-sharpening, called <b>U-Know-DiffPAN</b>. The U-Know-DiffPAN incorporates uncertainty-aware knowledge distillation for effective transfer of feature details from our teacher model to a student one. The teacher model in our U-Know-DiffPAN captures frequency details through frequency selective attention, facilitating accurate reverse process learning. By conditioning the encoder on compact vector representations of PAN and LRMS and the decoder on Wavelet transforms, we enable rich frequency utilization. So, the high-capacity teacher model distills frequency-rich features into a lightweight student model aided by an uncertainty map. From this, the teacher model can guide the student model to focus on difficult image regions for PAN-sharpening via the usage of the uncertainty map. Extensive experiments on diverse datasets demonstrate the robustness and superior performance of our U-Know-DiffPAN over very recent state-of-the-art PAN-sharpening methods.</p>
         </div>
       </div>
-    </div>
+    </details>
   </div>
-</section>
+</header>
 
+<main id="main">
 
-<!--=================Teasers==========================-->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container is-max-desktop has-text-centered">
-      <!-- The expanding image container -->
-      <div class="tab_container">
-        <!-- Close the image -->
-        <!-- <span onclick="this.parentElement.style.display='none'" class="closebtn">&times;</span> -->
-
-        <!-- Expanded image -->
-        <div id="juxtapose-embed" data-startingposition="30%" data-animate="true" class="juxtapose"
-          style="height: 800px; width: 800px;">
-          <div class="jx-slider">
-            <div class="jx-handle " style="left: 50%;">
-              <div class="jx-arrow jx-left"></div>
-              <div class="jx-control">
-                <div class="jx-controller" tabindex="0" role="slider" aria-valuenow="50" aria-valuemin="0"
-                  aria-valuemax="100"></div>
-              </div>
-              <div class="jx-arrow jx-right"></div>
-            </div>
-            <div class="jx-image jx-left " style="width: 50%;"><img src="./src/UDC_1.png" alt="">
-              <div class="jx-label" tabindex="0">UDC images</div>
-            </div>
-            <div class="jx-image jx-right " style="width: 50%;"><img src="./src/AF_1.png" alt="">
-              <div class="jx-label" tabindex="0">AlignFormer results</div>
-            </div><a href="https://juxtapose.knightlab.com" target="_blank" rel="noopener" class="jx-knightlab">
-              <div class="knightlab-logo"></div><span class="juxtapose-name">JuxtaposeJS</span>
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <div id="juxtapose-hidden"></div>
-        </div>
-
-        <!-- Image text -->
-        <div id="imgtext"></div>
-      </div>
-
-      <!-- The grid: four columns -->
-      <div class="tab_row">
-        <div class="tab_column">
-          <img src="./static/image/wv3_RR_testimg11_lrms.png" onclick="tab_gallery_click('wv3_RR_testimg11');">
-        </div>
-        <div class="tab_column">
-          <img src="./static/image/wv3_FR_testimg5_lrms.png" onclick="tab_gallery_click('wv3_FR_testimg5');">
-        </div>
-        <div class="tab_column">
-          <img src="./static/image/qb_RR_testimg3_lrms.png" onclick="tab_gallery_click('qb_RR_testimg3');">
-        </div>
-        <div class="tab_column">
-          <img src="./static/image/qb_FR_testimg8_lrms.png" onclick="tab_gallery_click('qb_FR_testimg8');">
-        </div>
-        <div class="tab_column">
-          <img src="./static/image/gf2_RR_testimg19_lrms.png" onclick="tab_gallery_click('gf2_RR_testimg19');">
-        </div>
-        <div class="tab_column">
-          <img src="./static/image/gf2_FR_testimg18_lrms.png" onclick="tab_gallery_click('gf2_FR_testimg18');">
-        </div>
-      </div>
+  <!-- Headline + first result: paper Fig. 1 (full-resolution WV3) -->
+  <section class="section section--headline" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">Lighter student, finer details</h2>
+        <p class="lead">A diffusion teacher&rsquo;s uncertainty map guides a lightweight student to difficult regions, such as cars.</p>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/teaser_full.jpg" data-title="Full-resolution WorldView-3 comparison">
+          <picture>
+            <source media="(max-width: 600px)"
+                    srcset="static/images/teaser_m_900.jpg 900w, static/images/teaser_m_1200.jpg 1200w"
+                    sizes="calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                    width="1200" height="1051">
+            <img src="static/images/teaser_1600.jpg"
+                 srcset="static/images/teaser_1200.jpg 1200w, static/images/teaser_1600.jpg 1600w, static/images/teaser_2000.jpg 2000w"
+                 sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                 width="1600" height="387" fetchpriority="high" decoding="async"
+                 alt="Full-resolution WorldView-3 parking lot: LRMS and PAN crops of a group of cars, then PanDiff, TMDiff, CANConv and U-Know-DiffPAN (ours), each with a red box on the cars and an enlarged inset; the U-Know-DiffPAN inset shows the cars most clearly.">
+          </picture>
+        </a>
+        <figcaption><b>Full-resolution WorldView-3.</b> PanDiff, TMDiff, CANConv and U-Know-DiffPAN (the student FSA-S); the red boxes enlarge cars, a highly uncertain region.</figcaption>
+      </figure>
     </div>
-  </div>
-</section>
-
-<script>
-bulmaCarousel.attach('#results-carousel', {
-  slidesToShow: 2,
-  loop: true,
-  pagination: false,
-});
-</script>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <!-- <p>
-            We present a joint learning scheme of video super-resolution and deblurring, called VSRDB, to restore clean high-resolution (HR) videos from blurry low-resolution (LR) ones.
-            This joint restoration problem has drawn much less attention compared to single restoration problems.
-          </p>
-          <p>
-            We propose a novel flow-guided dynamic filtering (FGDF) and iterative feature refinement with multi-attention (FRMA), which constitutes our VSRDB framework, denoted as FMA-Net.
-            Specifically, our proposed FGDF enables precise estimation of both spatio-temporally-variant degradation and restoration kernels that are aware of motion trajectories through sophisticated motion representation learning.
-            Compared to conventional dynamic filtering, the FGDF enables the FMA-Net to effectively handle large motions into the VSRDB.
-          </p>
-          <p>
-            Additionally, the stacked FRMA blocks trained with our novel temporal anchor (TA) loss, which temporally anchors and sharpens features, refine features in a course-to-fine manner through iterative updates.
-            Extensive experiments demonstrate the superiority of the proposed FMA-Net over state-of-the-art methods in terms of both quantitative and qualitative quality.
-          </p> -->
-          <p>
-            Conventional methods for PAN-sharpening often struggle to restore fine details due to limitations in leveraging high-frequency information. 
-            Moreover, diffusion-based approaches lack sufficient conditioning to fully utilize Panchromatic (PAN) images and low-resolution multispectral (LRMS) inputs effectively. 
-            To address these challenges, we propose an uncertainty-aware knowledge distillation diffusion framework with details enhancement for PAN-sharpening, called U-Know-DiffPAN. 
-            The U-Know-DiffPAN incorporates uncertainty-aware knowledge distillation for effective transfer of feature details from our teacher model to a student one. 
-            The teacher model in our U-Know-DiffPAN captures frequency details through freqeuncy selective attention, facilitating accurate reverse process learning. 
-            By conditioning the encoder on compact vector representations of PAN and LRMS and the decoder on Wavelet transforms, we enable rich frequency utilization. 
-            So, the high-capacity teacher model distills frequency-rich features into a lightweight student model aided by an uncertainty map. 
-            From this, the teacher model can guide the student model to focus on difficult image regions for PAN-sharpening via the usage of the uncertainty map. 
-            Extensive experiments on diverse datasets demonstrate the robustness and superior performance of our U-Know-DiffPAN over very recent state-of-the-art PAN-sharpening methods.
-          </p>
-          <p>
-
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Abstract. -->
-
-    <!-- Paper video. -->
-    <!-- <div class="columns is-centered has-text-centered">
-      <div class="column is-full">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/G6qqJXztJDM"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div> -->
-    <!--/ Paper video. -->
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-widescreen">
-    <h2 class="title is-3"> Overview of U-Know_Diff_PAN</h2>
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full">
-        <image src="./static/image/overview.png" 
-        class="img-responsive" 
-        alt="DDNeRF_Architecture_v21"
-        style="width: 75%; height: auto;"><br>
-        <div class="content has-text-justified">
-          <p>
-            The overall pipeline of U-Know-DiffPAN for PAN-sharpening. Our framework operates in two main stages: (i) pre-training the FSA-T within a diffusion process to produce an initial prediction alongside
-             an uncertainty map that identifies spatially weak regions; and (ii) training the FSA-S by leveraging this uncertainty map to guide the FSA-S in refining these regions through the KD.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-widescreen">
-    <h2 class="title is-3">Network Architecture</h2>
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full">
-        <image src="./static/image/FSA_T.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-        <div class="content has-text-justified">
-          <p>
-            <!-- <b>Top:</b> The overall pipeline of U-Know-DiffPAN for PAN-sharpening. <br>
-            <b>Bottom:</b> (a) Architecture of FSA-T block; (b) Architecture of FSA-S block. -->
-            Architecture of FSA-T block
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-widescreen">
-    <h2 class="title is-3">Quantitative Results</h2>
-    <div class="columns is-centered has-text-centered is-multiline">
-      <div class="column is-full">
-        <image src="./static/image/GF2_table.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-        <div class="content has-text-justified">
-          <p>
-            Quantitative comparison on GF2 dataset.
-            Comparison of different models on the GaoFen-2 (GF2) dataset. Blue indicates the second-best performance, while Red highlights the best-performing model.
-          </p>
-        </div>
-      </div>
-      <div class="column is-full">
-        <image src="./static/image/WV3_QB_table.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-        <div class="content has-text-justified">
-          <p>
-            Quantitative comparison on WV3 and QB dataset.
-            Comparison of different models on the WorldView-3 (WV3) and QuickBird (QB) datasets. Blue indicates the second-best performance, while Red highlights the best-performing model.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
   </section>
 
-  <section class="section">
-    <div class="container is-widescreen">
-      <h2 class="title is-3">Qualitative Results</h2>
-      <!-- <div class="columns is-centered has-text-centered"> -->
-      <div class="columns is-centered has-text-centered is-multiline">
-        <div class="column is-full">
-          <image src="./static/image/suppl_reduced_gf2.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-          <div class="content has-text-justified">
-            <p>
-              PAN-sharpening results for the GF2 dataset under reduced resolution (RR) scenarios. The first row depicts the output HRMS
-              images, while the second row highlights the Error Map between the output HRMS and the corresponding ground truth images.The Mean
-              Absolute Error (MAE) values are presented alongside the Error Map.
-            </p>
+  <!-- Gallery: the old page's LRMS / result pairs (tiles + compare dialog); then the paper's qualitative figures -->
+  <section class="section section--band" id="gallery" aria-labelledby="gallery-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="gallery-title">From LRMS to HRMS</h2>
+        <p class="lead">U-Know-DiffPAN outputs next to the upsampled LRMS input, on a reduced- and a full-resolution test image of each satellite. Select a tile to open the comparison slider.</p>
+      </header>
+
+      <div class="tabs pair-tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Satellite">
+            <button class="tab" role="tab" type="button" id="tab-g-wv3" aria-controls="panel-g-wv3" aria-selected="true">WV3<small>WorldView-3</small></button>
+            <button class="tab" role="tab" type="button" id="tab-g-qb" aria-controls="panel-g-qb" aria-selected="false">QB<small>QuickBird</small></button>
+            <button class="tab" role="tab" type="button" id="tab-g-gf2" aria-controls="panel-g-gf2" aria-selected="false">GF2<small>GaoFen-2</small></button>
           </div>
         </div>
-        <div class="column is-full">
-          <image src="./static/image/suppl_reduced_qb.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-          <div class="content has-text-justified">
-            <p>
-              PAN-sharpening results for the QB dataset under reduced resolution (RR) scenarios. The first row depicts the output HRMS
-              images, while the second row highlights the Error Map between the output HRMS and the corresponding ground truth images. The Mean
-              Absolute Error (MAE) values are presented alongside the Error Map.
-            </p>
-          </div>
+        <div class="legend" aria-label="Tile legend">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--input"></span>LRMS input (upsampled)</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--ours"></span>U-Know-DiffPAN (ours)</span>
         </div>
-        <div class="column is-full">
-          <image src="./static/image/suppl_reduced_wv3.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-          <div class="content has-text-justified">
-            <p>
-              PAN-sharpening results for the GF2 dataset under reduced resolution (RR) scenarios. The first row depicts the output HRMS
-              images, while the second row highlights the Error Map between the output HRMS and the corresponding ground truth images. The Mean
-              Absolute Error (MAE) values are presented alongside the Error Map.
-            </p>
-          </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-wv3" aria-labelledby="tab-g-wv3" tabindex="-1">
+          <div data-gallery="wv3"></div>
         </div>
-        <div class="column is-full">
-          <image src="./static/image/suppl_full_wv3.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-          <div class="content has-text-justified">
-            <p>
-              PAN-sharpening results for the WV3 dataset under full resolution (FR) scenarios. The first row depicts the output HRMS
-              images.
-            </p>
-          </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-qb" aria-labelledby="tab-g-qb" tabindex="-1" hidden>
+          <div data-gallery="qb"></div>
         </div>
-        <div class="column is-full">
-          <image src="./static/image/suppl_full_qb.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-          <div class="content has-text-justified">
-            <p>
-              PAN-sharpening results for the WV3 dataset under full resolution (FR) scenarios. The first row depicts the output HRMS
-              images.
-            </p>
-          </div>
-        </div>
-        <div class="column is-full">
-          <image src="./static/image/suppl_full_gf2.png" class="img-responsive" alt="DDNeRF_Architecture_v21"><br>
-          <div class="content has-text-justified">
-            <p>
-              PAN-sharpening results for the GF2 dataset under full resolution (FR) scenarios. The first row depicts the output HRMS images.
-            </p>
-          </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-gf2" aria-labelledby="tab-g-gf2" tabindex="-1" hidden>
+          <div data-gallery="gf2"></div>
         </div>
       </div>
-    </div>
-    </section>
-
-<!-- <section class="section"> -->
-  <!-- <div class="container is-widescreen"> -->
-    <!-- Concurrent Work. -->
-    <!-- <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Acknowledgement</h2>
-
-        <div class="content has-text-justified">
-          <p>
-            This work was supported by the Institute of Information & communications Technology Planning & Evaluation (IITP) grant funded by the Korea government (MSIT): No. 2021-0-00087, Development of high-quality conversion technology for SD/HD low-quality media and No. RS2022-00144444, Deep Learning Based Visual Representational Learning and Rendering of Static and Dynamic Scenes.
-          </p>
-        </div>
-      </div>
-    </div> -->
-    <!--/ Concurrent Work. -->
-  <!-- </div>
-</section> -->
-
-<!-- <section class="section" id="BibTeX">
-  <div class="container is-widescreen content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@InProceedings{Youk_2024_CVPR,
-    author    = {Kim, Sungpyo and Kim, Sungpyo and Kim, Munchurl},
-    title     = {U-Know-DiffPAN: An Uncertainty-aware Knowledge Distillation Diffusion Framework with Details Enhancement for PAN-Sharpening},
-    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-    month     = {June},
-    year      = {2024},
-    pages     = {44-55}
-}</code></pre>
-  </div>
-</section> -->
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
-      <a target="_blank" rel="noopener noreferrer" class="icon-link"
-         href="">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            We thank the authors of <a target="_blank" rel="noopener noreferrer" href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>  that kindly open sourced the template of this website.
-            Please visit our <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting researches
-          </p>
-        </div>
-      </div>
-<!--       <script type="text/javascript" id="mapmyvisitors" src="//mapmyvisitors.com/map.js?d=9m0ZS4AxwFSdh8NyeNwF9tYWp7ej9AlJ2-V9PRqw5XA&cl=ffffff&w=a"></script> -->
-      <a href="https://mapmyvisitors.com/web/1bwzu"  title="Visit tracker"><img src="https://mapmyvisitors.com/map.png?d=9m0ZS4AxwFSdh8NyeNwF9tYWp7ej9AlJ2-V9PRqw5XA&cl=ffffff" /></a>
-    </div>
-  </div>
-</footer>
-
-
-<!-- Image Slider Javascripts -->
-<!--=================Functions==========================-->
-<script src="./static/js/juxtapose.js"></script>
-
-<script>
-  var slider;
-  let origImages = [
-    { "src": "./static/image/wv3_RR_testimg11_lrms.png", "label": "Zoomed LRMS images", },
-    { "src": "./static/image/wv3_RR_testimg11_hrms.png", "label": "U-Know-DiffPAN results", }
-  ];
-  let origOptions = {
-    "makeResponsive": true,
-    "showLabels": true,
-    "mode": "horizontal",
-    "showCredits": true,
-    "animate": true,
-    "startingPosition": "50"
-  };
-
-  const juxtaposeSelector = "#juxtapose-embed";
-  const transientSelector = "#juxtapose-hidden";
-
-
-  function tab_gallery_click(name) {
-    // Get the expanded image
-    let inputImage = {
-      label: "Zoomed LRMS images",
-    };
-    let outputImage = {
-      label: "U-Know_DiffPAN results",
-    };
-
-    inputImage.src = "./static/image/".concat(name, "_lrms", ".png")
-    outputImage.src = "./static/image/".concat(name, "_hrms", ".png")
-
-    let images = [inputImage, outputImage];
-    let options = slider.options;
-    options.callback = function (obj) {
-      var newNode = document.getElementById(obj.selector.substring(1));
-      var oldNode = document.getElementById(juxtaposeSelector.substring(1));
-      console.log(obj.selector.substring(1));
-      console.log(newNode.children[0]);
-      oldNode.replaceChild(newNode.children[0], oldNode.children[0]);
-      // newNode.removeChild(newNode.children[0]);
-
-    };
-
-    slider = new juxtapose.JXSlider(transientSelector, images, options);
-  };
-
-  (function () {
-    slider = new juxtapose.JXSlider(
-      juxtaposeSelector, origImages, origOptions);
-    // document.getElementById("left-button").onclick = replaceLeft;
-    // document.getElementById("right-button").onclick = replaceRight;
-
-  })();
-  // Get the image text
-  var imgText = document.getElementById("imgtext");
-  // Use the same src in the expanded image as the image being clicked on from the grid
-  // expandImg.src = imgs.src;
-  // Use the value of the alt attribute of the clickable image as text inside the expanded image
-  imgText.innerHTML = name;
-  // Show the container element (hidden with CSS)
-  // expandImg.parentElement.style.display = "block";
-
-  $(".flip-card").click(function () {
-    console.log("fading in")
-    div_back = $(this).children().children()[1]
-    div_front = $(this).children().children()[0]
-    // console.log($(this).children("div.flip-card-back"))
-    console.log(div_back)
-    $(div_front).addClass("out");
-    $(div_front).removeClass("in");
-
-    $(div_back).addClass("in");
-    $(div_back).removeClass("out");
-
-  });
-
-  $(".flip-card").mouseleave(function () {
-    console.log("fading in")
-    div_back = $(this).children().children()[1]
-    div_front = $(this).children().children()[0]
-    // console.log($(this).children("div.flip-card-back"))
-    console.log(div_back)
-    $(div_front).addClass("in");
-    $(div_front).removeClass("out");
-
-    $(div_back).addClass("out");
-    $(div_back).removeClass("in");
-
-  });
+      <noscript><p class="gallery-noscript">The interactive gallery needs JavaScript. The paper figures below show the comparisons with the baselines.</p></noscript>
+      <p class="carousel-hint"><span class="hint-pointer">Use the arrows or the <kbd>&larr;</kbd>&thinsp;<kbd>&rarr;</kbd> keys to switch between reduced and full resolution &middot; click a tile to open the comparison slider</span><span class="hint-touch">Swipe or use the arrows to switch resolution &middot; tap a tile to open the comparison slider</span></p>
+<script type="application/json" id="gallery-data">
+{"root":"static/samples/","datasets":[{"id":"wv3","name":"WV3","unit":"Scene","dir":"wv3","refName":"U-Know-DiffPAN","cols":[{"n":"LRMS","v":"Input","k":"input","f":"lrms"},{"n":"U-Know-DiffPAN","v":"Ours","k":"ours","f":"ours"}],"scenes":[{"key":"rr","name":"Reduced resolution","w":256,"h":256,"cs":2.2},{"key":"fr","name":"Full resolution","w":512,"h":512,"cs":1.2}]},{"id":"qb","name":"QB","unit":"Scene","dir":"qb","refName":"U-Know-DiffPAN","cols":[{"n":"LRMS","v":"Input","k":"input","f":"lrms"},{"n":"U-Know-DiffPAN","v":"Ours","k":"ours","f":"ours"}],"scenes":[{"key":"rr","name":"Reduced resolution","w":256,"h":256,"cs":2.2},{"key":"fr","name":"Full resolution","w":512,"h":512,"cs":1.2}]},{"id":"gf2","name":"GF2","unit":"Scene","dir":"gf2","refName":"U-Know-DiffPAN","cols":[{"n":"LRMS","v":"Input","k":"input","f":"lrms"},{"n":"U-Know-DiffPAN","v":"Ours","k":"ours","f":"ours"}],"scenes":[{"key":"rr","name":"Reduced resolution","w":256,"h":256,"cs":2.2},{"key":"fr","name":"Full resolution","w":512,"h":512,"cs":1.2}]}]}
 </script>
 
+      <header class="section-head section-head--sub" id="figures">
+        <h2 class="section-title" id="figures-title">Paper figures</h2>
+        <p class="lead">Nine methods at reduced resolution, with error maps and MAE against the ground truth; six at full resolution, where no ground truth exists; and the teacher&rsquo;s uncertainty maps.</p>
+      </header>
+
+      <div class="tabs figure-tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-labelledby="figures-title">
+            <button class="tab" role="tab" type="button" id="ft-wv3" aria-controls="fp-wv3" aria-selected="true">WV3</button>
+            <button class="tab" role="tab" type="button" id="ft-qb" aria-controls="fp-qb" aria-selected="false">QB</button>
+            <button class="tab" role="tab" type="button" id="ft-gf2" aria-controls="fp-gf2" aria-selected="false">GF2</button>
+            <button class="tab" role="tab" type="button" id="ft-unc" aria-controls="fp-unc" aria-selected="false">Uncertainty maps</button>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="fp-wv3" aria-labelledby="ft-wv3" tabindex="-1">
+          <div class="figure-stack">
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/rr_wv3_full.jpg" data-title="WV3, reduced resolution">
+              <img src="static/images/rr_wv3_2000.jpg"
+                   srcset="static/images/rr_wv3_1200.jpg 1200w, static/images/rr_wv3_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="597" loading="lazy" decoding="async"
+                   alt="Reduced-resolution WorldView-3 scene. Top row: outputs of FusionNet, LAGConv, S2DBPN, DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S, each with a red box and an enlarged inset. Bottom row: error maps against the ground truth with MAE FusionNet 0.1746, LAGConv 0.1720, S2DBPN 0.1637, DCPNet 0.1718, CANConv 0.1592, PanDiff 0.1581, TMDiff 0.1541, FSA-T 0.1416, FSA-S 0.1421.">
+            </a>
+            <figcaption><b>WV3, reduced resolution.</b> Output HRMS (top) and error map against the ground truth, with its MAE (bottom).</figcaption>
+          </figure>
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/fr_wv3_full.jpg" data-title="WV3, full resolution">
+              <img src="static/images/fr_wv3_2000.jpg"
+                   srcset="static/images/fr_wv3_1200.jpg 1200w, static/images/fr_wv3_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="462" loading="lazy" decoding="async"
+                   alt="Full-resolution WorldView-3 scene: outputs of DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S, each with a red box and an enlarged inset.">
+            </a>
+            <figcaption><b>WV3, full resolution.</b> Output HRMS of DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S; no ground truth exists at full resolution.</figcaption>
+          </figure>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="fp-qb" aria-labelledby="ft-qb" tabindex="-1" hidden>
+          <div class="figure-stack">
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/rr_qb_full.jpg" data-title="QB, reduced resolution">
+              <img src="static/images/rr_qb_2000.jpg"
+                   srcset="static/images/rr_qb_1200.jpg 1200w, static/images/rr_qb_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="599" loading="lazy" decoding="async"
+                   alt="Reduced-resolution QuickBird scene. Top row: outputs of FusionNet, LAGConv, S2DBPN, DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S, each with a red box and an enlarged inset. Bottom row: error maps against the ground truth with MAE FusionNet 0.1513, LAGConv 0.1411, S2DBPN 0.1437, DCPNet 0.1297, CANConv 0.1359, PanDiff 0.1371, TMDiff 0.1403, FSA-T 0.1283, FSA-S 0.1295.">
+            </a>
+            <figcaption><b>QB, reduced resolution.</b> Output HRMS (top) and error map against the ground truth, with its MAE (bottom).</figcaption>
+          </figure>
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/fr_qb_full.jpg" data-title="QB, full resolution">
+              <img src="static/images/fr_qb_2000.jpg"
+                   srcset="static/images/fr_qb_1200.jpg 1200w, static/images/fr_qb_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="463" loading="lazy" decoding="async"
+                   alt="Full-resolution QuickBird scene: outputs of DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S, each with a red box and an enlarged inset.">
+            </a>
+            <figcaption><b>QB, full resolution.</b> Output HRMS of DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S; no ground truth exists at full resolution.</figcaption>
+          </figure>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="fp-gf2" aria-labelledby="ft-gf2" tabindex="-1" hidden>
+          <div class="figure-stack">
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/rr_gf2_full.jpg" data-title="GF2, reduced resolution">
+              <img src="static/images/rr_gf2_2000.jpg"
+                   srcset="static/images/rr_gf2_1200.jpg 1200w, static/images/rr_gf2_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="600" loading="lazy" decoding="async"
+                   alt="Reduced-resolution GaoFen-2 scene. Top row: outputs of FusionNet, LAGConv, S2DBPN, DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S, each with a red box and an enlarged inset. Bottom row: error maps against the ground truth with MAE FusionNet 0.1278, LAGConv 0.0958, S2DBPN 0.0799, DCPNet 0.0918, CANConv 0.0726, PanDiff 0.0750, TMDiff 0.0877, FSA-T 0.0584, FSA-S 0.0607.">
+            </a>
+            <figcaption><b>GF2, reduced resolution.</b> Output HRMS (top) and error map against the ground truth, with its MAE (bottom).</figcaption>
+          </figure>
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/fr_gf2_full.jpg" data-title="GF2, full resolution">
+              <img src="static/images/fr_gf2_2000.jpg"
+                   srcset="static/images/fr_gf2_1200.jpg 1200w, static/images/fr_gf2_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="462" loading="lazy" decoding="async"
+                   alt="Full-resolution GaoFen-2 scene: outputs of DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S, each with a red box and an enlarged inset.">
+            </a>
+            <figcaption><b>GF2, full resolution.</b> Output HRMS of DCPNet, CANConv, PanDiff, TMDiff, FSA-T and FSA-S; no ground truth exists at full resolution.</figcaption>
+          </figure>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="fp-unc" aria-labelledby="ft-unc" tabindex="-1" hidden>
+          <figure class="figure fig-uncertainty">
+            <a class="figure-media zoom" href="static/images/uncertainty_full.jpg" data-title="Uncertainty maps on reduced-resolution WV3">
+              <img src="static/images/uncertainty_1600.jpg"
+                   srcset="static/images/uncertainty_1000.jpg 1000w, static/images/uncertainty_1600.jpg 1600w"
+                   sizes="(min-width: 1060px) 980px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="1600" height="918" loading="lazy" decoding="async"
+                   alt="Five reduced-resolution WorldView-3 scenes in columns, three rows: the teacher's uncertainty map (bright on building edges, roads and the surf line), the error map, and the ground-truth HRMS image.">
+            </a>
+            <figcaption><b>Uncertainty maps on reduced-resolution WV3.</b> The teacher&rsquo;s uncertainty <i>&theta;&#770;</i> (top) is high on object edges and other high-frequency areas and resembles the error map (middle); bottom: the ground-truth HRMS.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quantitative results -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead">FSA-T or FSA-S is best on <b>every reduced-resolution metric</b> on WV3, QB and GF2; on WV3 and QB, the lightweight student surpasses its teacher on several metrics.</p>
+      </header>
+
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t3" aria-controls="panel-t3" aria-selected="true">Table 3<small>WV3 &amp; QB</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="false">Table 2<small>GF2</small></button>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t3" aria-labelledby="tab-t3" tabindex="-1">
+<figure class="table-figure" id="table-3">
+<figcaption><span class="fig-label">Table 3.</span> Performance comparison of different models on WV3 and QB datasets. <b>Bold</b> and <u>underline</u> highlight the best- and 2nd-best performing models. The results for the full-resolution datasets and detailed results with standard deviations are provided in Table&nbsp;8.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-t0-vl" data-table="#tab-main-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">WV3</button><button type="button" data-view="g2" aria-pressed="false">QB</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (scrolls horizontally)"><table class="results" id="tab-main-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Method</th>
+<th rowspan="2" scope="col" class="col-venue">Venue</th>
+<th colspan="6" scope="colgroup" class="col-group grp-start g1"><span>WV3 (Reduced-Resolution)</span></th>
+<th colspan="6" scope="colgroup" class="col-group grp-start g2"><span>QB (Reduced-Resolution)</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">Q8<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">Q4<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="14"><span class="group-label">Non-diffusion models</span></td></tr>
+<tr><td class="col-method">PanNet</td><td class="col-venue">ICCV'17</td><td class="grp-start g1">36.148</td><td class="g1">0.966</td><td class="g1">3.402</td><td class="g1">2.538</td><td class="g1">0.979</td><td class="g1">0.913</td><td class="grp-start g2">35.563</td><td class="g2">0.939</td><td class="g2">5.273</td><td class="g2">4.856</td><td class="g2">0.966</td><td class="g2">0.911</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="col-venue">JSTARS'18</td><td class="grp-start g1">36.329</td><td class="g1">0.967</td><td class="g1">3.300</td><td class="g1">2.489</td><td class="g1">0.979</td><td class="g1">0.914</td><td class="grp-start g2">37.040</td><td class="g2">0.954</td><td class="g2">4.828</td><td class="g2">4.074</td><td class="g2">0.977</td><td class="g2">0.925</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="col-venue">ICCV'21</td><td class="grp-start g1">36.569</td><td class="g1">0.968</td><td class="g1">3.188</td><td class="g1">2.428</td><td class="g1">0.981</td><td class="g1">0.916</td><td class="grp-start g2">36.821</td><td class="g2">0.952</td><td class="g2">4.892</td><td class="g2">4.183</td><td class="g2">0.975</td><td class="g2">0.923</td></tr>
+<tr><td class="col-method">LAGConv</td><td class="col-venue">AAAI'22</td><td class="grp-start g1">36.732</td><td class="g1">0.970</td><td class="g1">3.153</td><td class="g1">2.380</td><td class="g1">0.981</td><td class="g1">0.916</td><td class="grp-start g2">37.565</td><td class="g2">0.958</td><td class="g2">4.682</td><td class="g2">3.845</td><td class="g2">0.980</td><td class="g2">0.930</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="col-venue">TGRS'23</td><td class="grp-start g1">37.216</td><td class="g1">0.972</td><td class="g1">3.019</td><td class="g1">2.245</td><td class="g1">0.985</td><td class="g1">0.917</td><td class="grp-start g2">37.314</td><td class="g2">0.956</td><td class="g2">4.849</td><td class="g2">3.956</td><td class="g2">0.980</td><td class="g2">0.928</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="col-venue">TGRS'24</td><td class="grp-start g1">37.009</td><td class="g1">0.972</td><td class="g1">3.083</td><td class="g1">2.301</td><td class="g1">0.984</td><td class="g1">0.915</td><td class="grp-start g2">38.079</td><td class="g2 second">0.963</td><td class="g2">4.420</td><td class="g2">3.618</td><td class="g2">0.983</td><td class="g2">0.935</td></tr>
+<tr><td class="col-method">CANConv</td><td class="col-venue">CVPR'24</td><td class="grp-start g1">37.441</td><td class="g1 second">0.973</td><td class="g1">2.927</td><td class="g1">2.163</td><td class="g1">0.985</td><td class="g1">0.918</td><td class="grp-start g2">37.795</td><td class="g2">0.960</td><td class="g2">4.554</td><td class="g2">3.740</td><td class="g2">0.982</td><td class="g2 second">0.935</td></tr>
+<tr class="group"><td colspan="14"><span class="group-label">Diffusion models</span></td></tr>
+<tr><td class="col-method">PanDiff</td><td class="col-venue">TGRS'23</td><td class="grp-start g1">37.029</td><td class="g1">0.971</td><td class="g1">3.058</td><td class="g1">2.276</td><td class="g1">0.984</td><td class="g1">0.913</td><td class="grp-start g2">37.842</td><td class="g2">0.959</td><td class="g2">4.611</td><td class="g2">3.723</td><td class="g2">0.982</td><td class="g2 second">0.935</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="col-venue">TGRS'24</td><td class="grp-start g1">37.477</td><td class="g1">0.973</td><td class="g1">2.885</td><td class="g1">2.151</td><td class="g1">0.986</td><td class="g1">0.915</td><td class="grp-start g2">37.642</td><td class="g2">0.958</td><td class="g2">4.627</td><td class="g2">3.804</td><td class="g2">0.981</td><td class="g2">0.930</td></tr>
+<tr class="ours"><td class="col-method">FSA-S</td><td class="col-venue">Ours</td><td class="grp-start g1 best">37.930</td><td class="g1 best">0.976</td><td class="g1 best">2.797</td><td class="g1 best">2.046</td><td class="g1 best">0.988</td><td class="g1 best">0.922</td><td class="grp-start g2 best">38.361</td><td class="g2 best">0.964</td><td class="g2 best">4.337</td><td class="g2 best">3.500</td><td class="g2 second">0.984</td><td class="g2 best">0.938</td></tr>
+<tr class="ours"><td class="col-method">FSA-T</td><td class="col-venue">Ours</td><td class="grp-start g1 second">37.894</td><td class="g1 best">0.976</td><td class="g1 second">2.801</td><td class="g1 second">2.055</td><td class="g1 second">0.987</td><td class="g1 second">0.921</td><td class="grp-start g2 second">38.343</td><td class="g2 best">0.964</td><td class="g2 second">4.349</td><td class="g2 second">3.502</td><td class="g2 best">0.985</td><td class="g2 best">0.938</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">FSA-T is the teacher and FSA-S the distilled student, with 25.492M and 9.115M parameters (Table&nbsp;4).</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1" hidden>
+<figure class="table-figure" id="table-2">
+<figcaption><span class="fig-label">Table 2.</span> Comparison of different models on the GaoFen-2 (GF2) dataset. <b>Bold</b> indicates the best-performing model and <u>underline</u> the second-best performance. Standard deviations of the metrics across test samples are provided in Table&nbsp;8.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-gf2-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-gf2-t0-vl" data-table="#tab-gf2-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">Reduced</button><button type="button" data-view="g2" aria-pressed="false">Full</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (scrolls horizontally)"><table class="results" id="tab-gf2-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Method</th>
+<th rowspan="2" scope="col" class="col-venue">Venue</th>
+<th colspan="6" scope="colgroup" class="col-group grp-start g1"><span>Reduced-Resolution</span></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start g2"><span>Full-Resolution</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">Q4<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">D<sub>λ</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">D<sub>s</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">HQNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="11"><span class="group-label">Non-diffusion models</span></td></tr>
+<tr><td class="col-method">PanNet</td><td class="col-venue">ICCV'17</td><td class="grp-start g1">39.197</td><td class="g1">0.959</td><td class="g1">1.050</td><td class="g1">1.038</td><td class="g1">0.975</td><td class="g1">0.963</td><td class="grp-start g2">0.020</td><td class="g2">0.052</td><td class="g2">0.929</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="col-venue">JSTARS'18</td><td class="grp-start g1">40.730</td><td class="g1">0.971</td><td class="g1">0.946</td><td class="g1">0.862</td><td class="g1">0.983</td><td class="g1">0.972</td><td class="grp-start g2">0.026</td><td class="g2">0.079</td><td class="g2">0.898</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="col-venue">ICCV'21</td><td class="grp-start g1">39.866</td><td class="g1">0.966</td><td class="g1">0.971</td><td class="g1">0.960</td><td class="g1">0.980</td><td class="g1">0.967</td><td class="grp-start g2">0.034</td><td class="g2">0.105</td><td class="g2">0.865</td></tr>
+<tr><td class="col-method">LAGConv</td><td class="col-venue">AAAI'22</td><td class="grp-start g1">41.147</td><td class="g1">0.974</td><td class="g1">0.886</td><td class="g1">0.816</td><td class="g1">0.985</td><td class="g1">0.974</td><td class="grp-start g2">0.030</td><td class="g2">0.078</td><td class="g2">0.895</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="col-venue">TGRS'23</td><td class="grp-start g1">42.686</td><td class="g1">0.980</td><td class="g1">0.772</td><td class="g1">0.686</td><td class="g1">0.990</td><td class="g1">0.981</td><td class="grp-start g2">0.020</td><td class="g2">0.046</td><td class="g2">0.935</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="col-venue">TGRS'24</td><td class="grp-start g1">42.312</td><td class="g1">0.979</td><td class="g1">0.806</td><td class="g1">0.724</td><td class="g1">0.988</td><td class="g1">0.980</td><td class="grp-start g2">0.024</td><td class="g2 best">0.024</td><td class="g2 best">0.953</td></tr>
+<tr><td class="col-method">CANConv</td><td class="col-venue">CVPR'24</td><td class="grp-start g1">43.166</td><td class="g1">0.982</td><td class="g1">0.722</td><td class="g1">0.653</td><td class="g1">0.991</td><td class="g1">0.983</td><td class="grp-start g2">0.019</td><td class="g2">0.063</td><td class="g2">0.919</td></tr>
+<tr class="group"><td colspan="11"><span class="group-label">Diffusion models</span></td></tr>
+<tr><td class="col-method">PanDiff</td><td class="col-venue">TGRS'23</td><td class="grp-start g1">42.827</td><td class="g1">0.980</td><td class="g1">0.767</td><td class="g1">0.674</td><td class="g1">0.990</td><td class="g1">0.981</td><td class="grp-start g2">0.020</td><td class="g2">0.045</td><td class="g2">0.936</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="col-venue">TGRS'24</td><td class="grp-start g1">41.896</td><td class="g1">0.977</td><td class="g1">0.764</td><td class="g1">0.754</td><td class="g1">0.988</td><td class="g1">0.979</td><td class="grp-start g2">0.029</td><td class="g2">0.030</td><td class="g2">0.942</td></tr>
+<tr class="ours"><td class="col-method">FSA-S</td><td class="col-venue">Ours</td><td class="grp-start g1 second">44.585</td><td class="g1 second">0.986</td><td class="g1 second">0.624</td><td class="g1 second">0.548</td><td class="g1 second">0.993</td><td class="g1 second">0.987</td><td class="grp-start g2 second">0.018</td><td class="g2">0.037</td><td class="g2 second">0.944</td></tr>
+<tr class="ours"><td class="col-method">FSA-T</td><td class="col-venue">Ours</td><td class="grp-start g1 best">44.757</td><td class="g1 best">0.988</td><td class="g1 best">0.603</td><td class="g1 best">0.537</td><td class="g1 best">0.994</td><td class="g1 best">0.988</td><td class="grp-start g2 best">0.017</td><td class="g2 second">0.029</td><td class="g2 best">0.953</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+        </div>
+      </div>
+
+      <div class="table-solo">
+<figure class="table-figure" id="table-4">
+<figcaption><span class="fig-label">Table 4.</span> Computational complexity comparison for diffusion-based models. Best values are in <b>bold</b>.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>lower is better in every column</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (scrolls horizontally)"><table class="results" id="tab-complex-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Method</th>
+<th scope="col" class="metric">Params. (M)</th>
+<th scope="col" class="metric">FLOPs (T)</th>
+<th scope="col" class="metric">Time (s)</th>
+<th scope="col" class="metric">Memory (GB)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">PanDiff</td><td>12.556</td><td>0.471</td><td>19.522</td><td>3.260</td></tr>
+<tr><td class="col-method">TMDiff</td><td>153.939</td><td>5.517</td><td>67.461</td><td>10.483</td></tr>
+<tr class="ours"><td class="col-method">FSA-T</td><td>25.492</td><td>1.402</td><td>25.495</td><td>5.910</td></tr>
+<tr class="ours"><td class="col-method">FSA-S</td><td class="best">9.115</td><td class="best">0.346</td><td class="best">12.287</td><td class="best">2.136</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">Among the diffusion models, FSA-S has the fewest parameters and FLOPs, the shortest inference time and the lowest memory use.</p>
+</figure>
+      </div>
+
+      <div class="disclosures">
+      <details class="disclosure" id="full-results" data-animate>
+        <summary>Full resolution and standard deviations <span class="summary-sub">Table 8</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" id="table-8">
+<figcaption><span class="fig-label">Table 8.</span> Additional PAN-sharpening results by our U-Know-DiffPAN and other SOTA methods for the WV3, QB, and GF2 dataset. The best (second best) performance in each block is in <b>bold</b> (<u>underlined</u>).</figcaption>
+<div class="tabs t8-tabs"><div class="tabs-head"><div class="tablist" role="tablist" aria-label="Table 8 satellite"><button class="tab" role="tab" type="button" id="t8-tab-wv3" aria-controls="t8-panel-wv3" aria-selected="true">WV3</button><button class="tab" role="tab" type="button" id="t8-tab-qb" aria-controls="t8-panel-qb" aria-selected="false">QB</button><button class="tab" role="tab" type="button" id="t8-tab-gf2" aria-controls="t8-panel-gf2" aria-selected="false">GF2</button></div></div>
+<div class="tabpanel" role="tabpanel" id="t8-panel-wv3" aria-labelledby="t8-tab-wv3" tabindex="-1">
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-full-wv3-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-full-wv3-t0-vl" data-table="#tab-full-wv3-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">Reduced</button><button type="button" data-view="g2" aria-pressed="false">Full</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8, WV3 (scrolls horizontally)"><table class="results" id="tab-full-wv3-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Model</th>
+<th colspan="6" scope="colgroup" class="col-group grp-start g1"><span>Reduced-Resolution</span></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start g2"><span>Full-Resolution</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">Q8<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">D<sub>λ</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">D<sub>s</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">HQNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">PanNet</td><td class="grp-start g1">36.148 ± 1.958</td><td class="g1">0.966 ± 0.011</td><td class="g1">3.402 ± 0.672</td><td class="g1">2.538 ± 0.597</td><td class="g1">0.979 ± 0.006</td><td class="g1">0.913 ± 0.087</td><td class="grp-start g2">0.035 ± 0.014</td><td class="g2">0.049 ± 0.019</td><td class="g2">0.918 ± 0.031</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="grp-start g1">36.329 ± 1.748</td><td class="g1">0.967 ± 0.010</td><td class="g1">3.300 ± 0.654</td><td class="g1">2.489 ± 0.620</td><td class="g1">0.979 ± 0.007</td><td class="g1">0.914 ± 0.087</td><td class="grp-start g2">0.028 ± 0.013</td><td class="g2">0.050 ± 0.020</td><td class="g2">0.924 ± 0.030</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="grp-start g1">36.569 ± 1.666</td><td class="g1">0.968 ± 0.009</td><td class="g1">3.188 ± 0.628</td><td class="g1">2.428 ± 0.621</td><td class="g1">0.981 ± 0.007</td><td class="g1">0.916 ± 0.087</td><td class="grp-start g2">0.029 ± 0.011</td><td class="g2">0.053 ± 0.021</td><td class="g2">0.920 ± 0.030</td></tr>
+<tr><td class="col-method">LAGNet</td><td class="grp-start g1">36.732 ± 1.723</td><td class="g1">0.970 ± 0.009</td><td class="g1">3.153 ± 0.608</td><td class="g1">2.380 ± 0.617</td><td class="g1">0.981 ± 0.007</td><td class="g1">0.916 ± 0.087</td><td class="grp-start g2">0.033 ± 0.012</td><td class="g2">0.055 ± 0.023</td><td class="g2">0.915 ± 0.033</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="grp-start g1">37.216 ± 1.888</td><td class="g1">0.972 ± 0.009</td><td class="g1">3.019 ± 0.588</td><td class="g1">2.245 ± 0.541</td><td class="g1">0.985 ± 0.005</td><td class="g1">0.917 ± 0.091</td><td class="grp-start g2">0.025 ± 0.010</td><td class="g2">0.030 ± 0.010</td><td class="g2">0.946 ± 0.018</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="grp-start g1">37.009 ± 1.735</td><td class="g1">0.972 ± 0.008</td><td class="g1">3.083 ± 0.537</td><td class="g1">2.301 ± 0.569</td><td class="g1">0.984 ± 0.005</td><td class="g1">0.915 ± 0.092</td><td class="grp-start g2">0.043 ± 0.018</td><td class="g2">0.036 ± 0.012</td><td class="g2">0.923 ± 0.027</td></tr>
+<tr><td class="col-method">CANConv</td><td class="grp-start g1">37.441 ± 1.788</td><td class="g1">0.973 ± 0.008</td><td class="g1">2.927 ± 0.536</td><td class="g1">2.163 ± 0.481</td><td class="g1">0.985 ± 0.005</td><td class="g1">0.918 ± 0.082</td><td class="grp-start g2">0.020 ± 0.008</td><td class="g2 second">0.030 ± 0.008</td><td class="g2">0.951 ± 0.013</td></tr>
+<tr><td class="col-method">PanDiff</td><td class="grp-start g1">37.029 ± 1.796</td><td class="g1">0.971 ± 0.008</td><td class="g1">3.058 ± 0.567</td><td class="g1">2.276 ± 0.545</td><td class="g1">0.984 ± 0.004</td><td class="g1">0.913 ± 0.084</td><td class="grp-start g2 best">0.014 ± 0.005</td><td class="g2">0.034 ± 0.005</td><td class="g2">0.952 ± 0.009</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="grp-start g1">37.477 ± 1.923</td><td class="g1 second">0.973 ± 0.008</td><td class="g1">2.885 ± 0.549</td><td class="g1">2.151 ± 0.458</td><td class="g1">0.986 ± 0.004</td><td class="g1">0.915 ± 0.086</td><td class="grp-start g2">0.018 ± 0.007</td><td class="g2">0.059 ± 0.009</td><td class="g2">0.924 ± 0.015</td></tr>
+<tr class="ours"><td class="col-method">FSA-T</td><td class="grp-start g1 second">37.894 ± 1.820</td><td class="g1 best">0.976 ± 0.007</td><td class="g1 second">2.801 ± 0.517</td><td class="g1 second">2.055 ± 0.463</td><td class="g1 second">0.987 ± 0.003</td><td class="g1 second">0.921 ± 0.083</td><td class="grp-start g2 best">0.014 ± 0.005</td><td class="g2">0.032 ± 0.003</td><td class="g2 second">0.954 ± 0.006</td></tr>
+<tr class="ours"><td class="col-method">FSA-S</td><td class="grp-start g1 best">37.930 ± 1.824</td><td class="g1 best">0.976 ± 0.007</td><td class="g1 best">2.797 ± 0.526</td><td class="g1 best">2.046 ± 0.454</td><td class="g1 best">0.988 ± 0.003</td><td class="g1 best">0.922 ± 0.083</td><td class="grp-start g2 second">0.016 ± 0.006</td><td class="g2 best">0.029 ± 0.003</td><td class="g2 best">0.955 ± 0.008</td></tr>
+</tbody>
+</table></div></div>
+</div>
+<div class="tabpanel" role="tabpanel" id="t8-panel-qb" aria-labelledby="t8-tab-qb" tabindex="-1" hidden>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-full-qb-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-full-qb-t0-vl" data-table="#tab-full-qb-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">Reduced</button><button type="button" data-view="g2" aria-pressed="false">Full</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8, QB (scrolls horizontally)"><table class="results" id="tab-full-qb-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Model</th>
+<th colspan="6" scope="colgroup" class="col-group grp-start g1"><span>Reduced-Resolution</span></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start g2"><span>Full-Resolution</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">Q4<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">D<sub>λ</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">D<sub>s</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">HQNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">PanNet</td><td class="grp-start g1">35.563 ± 1.930</td><td class="g1">0.939 ± 0.012</td><td class="g1">5.273 ± 0.946</td><td class="g1">4.856 ± 0.590</td><td class="g1">0.966 ± 0.015</td><td class="g1">0.911 ± 0.094</td><td class="grp-start g2">0.063 ± 0.019</td><td class="g2">0.092 ± 0.021</td><td class="g2">0.851 ± 0.035</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="grp-start g1">37.040 ± 1.778</td><td class="g1">0.954 ± 0.007</td><td class="g1">4.828 ± 0.824</td><td class="g1">4.074 ± 0.244</td><td class="g1">0.977 ± 0.010</td><td class="g1">0.925 ± 0.098</td><td class="grp-start g2">0.058 ± 0.014</td><td class="g2">0.058 ± 0.027</td><td class="g2">0.888 ± 0.037</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="grp-start g1">36.821 ± 1.765</td><td class="g1">0.952 ± 0.007</td><td class="g1">4.892 ± 0.822</td><td class="g1">4.183 ± 0.266</td><td class="g1">0.975 ± 0.011</td><td class="g1">0.923 ± 0.100</td><td class="grp-start g2">0.074 ± 0.022</td><td class="g2">0.079 ± 0.025</td><td class="g2">0.853 ± 0.041</td></tr>
+<tr><td class="col-method">LAGNet</td><td class="grp-start g1">37.565 ± 1.721</td><td class="g1">0.958 ± 0.006</td><td class="g1">4.682 ± 0.785</td><td class="g1">3.845 ± 0.323</td><td class="g1">0.980 ± 0.009</td><td class="g1">0.930 ± 0.095</td><td class="grp-start g2">0.075 ± 0.019</td><td class="g2">0.035 ± 0.009</td><td class="g2">0.892 ± 0.024</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="grp-start g1">37.314 ± 1.782</td><td class="g1">0.956 ± 0.006</td><td class="g1">4.849 ± 0.822</td><td class="g1">3.956 ± 0.291</td><td class="g1">0.980 ± 0.008</td><td class="g1">0.928 ± 0.093</td><td class="grp-start g2">0.059 ± 0.026</td><td class="g2">0.036 ± 0.023</td><td class="g2">0.908 ± 0.044</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="grp-start g1">38.079 ± 1.454</td><td class="g1 second">0.963 ± 0.004</td><td class="g1">4.420 ± 0.710</td><td class="g1">3.618 ± 0.313</td><td class="g1">0.983 ± 0.010</td><td class="g1">0.935 ± 0.095</td><td class="grp-start g2">0.051 ± 0.017</td><td class="g2">0.073 ± 0.013</td><td class="g2">0.880 ± 0.013</td></tr>
+<tr><td class="col-method">CANConv</td><td class="grp-start g1">37.795 ± 1.801</td><td class="g1">0.960 ± 0.006</td><td class="g1">4.554 ± 0.788</td><td class="g1">3.740 ± 0.304</td><td class="g1">0.982 ± 0.007</td><td class="g1">0.935 ± 0.087</td><td class="grp-start g2">0.039 ± 0.012</td><td class="g2">0.070 ± 0.017</td><td class="g2">0.893 ± 0.010</td></tr>
+<tr><td class="col-method">PanDiff</td><td class="grp-start g1">37.842 ± 1.721</td><td class="g1">0.959 ± 0.006</td><td class="g1">4.611 ± 0.768</td><td class="g1">3.723 ± 0.280</td><td class="g1">0.982 ± 0.007</td><td class="g1">0.935 ± 0.084</td><td class="grp-start g2 best">0.028 ± 0.011</td><td class="g2">0.055 ± 0.012</td><td class="g2">0.919 ± 0.010</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="grp-start g1">37.642 ± 1.831</td><td class="g1">0.958 ± 0.006</td><td class="g1">4.627 ± 0.814</td><td class="g1">3.804 ± 0.279</td><td class="g1">0.981 ± 0.008</td><td class="g1">0.930 ± 0.096</td><td class="grp-start g2 second">0.034 ± 0.016</td><td class="g2">0.068 ± 0.012</td><td class="g2">0.901 ± 0.011</td></tr>
+<tr class="ours"><td class="col-method">FSA-T</td><td class="grp-start g1 second">38.343 ± 1.718</td><td class="g1 best">0.964 ± 0.005</td><td class="g1 second">4.349 ± 0.723</td><td class="g1 second">3.502 ± 0.272</td><td class="g1 best">0.985 ± 0.007</td><td class="g1 best">0.938 ± 0.089</td><td class="grp-start g2">0.036 ± 0.018</td><td class="g2 best">0.031 ± 0.014</td><td class="g2 best">0.934 ± 0.029</td></tr>
+<tr class="ours"><td class="col-method">FSA-S</td><td class="grp-start g1 best">38.361 ± 1.709</td><td class="g1 best">0.964 ± 0.005</td><td class="g1 best">4.337 ± 0.733</td><td class="g1 best">3.500 ± 0.272</td><td class="g1 second">0.984 ± 0.007</td><td class="g1 second">0.938 ± 0.090</td><td class="grp-start g2">0.035 ± 0.011</td><td class="g2 second">0.035 ± 0.021</td><td class="g2 second">0.931 ± 0.029</td></tr>
+</tbody>
+</table></div></div>
+</div>
+<div class="tabpanel" role="tabpanel" id="t8-panel-gf2" aria-labelledby="t8-tab-gf2" tabindex="-1" hidden>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-full-gf2-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-full-gf2-t0-vl" data-table="#tab-full-gf2-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">Reduced</button><button type="button" data-view="g2" aria-pressed="false">Full</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8, GF2 (scrolls horizontally)"><table class="results" id="tab-full-gf2-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Model</th>
+<th colspan="6" scope="colgroup" class="col-group grp-start g1"><span>Reduced-Resolution</span></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start g2"><span>Full-Resolution</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">Q4<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">D<sub>λ</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">D<sub>s</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">HQNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">PanNet</td><td class="grp-start g1">39.197 ± 2.009</td><td class="g1">0.959 ± 0.011</td><td class="g1">1.050 ± 0.209</td><td class="g1">1.038 ± 0.214</td><td class="g1">0.975 ± 0.006</td><td class="g1">0.963 ± 0.009</td><td class="grp-start g2">0.020 ± 0.012</td><td class="g2">0.052 ± 0.009</td><td class="g2">0.929 ± 0.013</td></tr>
+<tr><td class="col-method">MSDCNN</td><td class="grp-start g1">40.730 ± 1.564</td><td class="g1">0.971 ± 0.006</td><td class="g1">0.946 ± 0.166</td><td class="g1">0.862 ± 0.141</td><td class="g1">0.983 ± 0.003</td><td class="g1">0.972 ± 0.009</td><td class="grp-start g2">0.026 ± 0.014</td><td class="g2">0.079 ± 0.011</td><td class="g2">0.898 ± 0.016</td></tr>
+<tr><td class="col-method">FusionNet</td><td class="grp-start g1">39.866 ± 1.955</td><td class="g1">0.966 ± 0.009</td><td class="g1">0.971 ± 0.195</td><td class="g1">0.960 ± 0.193</td><td class="g1">0.980 ± 0.005</td><td class="g1">0.967 ± 0.008</td><td class="grp-start g2">0.034 ± 0.013</td><td class="g2">0.105 ± 0.013</td><td class="g2">0.865 ± 0.018</td></tr>
+<tr><td class="col-method">LAGNet</td><td class="grp-start g1">41.147 ± 1.384</td><td class="g1">0.974 ± 0.005</td><td class="g1">0.886 ± 0.140</td><td class="g1">0.816 ± 0.121</td><td class="g1">0.985 ± 0.003</td><td class="g1">0.974 ± 0.009</td><td class="grp-start g2">0.030 ± 0.014</td><td class="g2">0.078 ± 0.013</td><td class="g2">0.895 ± 0.021</td></tr>
+<tr><td class="col-method">S2DBPN</td><td class="grp-start g1">42.686 ± 1.676</td><td class="g1">0.980 ± 0.005</td><td class="g1">0.772 ± 0.149</td><td class="g1">0.686 ± 0.125</td><td class="g1">0.990 ± 0.002</td><td class="g1">0.981 ± 0.007</td><td class="grp-start g2">0.020 ± 0.012</td><td class="g2">0.046 ± 0.007</td><td class="g2">0.935 ± 0.011</td></tr>
+<tr><td class="col-method">DCPNet</td><td class="grp-start g1">42.312 ± 1.682</td><td class="g1">0.979 ± 0.005</td><td class="g1">0.806 ± 0.153</td><td class="g1">0.724 ± 0.138</td><td class="g1">0.988 ± 0.003</td><td class="g1">0.980 ± 0.007</td><td class="grp-start g2">0.024 ± 0.022</td><td class="g2 best">0.024 ± 0.008</td><td class="g2 best">0.953 ± 0.019</td></tr>
+<tr><td class="col-method">CANConv</td><td class="grp-start g1">43.166 ± 1.705</td><td class="g1">0.982 ± 0.004</td><td class="g1">0.722 ± 0.138</td><td class="g1">0.653 ± 0.124</td><td class="g1">0.991 ± 0.002</td><td class="g1">0.983 ± 0.006</td><td class="grp-start g2">0.019 ± 0.010</td><td class="g2">0.063 ± 0.009</td><td class="g2">0.919 ± 0.011</td></tr>
+<tr><td class="col-method">PanDiff</td><td class="grp-start g1">42.827 ± 1.462</td><td class="g1">0.980 ± 0.005</td><td class="g1">0.767 ± 0.134</td><td class="g1">0.674 ± 0.110</td><td class="g1">0.990 ± 0.002</td><td class="g1">0.981 ± 0.007</td><td class="grp-start g2">0.020 ± 0.014</td><td class="g2">0.045 ± 0.009</td><td class="g2">0.936 ± 0.011</td></tr>
+<tr><td class="col-method">TMDiff</td><td class="grp-start g1">41.896 ± 1.765</td><td class="g1">0.977 ± 0.005</td><td class="g1">0.764 ± 0.155</td><td class="g1">0.754 ± 0.143</td><td class="g1">0.988 ± 0.003</td><td class="g1">0.979 ± 0.007</td><td class="grp-start g2">0.029 ± 0.011</td><td class="g2 second">0.030 ± 0.010</td><td class="g2">0.942 ± 0.016</td></tr>
+<tr class="ours"><td class="col-method">FSA-T</td><td class="grp-start g1 best">44.757 ± 1.359</td><td class="g1 best">0.988 ± 0.003</td><td class="g1 best">0.603 ± 0.102</td><td class="g1 best">0.537 ± 0.077</td><td class="g1 best">0.994 ± 0.001</td><td class="g1 best">0.988 ± 0.006</td><td class="grp-start g2 best">0.017 ± 0.010</td><td class="g2 second">0.030 ± 0.008</td><td class="g2 best">0.953 ± 0.013</td></tr>
+<tr class="ours"><td class="col-method">FSA-S</td><td class="grp-start g1 second">44.585 ± 1.521</td><td class="g1 second">0.986 ± 0.003</td><td class="g1 second">0.624 ± 0.109</td><td class="g1 second">0.548 ± 0.091</td><td class="g1 second">0.993 ± 0.001</td><td class="g1 second">0.987 ± 0.007</td><td class="grp-start g2 second">0.018 ± 0.011</td><td class="g2">0.037 ± 0.007</td><td class="g2 second">0.944 ± 0.012</td></tr>
+</tbody>
+</table></div></div>
+</div>
+</div>
+</figure>
+        </div></div>
+      </details>
+      <details class="disclosure" id="ablations" data-animate>
+        <summary>Ablations <span class="summary-sub">Tables 5, 6 and 7</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-5">
+<figcaption><span class="fig-label">Table 5.</span> Comparison of Results with and without FFA and HQFE Blocks in FSA-T. Best values are in <b>bold</b>.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 5 (scrolls horizontally)"><table class="results results--compact" id="tab-ffa-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-check">Encoder<br/>FFA</th>
+<th rowspan="2" scope="col" class="col-check">Decoder<br/>HQFE</th>
+<th colspan="4" scope="colgroup" class="col-group grp-start"><span>GF2 (Reduced-Resolution)</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric">Q4<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-check"></td><td class="col-check"></td><td class="grp-start">0.654 ± 0.112</td><td>0.661 ± 0.076</td><td>0.992 ± 0.001</td><td>0.986 ± 0.007</td></tr>
+<tr><td class="col-check">✓</td><td class="col-check"></td><td class="grp-start">0.654 ± 0.112</td><td>0.636 ± 0.077</td><td>0.993 ± 0.002</td><td>0.986 ± 0.007</td></tr>
+<tr><td class="col-check"></td><td class="col-check">✓</td><td class="grp-start">0.617 ± 0.117</td><td>0.556 ± 0.104</td><td>0.993 ± 0.002</td><td>0.987 ± 0.007</td></tr>
+<tr class="ours"><td class="col-check">✓</td><td class="col-check">✓</td><td class="grp-start best">0.603 ± 0.102</td><td class="best">0.537 ± 0.077</td><td class="best">0.994 ± 0.001</td><td class="best">0.988 ± 0.006</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+            <div class="table-pair">
+<figure class="table-figure" id="table-6">
+<figcaption><span class="fig-label">Table 6.</span> Impact of our U-know loss function design. Best values are in <b>bold</b>.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 6 (scrolls horizontally)"><table class="results" id="tab-uknow-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Loss func.</th>
+<th colspan="3" scope="colgroup" class="col-group grp-start"><span>GF2 (Full-Resolution)</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start">D<sub>λ</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric">D<sub>s</sub><span class="arrow">↓</span></th>
+<th scope="col" class="metric">HQNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method"><i>ℒ</i><sub>1</sub></td><td class="grp-start">0.026 ± 0.014</td><td>0.040 ± 0.017</td><td>0.935 ± 0.020</td></tr>
+<tr><td class="col-method"><i>ℒ</i><sub>KD</sub></td><td class="grp-start">0.025 ± 0.015</td><td>0.038 ± 0.016</td><td>0.938 ± 0.021</td></tr>
+<tr class="ours"><td class="col-method"><i>ℒ</i><sub>U-know</sub></td><td class="grp-start best">0.018 ± 0.011</td><td class="best">0.037 ± 0.007</td><td class="best">0.944 ± 0.012</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+<figure class="table-figure" id="table-7">
+<figcaption><span class="fig-label">Table 7.</span> Comparison of results between DWT and SWT conditioning at the SWTCA block in FSA-T Ψ, with the best values in <b>bold</b>.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 7 (scrolls horizontally)"><table class="results" id="tab-swt-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Condition</th>
+<th colspan="4" scope="colgroup" class="col-group grp-start"><span>GF2 (Reduced-Resolution)</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start">SAM<span class="arrow">↓</span></th>
+<th scope="col" class="metric">ERGAS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric">Q4<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">DWT</td><td class="grp-start">0.646 ± 0.117</td><td>0.567 ± 0.095</td><td>0.993 ± 0.002</td><td>0.987 ± 0.007</td></tr>
+<tr class="ours"><td class="col-method">SWT</td><td class="grp-start best">0.603 ± 0.102</td><td class="best">0.537 ± 0.077</td><td class="best">0.994 ± 0.001</td><td class="best">0.988 ± 0.006</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+            </div>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="datasets" data-animate>
+        <summary>Datasets <span class="summary-sub">Table 1</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" id="table-1">
+<figcaption><span class="fig-label">Table 1.</span> Detailed information of Worldview-3, QuickBird, and GaoFen-2 datasets.</figcaption>
+<div class="table-meta"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 (scrolls horizontally)"><table class="results results--compact" id="tab-dataset-t0">
+<thead>
+<tr>
+<th colspan="2" scope="col" class="col-label">Satellite</th>
+<th scope="col" class="metric">WorldView-3</th>
+<th scope="col" class="metric">QuickBird</th>
+<th scope="col" class="metric">GaoFen-2</th>
+</tr>
+</thead>
+<tbody>
+<tr><td colspan="2" class="col-label">Number of Band</td><td>8</td><td>4</td><td>4</td></tr>
+<tr><td rowspan="2" class="col-label">Spatial Resolution (m)</td><td class="col-label">PAN</td><td>0.3</td><td>0.6</td><td>0.8</td></tr>
+<tr><td class="col-label">LRMS</td><td>1.2</td><td>2.4</td><td>3.2</td></tr>
+<tr><td colspan="2" class="col-label">Radiometric Resolution (bit)</td><td>11</td><td>11</td><td>10</td></tr>
+<tr><td colspan="2" class="col-label">Number of (Train / Test) Images</td><td>9,714 / 20</td><td>17,139 / 20</td><td>19,809 / 20</td></tr>
+<tr><td rowspan="2" class="col-label">Patch Size</td><td class="col-label">PAN</td><td>64×64×1</td><td>64×64×1</td><td>64×64×1</td></tr>
+<tr><td class="col-label">LRMS</td><td>16×16×8</td><td>16×16×4</td><td>16×16×4</td></tr>
+</tbody>
+</table></div></div>
+
+</figure>
+        </div></div>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method (compact): paper Fig. 2 -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">Trust the teacher where it is certain</h2>
+      </header>
+      <figure class="figure fig-method">
+        <a class="figure-media zoom" href="static/images/overview_full.jpg" data-title="U-Know-DiffPAN framework">
+          <img src="static/images/overview_1600.jpg"
+               srcset="static/images/overview_1200.jpg 1200w, static/images/overview_1600.jpg 1600w, static/images/overview_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="909" loading="lazy" decoding="async"
+               alt="U-Know-DiffPAN in two steps. Step 1, teacher pre-training: FSA-T receives the noisy residual, the LRMS and PAN images, the compact vector v and the SWT condition, and outputs the residual and the uncertainty map, trained with the uncertainty-driven diffusion loss. Step 2, student training: the frozen, pretrained FSA-T provides its output, uncertainty map and features; the student FSA-S, conditioned only on LRMS and PAN, is trained with the hard, soft and feature losses.">
+        </a>
+        <figcaption><b>U-Know-DiffPAN.</b> Step&nbsp;1 pre-trains the teacher FSA-T, which predicts the output and an uncertainty map; Step&nbsp;2 distills it into the lightweight student FSA-S.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">01</span><b>Frequency-selective teacher.</b> FSA-T conditions its encoder on a compact vector of PAN and LRMS (FFA blocks); in its decoder, HQFE blocks refine frequencies with Fourier attention (FTCA) and inject stationary-wavelet components of PAN and LRMS by cross-attention (SWTCA).</li>
+        <li><span class="kp-num">02</span><b>Uncertainty from the teacher.</b> Trained with an uncertainty-driven diffusion loss, FSA-T predicts the residual together with a pixel-wise uncertainty map <i>&theta;&#770;</i>, which is high on object edges.</li>
+        <li><span class="kp-num">03</span><b>Uncertainty-aware distillation.</b> The student FSA-S (ResBlocks only) learns from the ground truth weighted by <span class="nowrap"><i>&tau;</i>&thinsp;+&thinsp;<i>&theta;&#770;</i></span>, from the teacher&rsquo;s output weighted by <span class="nowrap"><i>&tau;</i>&thinsp;&minus;&thinsp;<i>&theta;&#770;</i></span>, and from the teacher&rsquo;s intermediate features.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+<pre><code id="bibtex-code">@inproceedings{kim2025u,
+  title={U-Know-DiffPAN: An Uncertainty-aware Knowledge Distillation Diffusion Framework with Details Enhancement for PAN-Sharpening},
+  author={Kim, Sungpyo and Do, Jeonghyeok and Lee, Jaehyup and Kim, Munchurl},
+  booktitle={Proceedings of the Computer Vision and Pattern Recognition Conference},
+  pages={23069--23079},
+  year={2025}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: PAN-sharpening">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">PAN-sharpening</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></span></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.png" width="78" height="84" alt="" loading="lazy"><span class="wordmark">U-Know-Diff<span>PAN</span></span></span>&nbsp;&middot; CVPR 2025&nbsp;&middot; KAIST and Kyungpook National University</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://openaccess.thecvf.com/content/CVPR2025/papers/Kim_U-Know-DiffPAN_An_Uncertainty-aware_Knowledge_Distillation_Diffusion_Framework_with_Details_Enhancement_CVPR_2025_paper.pdf" target="_blank" rel="noopener">Paper</a>
+      <a href="https://arxiv.org/abs/2412.06243" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/KAIST-VICLab/U-Know-DiffPAN" target="_blank" rel="noopener">Code</a>
+      <a href="mailto:ksp04204@kaist.ac.kr,ehwjdgur0913@kaist.ac.kr,jaehyuplee@knu.ac.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
+</footer>
 
 </body>
 </html>

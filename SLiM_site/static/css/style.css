@@ -1,0 +1,72 @@
+/* ==========================================================================
+   SLiM project page: brand tokens and page components.
+   The shared components (layout, nav, hero, section heads, figures, tabs,
+   tables, disclosures, key points, lightbox, BibTeX, footer) are in
+   family.css, which this file follows. Brand colours are sampled from the
+   logo: ink #1C2738, SLiM blue #1692BA ("LiM"), SLiM orange #EA5E3A ("S").
+   ========================================================================== */
+
+/* ---------- 1. Brand tokens ---------------------------------------------- */
+:root {
+  --accent: #1692BA;           /* SLiM blue (logo "LiM"): rules, borders, large text, icons */
+  --accent-text: #10789A;      /* small text and white-on-blue fills (5.0:1 on white) */
+  --accent-strong: #0C5F7A;    /* hover */
+  --accent-soft: #EDF6FA;      /* tinted fills */
+  --accent-line: #B8DDEA;      /* tinted borders */
+  --brand-2: #EA5E3A;          /* SLiM orange (logo "S"): first letter of the wordmark */
+  --logo-k: 1.1615;            /* hero logo height factor: the wordmark's cap height = GeoSET's (53 px at 1440) */
+}
+
+/* hero title: "Less is More" in the logo's "LiM" blue (.hero-accent), "Skeleton" in the logo's "S" orange */
+.hero-accent-s { color: var(--brand-2); }
+/* two-tone wordmark as in the logo: orange "S", blue "LiM" */
+.topnav-brand .wordmark, .footer-brand .wordmark { color: var(--brand-2); }
+
+/* ---------- 2. Headline: trade-off plot next to Table 3 ------------------- */
+.tradeoff {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: clamp(24px, 3.4vw, 44px); align-items: center;
+}
+.tradeoff .table-figure > figcaption { font-size: .875rem; }
+.tradeoff-fig figcaption { max-width: 64ch; }
+@media (max-width: 1179px) {
+  .tradeoff { grid-template-columns: minmax(0, 1fr); }
+  .tradeoff-fig { width: 100%; max-width: 760px; margin-inline: auto; }
+  .tradeoff .table-figure { width: 100%; max-width: 760px; margin-inline: auto; }
+}
+
+/* ---------- 3. Tables: sub-tables, widths, check marks ------------------- */
+.table-subcap { margin: 0 0 8px; font: 600 .875rem/1.4 var(--font-sans); color: var(--text); }
+.table-pair { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); align-items: start; margin-top: 4px; }
+@media (min-width: 960px) {
+  .table-pair--wide-left { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); }
+  .table-pair--even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* tables with few columns keep their numbers close enough to read across
+   (width: 100% so that grid items with auto margins do not grow to the table's nowrap width) */
+.table-figure--t1, .table-figure--t4, .table-figure--t9 { width: 100%; }
+.table-figure--t1 { max-width: 980px; margin-inline: auto; }
+.table-figure--t4, .table-figure--t9 { max-width: 620px; margin-inline: auto; }
+/* in a disclosure, Table 4 shares the left edge of Table 5 below it (Table 9 stays centred alone in its tab) */
+.table-figure--t4 { margin-inline: 0; }
+
+.results td.yes { color: var(--text); font-weight: 600; }
+.results td.no { color: var(--faint); }
+.results .ck-note { margin-left: 2px; font-size: .82em; font-weight: 500; color: var(--muted); }
+.results .pm { margin-left: 1px; font-size: .8em; font-weight: 500; color: var(--muted); }
+.results .col-text, .results td.col-text { text-align: left; }
+/* rows of our configuration in check-mark tables (no method column): the bar goes on the first cell */
+.results--checks tr.ours td:first-child { box-shadow: inset 3px 0 0 var(--ours-bar); }
+.results--checks td { font-variant-numeric: tabular-nums lining-nums; }
+
+/* synthetic-italic variables (J, N, T) lean into the next glyph: give them a hair of room */
+figcaption i, .table-note i, .results i { margin-right: .06em; }
+
+/* ---------- 4. Captions, text cells, BibTeX ------------------------------ */
+/* even line lengths in centred figure captions; no one-word last line in table captions and key points */
+.figure figcaption { text-wrap: balance; }
+.table-figure > figcaption, .keypoints li { text-wrap: pretty; }
+/* text cells (Table 10) keep Inter's normal hyphen width; tabular figures are for numbers only */
+.results td.col-text { font-variant-numeric: normal; }
+/* the long title line wraps at every width, as on the SOfA and ReFlowSET pages */
+.bibtex pre { white-space: pre-wrap; overflow-wrap: anywhere; }

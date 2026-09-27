@@ -1,836 +1,603 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="description"
-          content="SAR-to-EO Image Translation.">
-    <meta name="keywords"
-          content="SAR-to-EO Image Translation, Latent Diffusion Models">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object
-        Generation</title>
-
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-M33D2LGZ');
-    </script>
-    <!-- End Google Tag Manager -->
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-    <link rel="stylesheet" href="./static/css/bulma.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="./static/css/twentytwenty.css">
-    <link rel="stylesheet" href="./static/css/index.css">
-
-    <link rel="icon" sizes="256x256" href="./static/image/orange.png" type="image/png"/>
-
-    <script src="./static/js/jquery-3.2.1.min.js"></script>
-    <script src="./static/js/jquery.event.move.js"></script>
-    <script src="./static/js/jquery.twentytwenty.js"></script>
-    <script src="./static/js/bulma-carousel.min.js"></script>
-    <script src="./static/js/bulma-slider.min.js"></script>
-    <script src="./static/js/fontawesome.all.min.js"></script>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object Generation</title>
+  <meta name="description" content="C-DiffSET fine-tunes a latent diffusion model pretrained on natural images for SAR-to-EO image translation, with a confidence-guided diffusion loss that mitigates artifacts from temporal discrepancies between SAR and EO acquisitions.">
+  <meta name="author" content="Jeonghyeok Do, Jaehyup Lee, Seungchul Lee, Munchurl Kim">
+  <meta name="theme-color" content="#D67900">
+  <link rel="canonical" href="https://kaist-viclab.github.io/C-DiffSET_site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="C-DiffSET">
+  <meta property="og:title" content="C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object Generation">
+  <meta property="og:description" content="C-DiffSET fine-tunes a latent diffusion model pretrained on natural images for SAR-to-EO image translation, with a confidence-guided diffusion loss that mitigates artifacts from temporal discrepancies between SAR and EO acquisitions.">
+  <meta property="og:url" content="https://kaist-viclab.github.io/C-DiffSET_site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/C-DiffSET_site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The C-DiffSET logo above a qualitative comparison on SpaceNet6, SAR2Opt and QXS-SAROPT: input SAR, StegoGAN, BBDM, ControlNet, C-DiffSET and the target EO image.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object Generation">
+  <meta name="twitter:description" content="A pretrained latent diffusion model, fine-tuned for SAR-to-EO image translation with a confidence-guided diffusion loss: state-of-the-art results on SpaceNet6, SAR2Opt and QXS-SAROPT.">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/C-DiffSET_site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The C-DiffSET logo above a qualitative comparison on SpaceNet6, SAR2Opt and QXS-SAROPT: input SAR, StegoGAN, BBDM, ControlNet, C-DiffSET and the target EO image.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"], a[data-soon] { pointer-events: none; cursor: default; }</style></noscript>
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
 </head>
 <body>
 
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path d="M3.5 9.5L12 4l8.5 5.5M4.5 20h15M6.5 11.5v5.5M10 11.5v5.5M14 11.5v5.5M17.5 11.5v5.5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-gallery" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
 
-<section class="hero">
-    <div class="hero-body">
-        <div class="container is-max-desktop">
-            <div class="columns is-centered">
-                <div class="column has-text-centered">
-                    <div class="title is-2 publication-title"><h1 style="display: inline; clear:none;"><img
-                            src="./static/image/orange.png" width="40" height="40"> <font
-                            color="#FFA500"><b>C</b></font><b>-</b><font color="#1E90FF"><b>Diff</b></font><font
-                            color="#32CD32"><b>SET</b></font>: Leveraging
-                        Latent <font color="#1E90FF"><b>Diff</b></font>usion<br>for <font
-                                color="#32CD32"><b>S</b></font>AR-to-<font color="#32CD32"><b>E</b></font>O Image <font
-                                color="#32CD32"><b>T</b></font>ranslation<br>with <font color="#FFA500"><b>C</b></font>onfidence-Guided
-                        Reliable Object Generation
-                    </h1>
+<a class="skip-link" href="#main">Skip to content</a>
 
-                        <div class="title is-2 publication-title">
-                        </div>
-                    </div>
-                    <div class="is-size-5 publication-authors" style="margin-bottom: 20px;">
-            <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer" href="https://sites.google.com/view/jeonghyeokdo/">Jeonghyeok Do</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://sites.google.com/view/jaehyup-lee/">Jaehyup Lee</a><sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://stellarvision.co.kr/">Seungchul Lee</a><sup>3</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        </span>
-                        <span class="author-block">
-              <a target="_blank" rel="noopener noreferrer"
-                 href="https://scholar.google.com/citations?hl=ko&user=bGXte_4AAAAJ">Munchurl Kim</a><sup>†1</sup>
-            </span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"> <sup>†</sup>Corresponding author</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"><sup>1</sup>Korea Advanced Institute of Science and Technology, South Korea</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"><sup>2</sup>Kyungpook National University, South Korea</span>
-                    </div>
-                    <div class="is-size-5 publication-authors">
-                        <span class="author-block"><sup>3</sup>Stellarvision Inc., South Korea</span>
-                    </div>
-                    <div class="is-size-4 publication-authors">
-                        <span class="author-block", style="color:#346dc2">IEEE TCSVT 2026</span>
-                    </div>
-                    <div class="column has-text-centered">
-                        <div class="publication-links">
-                            <!-- PDF Link. -->
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://ieeexplore.ieee.org/document/11556318/"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2411.10788"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-                            <!-- Code Link. -->
-                            <span class="link-block">
-                <a target="_blank" rel="noopener noreferrer" href="https://github.com/KAIST-VICLab/C-DiffSET"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-</section>
-
-
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <h2 class="title is-3">Qualitative Results (SpaceNet6 Dataset)</h2>
-        </div>
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="C-DiffSET, back to top"><img src="static/images/icon.png" width="84" height="84" alt=""><span class="wordmark" aria-hidden="true"><span>C</span>-DiffSET</span></a>
+    <div class="topnav-links">
+      <a href="#gallery">Gallery</a>
+      <a href="#figures">Figures</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
-</section>
+    <a class="topnav-cta" href="https://ieeexplore.ieee.org/document/11556318/" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
+</nav>
 
-<section class="hero is-light is-small mt-4">
-    <div class="hero-body">
-        <div class="container">
-            <div id="results-carousel-horizontal" class="carousel results-carousel">
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0003_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0003_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0003_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0003_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0013_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0013_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0013_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0013_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0029_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0029_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0029_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0029_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0035_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0035_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0035_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0035_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0039_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0039_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0039_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0039_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0041_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0041_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0041_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0041_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0501_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0501_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0501_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/spacenet6/0501_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+<header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: Remote sensing">
+    <p class="lineage-menu-head"><b>Research line</b>Remote sensing</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-menu-stage"><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></span></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoCore-9B_site/"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoSET_site/"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.svg" width="2008" height="410" alt="C-DiffSET:" fetchpriority="high">
+      <span class="hero-title"><span class="t-line">Leveraging Latent Diffusion</span> <span class="t-line">for <span class="nowrap">SAR-to-EO</span> Image Translation</span> <span class="t-line">with <span class="hero-accent nowrap">Confidence-Guided</span> Reliable Object Generation</span></span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a><sup>1</sup></span>
+      <span class="author"><a href="https://sites.google.com/view/jaehyup-lee" target="_blank" rel="noopener">Jaehyup Lee</a><sup>2</sup></span>
+      <span class="author"><a href="https://stellarvision.co.kr/" target="_blank" rel="noopener">Seungchul Lee</a><sup>3</sup></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>1,&dagger;</sup></span>
+    </p>
+    <p class="hero-affil"><span><sup>1</sup>Korea Advanced Institute of Science and Technology (KAIST), South Korea</span><span><sup>2</sup>Kyungpook National University, South Korea</span><span><sup>3</sup>Stellarvision Inc.</span></p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Corresponding author</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:jaehyuplee@knu.ac.kr">jaehyuplee@knu.ac.kr</a><a href="mailto:leesc@stellarvision.kr">leesc@stellarvision.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">IEEE TCSVT 2026</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="https://ieeexplore.ieee.org/document/11556318/" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://arxiv.org/abs/2411.10788" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/C-DiffSET" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="#gallery"><svg class="icon" aria-hidden="true"><use href="#i-gallery"/></svg>Gallery</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>Synthetic Aperture Radar (SAR) imagery provides robust environmental and temporal coverage (e.g., during clouds, seasons, day-night cycles), yet its noise and unique structural patterns pose interpretation challenges, especially for non-experts. <span class="nowrap">SAR-to-EO</span> (<span class="nowrap">Electro-Optical</span>) image translation (SET) has emerged to make SAR images more perceptually interpretable. However, traditional approaches trained from scratch on limited <span class="nowrap">SAR-EO</span> datasets are prone to overfitting.</p>
+          <p>To address these challenges, we introduce Confidence Diffusion for <span class="nowrap">SAR-to-EO</span> Translation, called <b class="nowrap">C-DiffSET</b>, a framework leveraging pretrained Latent Diffusion Model (LDM) extensively trained on natural images, thus enabling effective adaptation to the EO domain. Remarkably, we find that the pretrained VAE encoder aligns SAR and EO images in the same latent space, even with varying noise levels in SAR inputs. To further improve pixel-wise fidelity for SET, we propose a <span class="nowrap">confidence-guided</span> diffusion (<span class="nowrap">C-Diff</span>) loss that mitigates artifacts from temporal discrepancies, such as appearing or disappearing objects, thereby enhancing structural accuracy. <span class="nowrap">C-DiffSET</span> achieves state-of-the-art (SOTA) results on multiple datasets, significantly outperforming the very recent image-to-image translation methods and SET methods with large margins.</p>
         </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Headline + qualitative results: paper Fig. 1 -->
+  <section class="section section--headline" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">Start from pretrained diffusion, not from scratch</h2>
+        <p class="lead">A latent diffusion model pretrained on natural images, <span class="nowrap">fine-tuned</span> for <span class="nowrap">SAR-to-EO</span> translation with a <span class="nowrap">confidence-guided</span> loss.</p>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/teaser_full.jpg" data-title="Qualitative comparison on SpaceNet6, SAR2Opt and QXS-SAROPT">
+          <img src="static/images/teaser_1600.jpg"
+               srcset="static/images/teaser_1200.jpg 1200w, static/images/teaser_1600.jpg 1600w, static/images/teaser_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="788" fetchpriority="high" decoding="async"
+               alt="Grid with three rows, SpaceNet6 (full polarization), SAR2Opt and QXS-SAROPT (single polarization), and six columns: input SAR, StegoGAN, BBDM, ControlNet, C-DiffSET and the target EO image.">
+        </a>
+        <figcaption><b>Qualitative comparison on SpaceNet6, SAR2Opt and <span class="nowrap">QXS-SAROPT</span>.</b> <span class="nowrap">Full-polarization</span> SAR input (SpaceNet6, GSD 0.5&nbsp;m) and <span class="nowrap">single-polarization</span> input (SAR2Opt and <span class="nowrap">QXS-SAROPT</span>, GSD 1&nbsp;m), against StegoGAN, BBDM and ControlNet.</figcaption>
+      </figure>
     </div>
-</section>
+  </section>
 
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <h2 class="title is-3">Qualitative Results (SAR2Opt Dataset)</h2>
+  <!-- Galleries: the old page's demo images (input SAR / cBBDM / C-DiffSET), then the native tiles of the paper's
+       comparison figures (Fig. 5, Figs. 12-20) and the other paper figures, all in one band as on GeoCR -->
+  <section class="section section--band" id="gallery" aria-labelledby="gallery-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="gallery-title">SAR in, EO out</h2>
+        <p class="lead">Input SAR, the SET method cBBDM and <span class="nowrap">C-DiffSET</span> on 21 scenes from SpaceNet6, SAR2Opt and <span class="nowrap">QXS-SAROPT</span>. Select a tile to compare it with <span class="nowrap">C-DiffSET</span>.</p>
+      </header>
+
+      <div class="tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Benchmark (samples)">
+            <button class="tab" role="tab" type="button" id="tab-s-spacenet6" aria-controls="panel-s-spacenet6" aria-selected="true">SpaceNet6 <small>7</small></button>
+            <button class="tab" role="tab" type="button" id="tab-s-sar2opt" aria-controls="panel-s-sar2opt" aria-selected="false">SAR2Opt <small>4</small></button>
+            <button class="tab" role="tab" type="button" id="tab-s-qxs-saropt" aria-controls="panel-s-qxs-saropt" aria-selected="false">QXS-SAROPT <small>10</small></button>
+          </div>
         </div>
-    </div>
-</section>
-
-<section class="hero is-light is-small mt-4">
-    <div class="hero-body">
-        <div class="container">
-            <div id="results-carousel-horizontal" class="carousel results-carousel">
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0074_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0074_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0074_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0074_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0188_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0188_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0188_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0188_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0486_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0486_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0486_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0486_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0565_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0565_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0565_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/sar2opt/0565_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="legend" aria-label="Tile legend">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--input"></span>Input SAR</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--ours"></span><span><span class="nowrap">C-DiffSET</span> (ours)</span></span>
+          <span class="legend-item"><span class="legend-swatch"></span>cBBDM</span>
         </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <h2 class="title is-3">Qualitative Results (QXS-SAROPT Dataset)</h2>
+        <div class="tabpanel" role="tabpanel" id="panel-s-spacenet6" aria-labelledby="tab-s-spacenet6" tabindex="-1">
+          <div data-gallery="s-spacenet6"></div>
         </div>
-    </div>
-</section>
-
-<section class="hero is-light is-small mt-4">
-    <div class="hero-body">
-        <div class="container">
-            <div id="results-carousel-horizontal" class="carousel results-carousel">
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0005_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0005_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0005_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0005_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0006_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0006_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0006_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0006_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0014_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0014_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0014_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0014_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0042_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0042_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0042_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0042_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0048_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0048_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0048_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0048_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0440_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0440_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0440_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0440_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0449_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0449_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0449_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0449_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0461_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0461_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0461_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0461_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0474_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0474_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0474_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0474_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="twoitem">
-                    <div class="twentytwenty-container twentytwenty-container-top">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0535_sar.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0535_cdiffset.png">
-                        </div>
-                    </div>
-                    <div class="twentytwenty-container twentytwenty-container-bottom">
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0535_cbbdm.png">
-                        </div>
-                        <div class="cmpcontent">
-                            <img src="./static/image/qxs/0535_cdiffset.png">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-s-sar2opt" aria-labelledby="tab-s-sar2opt" tabindex="-1" hidden>
+          <div data-gallery="s-sar2opt"></div>
         </div>
-    </div>
-</section>
-
-
-<!-- Abstract. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <h2 class="title is-3">Abstract</h2>
-                <div class="content has-text-justified" style="margin-bottom: 40px;">
-                    <p>
-                        We propose <b>Confidence Diffusion for SAR-to-EO Translation (C-DiffSET)</b>, the <em>first</em>
-                        framework to fine-tune a <em>pretrained</em> LDM for
-                        SAR-to-EO image translation (SET) tasks, effectively leveraging their learned representations to
-                        overcome the scarcity of
-                        SAR-EO pairs and local misalignment challenges.
-                    </p>
-                    <p>
-                        We introduce a novel <b>C-Diff loss</b> that can guide our C-DiffSET to reliably predict both EO
-                        outputs and confidence maps for accurate SET.
-                    </p>
-                    <p>
-                        We validate our C-DiffSET through extensive experiments on datasets with varying resolutions and
-                        ground sample distances (GSD), including QXS-SAROPT, SAR2Opt, and SpaceNet6 datasets,
-                        demonstrating the superiority of our
-                        C-DiffSET that <em>significantly</em> outperforms the very recent image-to-image translation
-                        methods and SET methods with large margins.
-                    </p>
-                </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-s-qxs-saropt" aria-labelledby="tab-s-qxs-saropt" tabindex="-1" hidden>
+          <div data-gallery="s-qxs-saropt"></div>
         </div>
-    </div>
-</section>
+      </div>
+      <noscript><p class="gallery-noscript">The interactive galleries need JavaScript. The figure above and the paper figures below show representative scenes.</p></noscript>
+      <p class="carousel-hint"><span class="hint-pointer">Use the arrows or the <kbd>&larr;</kbd>&thinsp;<kbd>&rarr;</kbd> keys to change scene &middot; click a tile to open the comparison slider</span><span class="hint-touch">Swipe or use the arrows to change scene &middot; tap a tile to open the comparison slider</span></p>
 
+      <header class="section-head section-head--sub" id="compare">
+        <h2 class="section-title" id="compare-title">All methods, same scenes</h2>
+        <p class="lead">Nine baselines and <span class="nowrap">C-DiffSET</span> on the same SAR input, at the resolution embedded in the paper&rsquo;s comparison figures. Select a tile to compare it with the target EO image.</p>
+      </header>
 
-<!-- Motivation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Motivation of C-DiffSET</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/merge.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Left.</b> Examples of misalignments in paired SAR-EO datasets. Local spatial
-                            misalignments caused by sensor differences or acquisition conditions. Temporal misalignments
-                            (discrepancies) where objects (e.g., ships) appear or disappear between SAR and EO images
-                            due to their different acquisition times.<br>
-                            <b>Right.</b> Results of applying the VAE encoder and decoder from LDM to EO and SAR images.
-                            The first row shows input images, including EO and SAR images with different levels of
-                            speckle noise. The second row presents the corresponding VAE reconstructions, illustrating
-                            that both EO and SAR images are accurately reconstructed despite noise variations.
-                        </p>
-                    </div>
-            </div>
+      <div class="tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Benchmark (all methods)">
+            <button class="tab" role="tab" type="button" id="tab-p-spacenet6" aria-controls="panel-p-spacenet6" aria-selected="true">SpaceNet6 <small>3</small></button>
+            <button class="tab" role="tab" type="button" id="tab-p-sar2opt" aria-controls="panel-p-sar2opt" aria-selected="false">SAR2Opt <small>3</small></button>
+            <button class="tab" role="tab" type="button" id="tab-p-qxs-saropt" aria-controls="panel-p-qxs-saropt" aria-selected="false">QXS-SAROPT <small>5</small></button>
+          </div>
         </div>
-    </div>
-</section>
-
-
-<!-- Overview of C-DiffSET. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Overview of C-DiffSET</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/overall.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Left.</b> Training strategy for the diffusion process.<br>
-                            <b>Right.</b> Inference stage for EO image prediction.
-                        </p>
-                    </div>
-            </div>
+        <div class="legend" aria-label="Tile legend">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--input"></span>Input SAR</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--ours"></span><span><span class="nowrap">C-DiffSET</span> (ours)</span></span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--gt"></span>Target EO</span>
+          <span class="legend-item"><span class="legend-swatch"></span>Baseline</span>
         </div>
-    </div>
-</section>
-
-<!-- Performance Evaluation. -->
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Quantitative Evaluation</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/table1.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Quantitative comparison of image-to-image translation methods and SET methods on SAR2Opt
-                                and SpaceNet6 datasets.</b> Our C-DiffSET to attain the highest PSNR, SSIM, and SCC
-                            values, along with the lowest LPIPS and FID scores.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-p-spacenet6" aria-labelledby="tab-p-spacenet6" tabindex="-1">
+          <div data-gallery="p-spacenet6"></div>
         </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/table4.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Left.</b> Quantitative comparison of image-to-image translation methods and SET methods
-                            on the QXS-SAROPT dataset.<br>
-                            <b>Right.</b> Ablation study on the SAR2Opt dataset evaluating the impact of pretrained LDM
-                            and C-Diff loss.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-p-sar2opt" aria-labelledby="tab-p-sar2opt" tabindex="-1" hidden>
+          <div data-gallery="p-sar2opt"></div>
         </div>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/first.PNG"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Qualitative results of image-to-image translation methods and SET methods.</b> Our C-DiffSET achieve
-                            superior structural accuracy and visual fidelity compared to very recent methods.
-                        </p>
-                    </div>
-            </div>
+        <div class="tabpanel" role="tabpanel" id="panel-p-qxs-saropt" aria-labelledby="tab-p-qxs-saropt" tabindex="-1" hidden>
+          <div data-gallery="p-qxs-saropt"></div>
         </div>
-    </div>
-</section>
-
-<!-- Confidence. -->
-<head>
-    <script type="text/javascript" async
-            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-    </script>
-</head>
-<body>
-<section class="section">
-    <div class="container is-max-desktop">
-        <h2 class="title is-3">Analysis of Confidence Output</h2>
-        <div class="columns is-centered has-text-centered">
-            <div class="column is-full">
-                <image src="./static/image/confidence.PNG" style="width: 60%; height: auto;"><br>
-                    <div class="content has-text-justified" style="margin-bottom: 40px;">
-                        <p>
-                            <b>Confidence maps generated on the training dataset.</b> Using this confidence map, C-Diff
-                            loss enables the U-Net \( \psi \) to down-weight uncertain regions where objects are
-                            temporally misaligned across modalities, thereby reducing artifacts and ensuring coherent EO
-                            outputs.
-                        </p>
-                    </div>
-            </div>
-        </div>
-    </div>
-</section>
-</body>
-
-<script>
-  $(window).on('load', function() {
-    bulmaCarousel.attach('#results-carousel-horizontal', {
-      slidesToScroll: 1,
-      slidesToShow: 3,
-      loop: true,
-      autoplay: true,
-    });
-
-    bulmaCarousel.attach('#results-carousel-vertical', {
-      slidesToScroll: 1,
-      slidesToShow: 5,
-      loop: true,
-      autoplay: true,
-    });
-
-    bulmaCarousel.attach('#results-carousel-testimonials', {
-      slidesToScroll: 1,
-      slidesToShow: 3,
-      loop: true,
-      autoplay: true,
-      breakpoints: [
-        {
-          changePoint: 50 + 260 * 2,
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          loop: true,
-          autoplay: true,
-        },
-        {
-          changePoint: 50 + 260 * 3,
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          loop: true,
-          autoplay: true,
-        },
-        {
-          changePoint: 50 + 260 * 4,
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          loop: true,
-          autoplay: true,
-        }
-      ],
-    });
-
-    $(".twentytwenty-container-top").twentytwenty({
-      before_label: 'Input',
-      after_label: 'Ours',
-      default_offset_pct: 0.75,
-    });
-
-    $(".twentytwenty-container-bottom").twentytwenty({
-      before_label: 'cBBDM',
-      after_label: 'Ours',
-      default_offset_pct: 0.5,
-    });
-
-    $('.results-carousel').css({
-      'max-height': '2000px',
-      'visibility': 'visible'
-    });
-  });
+      </div>
+      <p class="carousel-hint"><span class="hint-pointer">Use the arrows or the <kbd>&larr;</kbd>&thinsp;<kbd>&rarr;</kbd> keys to change scene &middot; click a tile to open the comparison slider</span><span class="hint-touch">Swipe or use the arrows to change scene &middot; tap a tile to open the comparison slider</span></p>
+<script type="application/json" id="gallery-data">
+{"datasets":[{"id":"s-spacenet6","name":"SpaceNet6","unit":"Scene","root":"static/samples/","dir":"spacenet6","ref":"ours","tileMin":200,"compareScale":1.2,"compareMin":0,"cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":512,"h":512},{"n":"C-DiffSET","v":"Ours","k":"ours","f":"02_c-diffset.jpg","w":512,"h":512},{"n":"cBBDM","v":"arXiv'24","k":"baseline","f":"03_cbbdm.jpg","w":512,"h":512}],"scenes":[{"dir":"0003"},{"dir":"0013"},{"dir":"0029"},{"dir":"0035"},{"dir":"0039"},{"dir":"0041"},{"dir":"0501"}]},{"id":"s-sar2opt","name":"SAR2Opt","unit":"Scene","root":"static/samples/","dir":"sar2opt","ref":"ours","tileMin":200,"compareScale":1.2,"compareMin":0,"cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":512,"h":512},{"n":"C-DiffSET","v":"Ours","k":"ours","f":"02_c-diffset.jpg","w":512,"h":512},{"n":"cBBDM","v":"arXiv'24","k":"baseline","f":"03_cbbdm.jpg","w":512,"h":512}],"scenes":[{"dir":"0074"},{"dir":"0188"},{"dir":"0486"},{"dir":"0565"}]},{"id":"s-qxs-saropt","name":"QXS-SAROPT","unit":"Scene","root":"static/samples/","dir":"qxs-saropt","ref":"ours","tileMin":200,"compareScale":1.2,"compareMin":0,"cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":512,"h":512},{"n":"C-DiffSET","v":"Ours","k":"ours","f":"02_c-diffset.jpg","w":512,"h":512},{"n":"cBBDM","v":"arXiv'24","k":"baseline","f":"03_cbbdm.jpg","w":512,"h":512}],"scenes":[{"dir":"0005"},{"dir":"0006"},{"dir":"0014"},{"dir":"0042"},{"dir":"0048"},{"dir":"0440"},{"dir":"0449"},{"dir":"0461"},{"dir":"0474"},{"dir":"0535"}]},{"id":"p-spacenet6","name":"SpaceNet6","unit":"Scene","root":"static/tiles/","dir":"spacenet6","ref":"gt","tileMin":160,"compareScale":1.2,"compareMin":560,"cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":512,"h":512},{"n":"C-DiffSET","v":"Ours","k":"ours","f":"12_c-diffset.jpg","w":512,"h":512},{"n":"Target EO","v":"reference","k":"gt","f":"06_target-eo.jpg","w":512,"h":512},{"n":"Pix2Pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":512,"h":512},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":512,"h":512},{"n":"CFCA-SET","v":"TGRS'23","k":"baseline","f":"04_cfca-set.jpg","w":512,"h":512},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"05_stegogan.jpg","w":512,"h":512},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"07_bbdm.jpg","w":512,"h":512},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"08_controlnet.jpg","w":513,"h":513},{"n":"Uni-ControlNet","v":"NeurIPS'23","k":"baseline","f":"09_uni-controlnet.jpg","w":513,"h":513},{"n":"DGDM","v":"ECCV'24","k":"baseline","f":"10_dgdm.jpg","w":512,"h":512},{"n":"cBBDM","v":"arXiv'24","k":"baseline","f":"11_cbbdm.jpg","w":512,"h":512}],"scenes":[{"dir":"s01","fig":"Fig. 5"},{"dir":"s02","fig":"Fig. 19"},{"dir":"s03","fig":"Fig. 20"}]},{"id":"p-sar2opt","name":"SAR2Opt","unit":"Scene","root":"static/tiles/","dir":"sar2opt","ref":"gt","tileMin":160,"compareScale":1.2,"compareMin":560,"cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":512,"h":512},{"n":"C-DiffSET","v":"Ours","k":"ours","f":"12_c-diffset.jpg","w":512,"h":512},{"n":"Target EO","v":"reference","k":"gt","f":"06_target-eo.jpg","w":512,"h":512},{"n":"Pix2Pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":512,"h":512},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":512,"h":512},{"n":"CFCA-SET","v":"TGRS'23","k":"baseline","f":"04_cfca-set.jpg","w":512,"h":512},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"05_stegogan.jpg","w":512,"h":512},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"07_bbdm.jpg","w":512,"h":512},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"08_controlnet.jpg","w":512,"h":512},{"n":"Uni-ControlNet","v":"NeurIPS'23","k":"baseline","f":"09_uni-controlnet.jpg","w":512,"h":512},{"n":"DGDM","v":"ECCV'24","k":"baseline","f":"10_dgdm.jpg","w":512,"h":512},{"n":"cBBDM","v":"arXiv'24","k":"baseline","f":"11_cbbdm.jpg","w":512,"h":512}],"scenes":[{"dir":"s01","fig":"Fig. 5"},{"dir":"s02","fig":"Fig. 17"},{"dir":"s03","fig":"Fig. 18"}]},{"id":"p-qxs-saropt","name":"QXS-SAROPT","unit":"Scene","root":"static/tiles/","dir":"qxs-saropt","ref":"gt","tileMin":160,"compareScale":1.2,"compareMin":560,"cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":256,"h":256},{"n":"C-DiffSET","v":"Ours","k":"ours","f":"12_c-diffset.jpg","w":256,"h":256},{"n":"Target EO","v":"reference","k":"gt","f":"06_target-eo.jpg","w":256,"h":256},{"n":"Pix2Pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":256,"h":256},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":256,"h":256},{"n":"CFCA-SET","v":"TGRS'23","k":"baseline","f":"04_cfca-set.jpg","w":256,"h":256},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"05_stegogan.jpg","w":256,"h":256},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"07_bbdm.jpg","w":256,"h":256},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"08_controlnet.jpg","w":256,"h":256},{"n":"Uni-ControlNet","v":"NeurIPS'23","k":"baseline","f":"09_uni-controlnet.jpg","w":256,"h":256},{"n":"DGDM","v":"ECCV'24","k":"baseline","f":"10_dgdm.jpg","w":256,"h":256},{"n":"cBBDM","v":"arXiv'24","k":"baseline","f":"11_cbbdm.jpg","w":256,"h":256}],"scenes":[{"dir":"s01","fig":"Fig. 12"},{"dir":"s02","fig":"Fig. 13"},{"dir":"s03","fig":"Fig. 14"},{"dir":"s04","fig":"Fig. 15"},{"dir":"s05","fig":"Fig. 16"}]}]}
 </script>
 
+      <header class="section-head section-head--sub" id="figures">
+        <h2 class="section-title" id="figures-title">Paper figures</h2>
+        <p class="lead">The shared <span class="nowrap">SAR&ndash;EO</span> latent space, confidence maps, misalignments in paired data, the <span class="nowrap">C-Diff</span> loss and the number of sampling steps.</p>
+      </header>
+
+      <div class="tabs figure-tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-labelledby="figures-title">
+            <button class="tab" role="tab" type="button" id="ft-latent" aria-controls="fp-latent" aria-selected="true">Shared latent</button>
+            <button class="tab" role="tab" type="button" id="ft-conf" aria-controls="fp-conf" aria-selected="false">Confidence maps</button>
+            <button class="tab" role="tab" type="button" id="ft-mis" aria-controls="fp-mis" aria-selected="false">Misalignment</button>
+            <button class="tab" role="tab" type="button" id="ft-loss" aria-controls="fp-loss" aria-selected="false">C-Diff vs MSE</button>
+            <button class="tab" role="tab" type="button" id="ft-steps" aria-controls="fp-steps" aria-selected="false">Sampling steps</button>
+          </div>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="fp-latent" aria-labelledby="ft-latent" tabindex="-1">
+          <div class="figure-pair" style="--pair: minmax(0, 1.7986fr) minmax(0, 1.3181fr)">
+            <figure class="figure">
+              <a class="figure-media zoom" href="static/images/vae_full.jpg" data-title="VAE reconstructions of EO and SAR images">
+                <img src="static/images/vae_1600.jpg" srcset="static/images/vae_1000.jpg 1000w, static/images/vae_1600.jpg 1600w"
+                     sizes="(min-width: 1304px) 700px, (min-width: 761px) 56vw, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                     width="1600" height="889" loading="lazy" decoding="async"
+                     alt="Top row: an EO image, a SAR image, and the SAR image with speckle noise of sigma 0.1 and 1.0. Bottom row: the reconstructions of each by the VAE encoder and decoder of the LDM.">
+              </a>
+              <figcaption><b>VAE reconstructions.</b> The frozen LDM VAE reconstructs EO images and SAR images, also under added speckle noise (&sigma;<sub><i>x</i></sub>&nbsp;=&nbsp;0.1 and 1.0).</figcaption>
+            </figure>
+            <figure class="figure">
+              <a class="figure-media zoom" href="static/images/vae_more_full.jpg" data-title="Shared latent space on three datasets">
+                <img src="static/images/vae_more_1600.jpg" srcset="static/images/vae_more_1000.jpg 1000w, static/images/vae_more_1600.jpg 1600w"
+                     sizes="(min-width: 1304px) 520px, (min-width: 761px) 41vw, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                     width="1600" height="1214" loading="lazy" decoding="async"
+                     alt="Rows for QXS-SAROPT, SAR2Opt and SpaceNet6; columns: SAR image, its VAE reconstruction, EO image, its VAE reconstruction.">
+              </a>
+              <figcaption><b>One latent space for SAR and EO.</b> SAR and EO images and their VAE reconstructions on the three datasets.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="fp-conf" aria-labelledby="ft-conf" tabindex="-1" hidden>
+          <figure class="figure fig-fit" style="--ar: 1.647">
+            <a class="figure-media zoom" href="static/images/confidence_full.jpg" data-title="Confidence maps at t = T/2">
+              <img src="static/images/confidence_1600.jpg" srcset="static/images/confidence_1000.jpg 1000w, static/images/confidence_1600.jpg 1600w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="1600" height="971" loading="lazy" decoding="async"
+                   alt="Five SAR-EO training pairs from QXS-SAROPT, SAR2Opt and SpaceNet6. Rows: input SAR, target EO, and the confidence map. Red boxes mark ships and structures that appear in only one of the two images; the confidence map is dark inside the boxes.">
+            </a>
+            <figcaption><b>Confidence maps at <i>t</i>&nbsp;=&nbsp;<i>T</i>/2.</b> On training pairs, the predicted confidence highlights temporal discrepancies (boxed), where objects appear in only one of the SAR and EO images.</figcaption>
+          </figure>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="fp-mis" aria-labelledby="ft-mis" tabindex="-1" hidden>
+          <figure class="figure fig-fit" style="--ar: 1.923">
+            <a class="figure-media zoom" href="static/images/challenge_full.jpg" data-title="Misalignments in paired SAR-EO datasets">
+              <img src="static/images/challenge_1600.jpg" srcset="static/images/challenge_1000.jpg 1000w, static/images/challenge_1600.jpg 1600w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="1600" height="832" loading="lazy" decoding="async"
+                   alt="Left: two SAR-EO pairs with a yellow line showing a horizontal offset between the images. Right: two pairs with red boxes around ships present in only one image.">
+            </a>
+            <figcaption><b>Misalignments in paired <span class="nowrap">SAR&ndash;EO</span> data.</b> Left: local spatial misalignments from sensor differences or acquisition conditions. Right: temporal discrepancies, where objects such as ships appear or disappear between acquisitions.</figcaption>
+          </figure>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="fp-loss" aria-labelledby="ft-loss" tabindex="-1" hidden>
+          <figure class="figure fig-fit" style="--ar: 1.291">
+            <a class="figure-media zoom" href="static/images/loss_ablation_full.jpg" data-title="SET results with and without the C-Diff loss">
+              <img src="static/images/loss_ablation_1600.jpg" srcset="static/images/loss_ablation_1000.jpg 1000w, static/images/loss_ablation_1600.jpg 1600w"
+                   sizes="(min-width: 1304px) 1000px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="1600" height="1239" loading="lazy" decoding="async"
+                   alt="Three scenes in rows; columns: input SAR, the result with the MSE loss, the result with the C-Diff loss, and the target EO image.">
+            </a>
+            <figcaption><b><span class="nowrap">C-Diff</span> loss vs MSE loss.</b> SET results with and without confidence weighting; the MSE loss corresponds to <i>&beta;</i>&nbsp;=&nbsp;0.</figcaption>
+          </figure>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="fp-steps" aria-labelledby="ft-steps" tabindex="-1" hidden>
+          <div class="figure-stack">
+            <figure class="figure">
+              <a class="figure-media figure-media--chart zoom" href="static/images/steps_graph_full.png" data-title="Metrics and inference time against total inference steps">
+                <img src="static/images/steps_graph_2400.png" srcset="static/images/steps_graph_1400.png 1400w, static/images/steps_graph_2400.png 2400w"
+                     sizes="(min-width: 1304px) 1200px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                     width="2400" height="346" loading="lazy" decoding="async"
+                     alt="Five line plots (FID, LPIPS, SCC, SSIM and PSNR) against total inference steps from 1 to 1000 on a log axis, each with the inference time on a second axis. The metrics flatten out from about 50 steps while the time keeps growing.">
+              </a>
+              <figcaption><b>Quality and time vs total inference steps.</b> On the first 50 SpaceNet6 samples, the metrics improve up to 50 DDIM steps with diminishing returns beyond, while the time keeps rising; <span class="nowrap">C-DiffSET</span> uses 50 steps.</figcaption>
+            </figure>
+            <figure class="figure">
+              <a class="figure-media zoom" href="static/images/steps_full.jpg" data-title="Results across total inference steps">
+                <img src="static/images/steps_2000.jpg" srcset="static/images/steps_1200.jpg 1200w, static/images/steps_2000.jpg 2000w, static/images/steps_2600.jpg 2600w"
+                     sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                     width="2000" height="362" loading="lazy" decoding="async"
+                     alt="Two SpaceNet6 scenes in rows: input SAR, C-DiffSET results with 1, 2, 5, 10, 20, 50, 75, 100, 200, 500 and 999 total inference steps, and the target EO image.">
+              </a>
+              <figcaption><b>Results across total inference steps.</b> From 1 to 999 DDIM steps (training uses <i>T</i>&nbsp;=&nbsp;1,000).</figcaption>
+            </figure>
+            <figure class="figure">
+              <a class="figure-media zoom" href="static/images/denoise_full.jpg" data-title="Progressive denoising over 50 inference steps">
+                <img src="static/images/denoise_2000.jpg" srcset="static/images/denoise_1200.jpg 1200w, static/images/denoise_2000.jpg 2000w, static/images/denoise_2600.jpg 2600w"
+                     sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                     width="2000" height="362" loading="lazy" decoding="async"
+                     alt="Two SpaceNet6 scenes in rows: input SAR, the decoded output at timesteps 981, 901, 801, 701, 601, 501, 401, 301, 201, 101 and 1 of a 50-step run, and the target EO image.">
+              </a>
+              <figcaption><b>Progressive denoising.</b> Outputs of a 50-step run on SpaceNet6, from heavy noise at <i>t</i>&nbsp;=&nbsp;981 to the final image at <i>t</i>&nbsp;=&nbsp;1.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quantitative results (Tables 1, 2; ablations Tables 3 and 8; cost Table 7) -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead"><span class="nowrap">C-DiffSET</span> is best in all five metrics on SAR2Opt, SpaceNet6 and <span class="nowrap">QXS-SAROPT</span>.</p>
+      </header>
+
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t1" aria-controls="panel-t1" aria-selected="true">Table 1<small>SAR2Opt &amp; SpaceNet6</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="false">Table 2<small>QXS-SAROPT</small></button>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t1" aria-labelledby="tab-t1" tabindex="-1">
+<figure class="table-figure" id="table-1">
+<figcaption><span class="fig-label">Table 1.</span> Quantitative comparison of image-to-image translation methods and SET methods on SAR2Opt and SpaceNet6 datasets.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-t0-vl" data-table="#tab-main-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">SAR2Opt</button><button type="button" data-view="g2" aria-pressed="false">SpaceNet6</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 (scrolls horizontally)"><table class="results" id="tab-main-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Method</th>
+<th rowspan="2" scope="col" class="col-venue">Venue</th>
+<th colspan="5" scope="colgroup" class="col-group grp-start g1"><span>SAR2Opt</span></th>
+<th colspan="5" scope="colgroup" class="col-group grp-start g2"><span>SpaceNet6</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">PSNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="12"><span class="group-label">GANs</span></td></tr>
+<tr><td class="col-method">Pix2Pix</td><td class="col-venue">CVPR 2017</td><td class="grp-start g1">196.87</td><td class="g1">0.426</td><td class="g1">0.0006</td><td class="g1">0.216</td><td class="g1">15.422</td><td class="grp-start g2">124.55</td><td class="g2">0.256</td><td class="g2">0.0102</td><td class="g2">0.522</td><td class="g2">19.357</td></tr>
+<tr><td class="col-method">CycleGAN</td><td class="col-venue">ICCV 2017</td><td class="grp-start g1">139.72</td><td class="g1">0.425</td><td class="g1">0.0022</td><td class="g1">0.224</td><td class="g1">14.931</td><td class="grp-start g2">114.81</td><td class="g2">0.274</td><td class="g2">0.0097</td><td class="g2">0.493</td><td class="g2">17.798</td></tr>
+<tr><td class="col-method"><span class="nowrap">SAR-SMTNet</span><sup>†</sup></td><td class="col-venue">TGRS 2023</td><td class="grp-start g1">160.87</td><td class="g1">0.479</td><td class="g1">0.0011</td><td class="g1">0.219</td><td class="g1">14.661</td><td class="grp-start g2">118.96</td><td class="g2">0.294</td><td class="g2">0.0103</td><td class="g2">0.483</td><td class="g2">17.032</td></tr>
+<tr><td class="col-method"><span class="nowrap">CFCA-SET</span><sup>†</sup></td><td class="col-venue">TGRS 2023</td><td class="grp-start g1">152.27</td><td class="g1">0.430</td><td class="g1">0.0009</td><td class="g1">0.223</td><td class="g1">15.183</td><td class="grp-start g2">164.78</td><td class="g2">0.279</td><td class="g2">0.0097</td><td class="g2">0.498</td><td class="g2">18.297</td></tr>
+<tr><td class="col-method">StegoGAN</td><td class="col-venue">CVPR 2024</td><td class="grp-start g1">144.54</td><td class="g1">0.398</td><td class="g1">0.0034</td><td class="g1">0.237</td><td class="g1">15.624</td><td class="grp-start g2">75.12</td><td class="g2">0.244</td><td class="g2">0.0106</td><td class="g2">0.516</td><td class="g2">18.958</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="12"><span class="group-label">LDMs</span></td></tr>
+<tr><td class="col-method">BBDM</td><td class="col-venue">CVPR 2023</td><td class="grp-start g1">94.72</td><td class="g1">0.473</td><td class="g1">0.0005</td><td class="g1">0.234</td><td class="g1">15.131</td><td class="grp-start g2">81.86</td><td class="g2">0.302</td><td class="g2">0.0019</td><td class="g2">0.217</td><td class="g2">17.678</td></tr>
+<tr><td class="col-method">ControlNet</td><td class="col-venue">ICCV 2023</td><td class="grp-start g1">81.04</td><td class="g1">0.423</td><td class="g1">0.0005</td><td class="g1">0.216</td><td class="g1">14.461</td><td class="grp-start g2">106.59</td><td class="g2">0.392</td><td class="g2">0.0027</td><td class="g2">0.178</td><td class="g2">14.085</td></tr>
+<tr><td class="col-method"><span class="nowrap">Uni-ControlNet</span></td><td class="col-venue">NeurIPS 2023</td><td class="grp-start g1">80.81</td><td class="g1">0.421</td><td class="g1">0.0004</td><td class="g1">0.215</td><td class="g1">14.384</td><td class="grp-start g2">91.14</td><td class="g2">0.321</td><td class="g2">0.0037</td><td class="g2">0.183</td><td class="g2">14.333</td></tr>
+<tr><td class="col-method">DGDM</td><td class="col-venue">ECCV 2024</td><td class="grp-start g1">156.12</td><td class="g1">0.541</td><td class="g1">0.0004</td><td class="g1">0.273</td><td class="g1">15.568</td><td class="grp-start g2">238.37</td><td class="g2">0.438</td><td class="g2">0.0015</td><td class="g2">0.253</td><td class="g2">17.124</td></tr>
+<tr><td class="col-method">cBBDM<sup>†</sup></td><td class="col-venue">arXiv 2024</td><td class="grp-start g1">97.64</td><td class="g1">0.394</td><td class="g1">0.0022</td><td class="g1">0.285</td><td class="g1">16.591</td><td class="grp-start g2">72.77</td><td class="g2">0.243</td><td class="g2">0.0079</td><td class="g2">0.254</td><td class="g2">19.033</td></tr>
+<tr class="ours"><td class="col-method"><span class="nowrap">C-DiffSET</span> (Ours)</td><td class="col-venue">–</td><td class="grp-start g1 best">77.81</td><td class="g1 best">0.346</td><td class="g1 best">0.0035</td><td class="g1 best">0.286</td><td class="g1 best">16.613</td><td class="grp-start g2 best">37.44</td><td class="g2 best">0.142</td><td class="g2 best">0.0151</td><td class="g2 best">0.567</td><td class="g2 best">21.022</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note"><sup>&dagger;</sup>&thinsp;SET-specific methods without official code, re-implemented from their technical descriptions. All LDM-based methods, including <span class="nowrap">C-DiffSET</span>, are initialised with the same Stable Diffusion v2.1 weights. On SpaceNet6, <span class="nowrap">C-DiffSET</span> lowers FID from 72.77 (cBBDM, the next best) to <b>37.44</b>.</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1" hidden>
+<figure class="table-figure" id="table-2">
+<figcaption><span class="fig-label">Table 2.</span> Quantitative comparison of image-to-image translation methods and SET methods on the <span class="nowrap">QXS-SAROPT</span> dataset.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (scrolls horizontally)"><table class="results" id="tab-qxs-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Method</th>
+<th colspan="5" scope="colgroup" class="col-group grp-start"><span><span class="nowrap">QXS-SAROPT</span></span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric">PSNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="6"><span class="group-label">GANs</span></td></tr>
+<tr><td class="col-method">Pix2Pix</td><td class="grp-start">196.89</td><td>0.454</td><td>0.0000</td><td>0.247</td><td>14.924</td></tr>
+<tr><td class="col-method">CycleGAN</td><td class="grp-start">195.38</td><td>0.455</td><td>0.0001</td><td>0.251</td><td>14.977</td></tr>
+<tr><td class="col-method"><span class="nowrap">SAR-SMTNet</span><sup>†</sup></td><td class="grp-start">117.69</td><td>0.435</td><td>0.0003</td><td>0.260</td><td>14.491</td></tr>
+<tr><td class="col-method"><span class="nowrap">CFCA-SET</span><sup>†</sup></td><td class="grp-start">79.06</td><td>0.406</td><td>0.0006</td><td>0.273</td><td>15.094</td></tr>
+<tr><td class="col-method">StegoGAN</td><td class="grp-start">85.60</td><td>0.391</td><td>0.0019</td><td>0.280</td><td>15.580</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="6"><span class="group-label">LDMs</span></td></tr>
+<tr><td class="col-method">BBDM</td><td class="grp-start">65.15</td><td>0.522</td><td>0.0004</td><td>0.238</td><td>13.946</td></tr>
+<tr><td class="col-method">ControlNet</td><td class="grp-start">22.39</td><td>0.434</td><td>0.0001</td><td>0.257</td><td>14.062</td></tr>
+<tr><td class="col-method"><span class="nowrap">Uni-ControlNet</span></td><td class="grp-start">22.48</td><td>0.437</td><td>0.0002</td><td>0.257</td><td>13.985</td></tr>
+<tr><td class="col-method">DGDM</td><td class="grp-start">147.23</td><td>0.634</td><td>0.0001</td><td>0.288</td><td>11.564</td></tr>
+<tr><td class="col-method">cBBDM<sup>†</sup></td><td class="grp-start">69.47</td><td>0.420</td><td>0.0023</td><td>0.304</td><td>16.248</td></tr>
+<tr class="ours"><td class="col-method"><span class="nowrap">C-DiffSET</span> (Ours)</td><td class="grp-start best">18.15</td><td class="best">0.293</td><td class="best">0.0108</td><td class="best">0.372</td><td class="best">18.077</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">On <span class="nowrap">QXS-SAROPT</span>, FID drops from 22.39 (ControlNet, the next best) to <b>18.15</b>.</p>
+</figure>
+        </div>
+      </div>
+
+      <div class="disclosures">
+      <details class="disclosure" id="ablation" data-animate>
+        <summary><span>Ablation: pretrained LDM and <span class="nowrap">C-Diff</span> loss</span> <span class="summary-sub">Tables 3 and 8</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body stack stack--tables">
+<figure class="table-figure" id="table-3">
+<figcaption><span class="fig-label">Table 3.</span> Ablation studies on the SAR2Opt and SpaceNet6 dataset evaluating the impact of pretrained LDM and <span class="nowrap">confidence-guided</span> diffusion (<span class="nowrap">C-Diff</span>) loss.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (scrolls horizontally)"><table class="results" id="tab-ablation-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-check">Pretrained LDM</th>
+<th rowspan="2" scope="col" class="col-check">Loss function</th>
+<th colspan="5" scope="colgroup" class="col-group grp-start"><span>SAR2Opt</span></th>
+<th colspan="5" scope="colgroup" class="col-group grp-start"><span>SpaceNet6</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric">PSNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-check"></td><td class="col-check">MSE</td><td class="grp-start">98.98</td><td>0.39</td><td>0.001</td><td>0.26</td><td>15.82</td><td class="grp-start">60.26</td><td>0.23</td><td>0.011</td><td>0.43</td><td>18.16</td></tr>
+<tr><td class="col-check">✓</td><td class="col-check">MSE</td><td class="grp-start">78.14</td><td>0.36</td><td>0.003</td><td>0.28</td><td>16.46</td><td class="grp-start">40.62</td><td>0.16</td><td>0.014</td><td>0.52</td><td>20.29</td></tr>
+<tr class="ours"><td class="col-check">✓</td><td class="col-check"><span class="nowrap">C-Diff</span></td><td class="grp-start best">77.81</td><td class="best">0.34</td><td class="best">0.004</td><td class="best">0.29</td><td class="best">16.61</td><td class="grp-start best">37.44</td><td class="best">0.14</td><td class="best">0.015</td><td class="best">0.57</td><td class="best">21.02</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">Starting from the pretrained LDM lowers FID from 98.98 to 78.14 on SAR2Opt and from 60.26 to 40.62 on SpaceNet6 with the same MSE loss; the <span class="nowrap">C-Diff</span> loss then improves every metric on both datasets.</p>
+</figure>
+<figure class="table-figure" id="table-8">
+<figcaption><span class="fig-label">Table 8.</span> Ablation studies on the <span class="nowrap">QXS-SAROPT</span> dataset evaluating the impact of pretrained LDM and <span class="nowrap">confidence-guided</span> diffusion (<span class="nowrap">C-Diff</span>) loss.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8 (scrolls horizontally)"><table class="results" id="tab-more-ablation-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-check">Pretrained LDM</th>
+<th rowspan="2" scope="col" class="col-check">Loss function</th>
+<th colspan="5" scope="colgroup" class="col-group grp-start"><span><span class="nowrap">QXS-SAROPT</span></span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric">PSNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-check"></td><td class="col-check">MSE</td><td class="grp-start">29.04</td><td>0.407</td><td>0.0006</td><td>0.279</td><td>14.647</td></tr>
+<tr><td class="col-check">✓</td><td class="col-check">MSE</td><td class="grp-start">19.99</td><td>0.297</td><td>0.0094</td><td>0.364</td><td>17.736</td></tr>
+<tr class="ours"><td class="col-check">✓</td><td class="col-check"><span class="nowrap">C-Diff</span></td><td class="grp-start best">18.15</td><td class="best">0.293</td><td class="best">0.0108</td><td class="best">0.372</td><td class="best">18.077</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note">On <span class="nowrap">QXS-SAROPT</span>, starting from the pretrained LDM lowers FID from 29.04 to 19.99 with the same MSE loss; the <span class="nowrap">C-Diff</span> loss then improves every metric.</p>
+</figure>
+        </div></div>
+      </details>
+      <details class="disclosure" id="complexity" data-animate>
+        <summary>Computational cost <span class="summary-sub">Table 7</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" id="table-7">
+<figcaption><span class="fig-label">Table 7.</span> Comparative analysis of <span class="nowrap">C-DiffSET</span> with other methods by parameters, FLOPs, memory usage, and inference time.</figcaption>
+<div class="table-meta table-meta--hint"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 7 (scrolls horizontally)"><table class="results" id="tab-complex-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Method</th>
+<th scope="col" class="metric">Params. (M)</th>
+<th scope="col" class="metric">FLOPs (G)</th>
+<th scope="col" class="metric">Memory (MB)</th>
+<th scope="col" class="metric">Time (s)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="5"><span class="group-label">GANs</span></td></tr>
+<tr><td class="col-method">Pix2Pix</td><td>54.41</td><td>24.22</td><td>464.12</td><td>0.06</td></tr>
+<tr><td class="col-method">CycleGAN</td><td>7.84</td><td>140.43</td><td>398.38</td><td>0.08</td></tr>
+<tr><td class="col-method"><span class="nowrap">SAR-SMTNet</span></td><td>2.15</td><td>615.40</td><td>2626.98</td><td>0.22</td></tr>
+<tr><td class="col-method"><span class="nowrap">CFCA-SET</span></td><td>26.80</td><td>98.98</td><td>431.86</td><td>0.10</td></tr>
+<tr><td class="col-method">StegoGAN</td><td>13.15</td><td>227.49</td><td>461.14</td><td>0.11</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="5"><span class="group-label">LDMs</span></td></tr>
+<tr><td class="col-method">BBDM</td><td>949.56</td><td>2122.44</td><td>6147.88</td><td>3.13</td></tr>
+<tr><td class="col-method">ControlNet</td><td>1312.72</td><td>2231.03</td><td>7567.83</td><td>4.50</td></tr>
+<tr><td class="col-method"><span class="nowrap">Uni-ControlNet</span></td><td>1519.18</td><td>2295.20</td><td>8382.00</td><td>4.95</td></tr>
+<tr><td class="col-method">DGDM</td><td>959.03</td><td>2161.25</td><td>6184.45</td><td>1.47</td></tr>
+<tr><td class="col-method">cBBDM</td><td>949.58</td><td>2122.49</td><td>6147.93</td><td>3.15</td></tr>
+<tr class="ours"><td class="col-method"><span class="nowrap">C-DiffSET</span></td><td>949.58</td><td>2122.49</td><td>6148.09</td><td>3.27</td></tr>
+</tbody>
+</table></div></div>
+<p class="table-note"><span class="nowrap">C-DiffSET</span> has the parameters and FLOPs of cBBDM (949.58&nbsp;M and 2122.49&nbsp;G) and takes 3.27&nbsp;s per 512&nbsp;&times;&nbsp;512 image.</p>
+</figure>
+        </div></div>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method (compact): paper Fig. 3 -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">Share the latent, weight by confidence</h2>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/framework_full.jpg" data-title="C-DiffSET framework">
+          <img src="static/images/framework_1600.jpg"
+               srcset="static/images/framework_1200.jpg 1200w, static/images/framework_1600.jpg 1600w, static/images/framework_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="523" loading="lazy" decoding="async"
+               alt="C-DiffSET framework. Training: the frozen image encoder maps the SAR image X and the EO image Y to latents; noise is added to the EO latent in the forward process; the denoising U-Net, fed the concatenated noisy EO and SAR latents, the timestep and the CLIP embedding of the prompt Electro-Optical Image, predicts the noise and a confidence map, optimised with the C-Diff loss. Inference: starting from Gaussian noise, the U-Net denoises step by step conditioned on the SAR latent, and the image decoder produces the EO prediction.">
+        </a>
+        <figcaption><b><span class="nowrap">C-DiffSET</span> framework.</b> Training (left): the U-Net predicts the noise and a confidence map from the noisy EO latent and the SAR latent. Inference (right): iterative denoising from Gaussian noise, then the VAE decoder.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">01</span><b>One latent space for SAR and EO.</b> The frozen VAE of the pretrained LDM embeds both images; the SAR latent is concatenated channel-wise with the noisy EO latent, keeping pixel-wise correspondence.</li>
+        <li><span class="kp-num">02</span><b>Fine-tuned, not trained from scratch.</b> The U-Net starts from Stable Diffusion v2.1 weights, with the fixed prompt &ldquo;electro-optical image&rdquo; as a stable conditioning signal.</li>
+        <li><span class="kp-num">03</span><b><span class="nowrap">Confidence-guided</span> diffusion loss.</b> A predicted confidence map weights the noise error pixel-wise (<i>&beta;</i>-NLL style), so regions where objects appear or disappear between acquisitions are down-weighted.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+<pre><code id="bibtex-code">@article{do2026cdiffset,
+  title={C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object Generation},
+  author={Do, Jeonghyeok and Lee, Jaehyup and Lee, Seungchul and Kim, Munchurl},
+  journal={IEEE Transactions on Circuits and Systems for Video Technology},
+  year={2026},
+  doi={10.1109/TCSVT.2026.3701447}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: Remote sensing">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">Remote sensing</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-stage"><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></span></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/GeoCore-9B_site/"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/GeoSET_site/"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
 
 <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <a target="_blank" rel="noopener noreferrer" class="icon-link"
-               href="https://ieeexplore.ieee.org/document/11556318/">
-                <i class="fas fa-file-pdf"></i>
-            </a>
-            <a target="_blank" rel="noopener noreferrer" class="icon-link" href="https://github.com/KAIST-VICLab"
-               class="external-link" disabled>
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <div class="columns is-centered">
-            <div class="column is-8">
-                <div class="content">
-                    <p>
-                        We thank the authors of <a target="_blank" rel="noopener noreferrer"
-                                                   href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> and
-                        <a target="_blank" rel="noopener noreferrer"
-                           href="https://github.com/marigoldmonodepth/marigoldmonodepth.github.io/tree/main">Marigold</a>
-                        that
-                        kindly open sourced the template of this website. Website template licensed under
-                        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-                            CC-BY-SA-4.0
-                        </a>.
-                        Please visit our <a target="_blank" rel="noopener noreferrer"
-                                            href="https://github.com/KAIST-VICLab">VIC-Lab</a> for more interesting
-                        researches.
-                    </p>
-                </div>
-            </div>
-            <a href="https://mapmyvisitors.com/web/1bwmv" title="Visit tracker"><img
-                    src="https://mapmyvisitors.com/map.png?d=DJ4AbzU_cK5trk4CYHZY9fn2NTXA2_R0Guj2lFqZzJY&cl=ffffff"/></a>
-        </div>
-    </div>
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.png" width="84" height="84" alt="" loading="lazy"><span class="wordmark"><span>C</span>-DiffSET</span></span>&nbsp;&middot; IEEE TCSVT 2026&nbsp;&middot; KAIST, Kyungpook National University and Stellarvision Inc.</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://ieeexplore.ieee.org/document/11556318/" target="_blank" rel="noopener">Paper</a>
+      <a href="https://arxiv.org/abs/2411.10788" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/KAIST-VICLab/C-DiffSET" target="_blank" rel="noopener">Code</a>
+      <a href="mailto:ehwjdgur0913@kaist.ac.kr,jaehyuplee@knu.ac.kr,leesc@stellarvision.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
 </footer>
 
 </body>

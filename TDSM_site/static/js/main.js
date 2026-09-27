@@ -1,0 +1,129 @@
+/* TDSM project page: the paper-figure carousel (prev / thumbnail strip / next), strip edge fades, thumbnail
+   loading, and links to a figure of the carousel (e.g. from Table 10). Vanilla JS, no dependencies. Runs after
+   family.js (nav, hero, tabs, tables, disclosures, image lightbox, BibTeX), whose helpers it takes from
+   window.Family. The switcher is the SOfA / MotionMaestro page's component without video handling. */
+(function () {
+  'use strict';
+
+  var F = window.Family;
+  var $ = F.$, $$ = F.$$;
+  var hasIO = 'IntersectionObserver' in window;
+
+  /* ------------------------------------------------------------------
+     Switchers: [data-switch] > [role=tablist] > [role=tab] with
+        aria-controls -> panel id. Optional [data-prev] [data-next]
+        [data-count] inside the same [data-switch].
+     ------------------------------------------------------------------ */
+  function own(root, sel) {
+    return $$(sel, root).filter(function (el) { return el.closest('[data-switch]') === root; });
+  }
+  function keepTabVisible(tab) {
+    F.revealInRow(tab.closest('.hscroll, .chip-row, .tablist'), tab, 32);
+  }
+  function initSwitchers() {
+    $$('[data-switch]').forEach(function (root) {
+      var list = own(root, '[role="tablist"]')[0];
+      if (!list) return;
+      var tabs = $$('[role="tab"]', list);
+      var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
+      var current = 0;
+
+      function select(i, focus, silent) {
+        i = (i + tabs.length) % tabs.length;
+        current = i;
+        tabs.forEach(function (t, k) {
+          var on = k === i;
+          t.setAttribute('aria-selected', String(on));
+          t.tabIndex = on ? 0 : -1;
+          if (panels[k]) panels[k].hidden = !on;
+        });
+        if (focus) tabs[i].focus({ preventScroll: true });
+        if (!silent) keepTabVisible(tabs[i]);
+        own(root, '[data-count]').forEach(function (c) { c.textContent = (i + 1) + ' / ' + tabs.length; });
+      }
+      root.__selectPanel = function (id) {
+        var k = panels.findIndex(function (p) { return p && p.id === id; });
+        if (k >= 0) select(k);
+        return k >= 0;
+      };
+
+      tabs.forEach(function (t, k) {
+        t.addEventListener('click', function () { select(k); });
+        t.addEventListener('keydown', function (e) {
+          var n = null;
+          if (e.key === 'ArrowRight') n = current + 1;
+          else if (e.key === 'ArrowLeft') n = current - 1;
+          else if (e.key === 'Home') n = 0;
+          else if (e.key === 'End') n = tabs.length - 1;
+          if (n !== null) { e.preventDefault(); select(n, true); }
+        });
+      });
+      own(root, '[data-prev]').forEach(function (b) { b.addEventListener('click', function () { select(current - 1); }); });
+      own(root, '[data-next]').forEach(function (b) { b.addEventListener('click', function () { select(current + 1); }); });
+
+      var initial = tabs.findIndex(function (t) { return t.getAttribute('aria-selected') === 'true'; });
+      select(initial < 0 ? 0 : initial, false, true);
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Links to a carousel figure (href="#fig-N"): show that slide and
+        bring the whole carousel (strip + figure) into view
+     ------------------------------------------------------------------ */
+  function showSlide(id, scroll) {
+    var panel = id && document.getElementById(id);
+    var root = panel && panel.closest('[data-switch]');
+    if (!root || !root.__selectPanel || !root.__selectPanel(id)) return false;
+    if (scroll) root.scrollIntoView({ behavior: F.scrollBehavior(), block: 'start' });
+    return true;
+  }
+  function initSlideLinks() {
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#fig-"]');
+      if (!a) return;
+      if (showSlide(decodeURIComponent(a.hash.slice(1)), true)) e.preventDefault();
+    });
+    if (/^#fig-/.test(location.hash)) showSlide(decodeURIComponent(location.hash.slice(1)), false);
+  }
+
+  /* ------------------------------------------------------------------
+     Horizontal scroll edges: thumbnail strips fade at the side that
+     has more (tables: family.js)
+     ------------------------------------------------------------------ */
+  function initScrollEdges() {
+    var ro = 'ResizeObserver' in window ? new ResizeObserver(function (es) { es.forEach(function (e) { if (e.target.__edge) e.target.__edge(); }); }) : null;
+    $$('.hscroll').forEach(function (sc) {
+      var fn = function () {
+        var max = sc.scrollWidth - sc.clientWidth;
+        sc.classList.toggle('fade-l', max > 2 && sc.scrollLeft > 2);
+        sc.classList.toggle('fade-r', max > 2 && sc.scrollLeft < max - 2);
+      };
+      sc.__edge = fn;
+      sc.addEventListener('scroll', fn, { passive: true });
+      if (ro) ro.observe(sc);
+      window.addEventListener('resize', fn);
+      fn();
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Thumbnail strips: once a strip is near the viewport, load all of
+         its thumbnails, including those still scrolled off to the side
+     ------------------------------------------------------------------ */
+  function initThumbs() {
+    var strips = $$('.thumbs');
+    var eager = function (strip) { $$('img[loading="lazy"]', strip).forEach(function (img) { img.loading = 'eager'; }); };
+    if (!hasIO) { strips.forEach(eager); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { eager(e.target); io.unobserve(e.target); } });
+    }, { rootMargin: '400px 0px' });
+    strips.forEach(function (s) { io.observe(s); });
+  }
+
+  F.onReady(function () {
+    initSwitchers();
+    initSlideLinks();
+    initScrollEdges();
+    initThumbs();
+  });
+})();

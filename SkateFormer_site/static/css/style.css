@@ -1,0 +1,130 @@
+/* ==========================================================================
+   SkateFormer project page: brand tokens and page components.
+   The shared components (layout, nav, hero, section heads, figures, tabs,
+   tables, disclosures, key points, lightbox, BibTeX, footer) are in
+   family.css, which this file follows. Brand colours come from the old
+   SkateFormer page title: ink #1C2738, red #D91421 ("Ska": Skeletal),
+   blue #1484D9 ("te": Temporal); the skater icon keeps its own grey.
+   ========================================================================== */
+
+/* ---------- 1. Brand tokens ---------------------------------------------- */
+:root {
+  --accent: #D91421;           /* SkateFormer red (logo "Ska"), 5.2:1 on white */
+  --accent-text: #D91421;      /* small text, white-on-colour fills (= --accent here) */
+  --accent-strong: #A60F19;    /* hover */
+  --accent-soft: #FDF1F2;      /* tinted fills (the paper tints SkateFormer rows light red) */
+  --accent-line: #F6C9CD;      /* tinted borders */
+  --brand-t: #1484D9;          /* SkateFormer blue (logo "te"): large text only (3.9:1) */
+  --brand-t-text: #1273C0;     /* the blue for small text (4.7:1) */
+  --logo-k: 1;                 /* hero logo height factor (wordmark = GeoSET wordmark) */
+}
+
+/* hero title: "Skeletal" in the logo red (.hero-accent), "Temporal" in the logo blue */
+.hero-accent-t { color: var(--brand-t); }
+/* wordmark (nav, footer): the logo's colours, red "Ska" + blue "te" + ink "Former" */
+.wordmark > .wm-t { color: var(--brand-t); }
+/* the title keeps "Skeletal-Temporal Transformer for" on the first line on wide screens */
+@media (min-width: 1000px) { .hero-title { max-width: 32ch; } }
+
+/* ---------- 2. Headline figure (paper Fig. 1) and method figure --------- */
+.teaser figcaption { max-width: 112ch; }
+
+/* ---------- 3. Paper figures: prev, thumbnail strip, next (SOfA / MotionMaestro) */
+/* slides: large, but never taller than the viewport, so the whole figure can be seen at once */
+.fig-carousel .slide .figure-media { max-width: min(100%, var(--max, 100%)); margin-inline: auto; }
+.fig-carousel .slide[style*="--ar"] .figure-media {
+  max-width: min(100%, var(--max, 100%), max(var(--min-w, 760px), calc((100vh - 150px) * var(--ar))));
+}
+@supports (height: 100svh) {
+  .fig-carousel .slide[style*="--ar"] .figure-media {
+    max-width: min(100%, var(--max, 100%), max(var(--min-w, 760px), calc((100svh - 150px) * var(--ar))));
+  }
+}
+.fig-carousel figcaption { max-width: 110ch; }
+/* horizontal scroller with edge fades (fade classes set by main.js) */
+.hscroll {
+  position: relative;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.hscroll::-webkit-scrollbar { display: none; }
+.carousel-nav { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 18px; }
+.carousel-nav .thumbs { flex: 0 1 auto; min-width: 0; }
+.thumbs { display: flex; gap: 10px; padding: 3px; scroll-padding-inline: 3px; }
+.thumb {
+  flex: 0 0 156px;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 5px 5px 7px; border-radius: var(--radius); text-align: left;
+  background: var(--bg); border: 1px solid var(--border);
+  transition: border-color .15s, box-shadow .15s;
+  scroll-snap-align: start;
+}
+.thumb:hover { border-color: var(--border-strong); }
+.thumb img {
+  width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain;
+  border-radius: var(--radius-s); background: #fff; border: 1px solid var(--border);
+}
+.thumb span {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  padding: 0 3px; font-size: .8rem; line-height: 1.35; color: var(--muted); font-weight: 500;
+}
+.thumb span b { color: var(--ink); font-weight: 700; margin-right: 2px; }
+.thumb[aria-selected="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+@media (max-width: 640px) {
+  .carousel-nav .carousel-btn { display: none; }
+  .thumb { flex-basis: 136px; }
+}
+
+/* ---------- 4. Tables: widths, grids, deltas, ranks, math ---------------- */
+.table-figure .table-note { margin-top: 10px; }
+/* two table figures side by side (Tables 5 and 6) */
+.table-grid { display: grid; gap: clamp(28px, 3.5vw, 40px) 28px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 960px) { .table-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* tables with few columns keep their numbers close enough to read across
+   (width: 100% so that grid items with auto margins do not grow to the table's nowrap width) */
+#table-2, #table-3, #table-4, #table-8, #table-12 { width: 100%; margin-inline: auto; }
+#table-2 { max-width: 980px; }
+#table-3 { max-width: 860px; }
+#table-4 { max-width: 1000px; }
+#table-8 { max-width: 1080px; }
+#table-12 { max-width: 860px; }
+#table-7 { width: 100%; max-width: 1000px; margin-inline: auto; }
+
+/* coloured changes in parentheses, as in the paper (red = gain, blue = drop, grey = no change) */
+.results .delta { margin-left: 1px; font-size: .84em; font-weight: 500; }
+.results .delta.up { color: var(--accent-text); }
+.results .delta.dn { color: var(--brand-t-text); }
+.results .delta.eq { color: var(--faint); }
+.results .delta--b { font-weight: 700; }
+.results .rank { font-size: .84em; color: var(--faint); }
+.results td.mark { color: var(--text); font-weight: 600; }
+.results td.col-text { text-align: left; }
+.results td[rowspan] { vertical-align: middle; border-right: 1px solid var(--border); }
+/* Table 8: the full-model column */
+.results .col-ours { background: var(--accent-soft); color: var(--text); }
+.results thead th.col-ours { color: var(--accent-text); }
+.results tbody tr:not(.group):hover td.col-ours { background: color-mix(in srgb, var(--accent) 10%, #fff); }
+.results tr.total td.col-ours { background: color-mix(in srgb, var(--accent) 10%, #fff); }
+
+/* math in table heads and rows: bold upright base, stacked scripts (v with sub k and sup njp) */
+.mv { font-weight: 700; font-style: normal; font-family: var(--font-sans); }
+.ss {
+  display: inline-flex; flex-direction: column; align-items: flex-start;
+  margin-left: 1px; vertical-align: .42em;     /* the first line (superscript) sits above the baseline */
+  font-size: .68em; line-height: 1.02; font-weight: 500;
+}
+.ss-sup { font-family: var(--font-sans); }
+.ss-sub i { font-style: italic; }
+.bb { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "DejaVu Sans", "Segoe UI Symbol", serif; font-weight: 400; }
+.results thead .bb { font-size: 1.08em; color: var(--text); }
+.results sub, .table-note sub { font-size: .75em; line-height: 0; }
+
+/* synthetic-italic variables (T, V, K, N) lean into the next glyph: give them a hair of room */
+figcaption i, .table-note i, .keypoints i { margin-right: .06em; }
+
+/* ---------- 5. Print ------------------------------------------------------ */
+@media print {
+  .topnav, .copy-btn, .carousel-nav .carousel-btn, .skip-link { display: none !important; }
+  .section { padding-block: 24px; }
+}

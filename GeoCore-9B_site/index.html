@@ -1,175 +1,611 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GeoCore-9B is a geo-aware generative foundation model for Earth observation, conditioned on text, GSD, latitude, and longitude.">
-  <meta name="theme-color" content="#f4eedf">
-  <meta property="og:title" content="GeoCore-9B · Geo-aware generative foundation model">
-  <meta property="og:description" content="A 9.24B Flow Matching DiT trained from scratch for Earth observation.">
+  <title>GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation</title>
+  <meta name="description" content="GeoCore-9B is a 9-billion-parameter generative foundation model trained from scratch on Earth observation data. A Flow Matching DiT conditions generation on text, ground sample distance, latitude and longitude, and a training-only Geospatial Semantic Alignment loss distills structural priors from a frozen satellite teacher.">
+  <meta name="author" content="Jeonghyeok Do, Munchurl Kim">
+  <meta name="theme-color" content="#0C4A32">
+  <link rel="canonical" href="https://kaist-viclab.github.io/GeoCore-9B_site/">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="static/assets/geocore-logo-mark.png">
-  <title>GeoCore-9B · KAIST VICLab</title>
-  <link rel="icon" href="static/assets/geocore-logo-mark-trimmed.png">
-  <link rel="stylesheet" href="static/field-journal.css?v=20260925">
+  <meta property="og:site_name" content="GeoCore-9B">
+  <meta property="og:title" content="GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation">
+  <meta property="og:description" content="A 9-billion-parameter Flow Matching DiT, trained from scratch on EO data, that generates satellite imagery from text, ground sample distance, latitude and longitude, and adapts with LoRA to cloud removal and SAR-to-optical translation.">
+  <meta property="og:url" content="https://kaist-viclab.github.io/GeoCore-9B_site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/GeoCore-9B_site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The GeoCore-9B logo above text-free generations from latitude and longitude alone: CRS-Diff and GeoCore-9B for New York City, the Sahara Desert, Antarctica and the Amazon.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation">
+  <meta name="twitter:description" content="A 9-billion-parameter Flow Matching DiT, trained from scratch on EO data, that generates satellite imagery from text, ground sample distance, latitude and longitude, and adapts with LoRA to cloud removal and SAR-to-optical translation.">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/GeoCore-9B_site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The GeoCore-9B logo above text-free generations from latitude and longitude alone: CRS-Diff and GeoCore-9B for New York City, the Sahara Desert, Antarctica and the Amazon.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"], a[data-soon] { pointer-events: none; cursor: default; }</style></noscript>
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
 </head>
 <body>
-  <a class="skip" href="#content">Skip to content</a>
-  <header class="topbar">
-    <div class="shell topbar-inner">
-      <a class="brand" href="#top" aria-label="GeoCore-9B home">
-        <img src="static/assets/geocore-logo-mark-trimmed.png" alt=""><span>GeoCore-9B</span>
-      </a>
-      <nav class="nav" aria-label="Primary">
-        <a href="#overview">Overview</a><a href="#method">Method</a><a href="#generation">Generation</a><a href="#results">Results</a><a href="#resources">Resources</a>
-      </nav>
-      <div class="top-actions">
-        <a href="https://github.com/KAIST-VICLab/GeoCore-9B">Code ↗</a>
-        <a href="https://huggingface.co/JeonghyeokDo/GeoCore-9B">Weights ↗</a>
-      </div>
-      <details class="menu">
-        <summary>Menu</summary>
-        <nav><a href="#overview">Overview</a><a href="#method">Method</a><a href="#generation">Generation</a><a href="#results">Results</a><a href="#resources">Resources</a><a href="https://github.com/KAIST-VICLab/GeoCore-9B">Code ↗</a><a href="https://huggingface.co/JeonghyeokDo/GeoCore-9B">Weights ↗</a></nav>
-      </details>
+
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-model" viewBox="0 0 24 24"><path d="M12 3.5l7.5 4.2v8.6L12 20.5l-7.5-4.2V7.7z"/><path d="M4.5 7.7L12 12l7.5-4.3M12 12v8.5"/></symbol>
+  <symbol id="i-gallery" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="GeoCore-9B, back to top"><img src="static/images/icon.png" width="81" height="84" alt=""><span class="wordmark" aria-hidden="true">GeoCore<span>-9B</span></span></a>
+    <div class="topnav-links">
+      <a href="#generation">Generation</a>
+      <a href="#downstream">Downstream</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
-  </header>
+    <a class="topnav-cta" href="#" data-soon><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
+</nav>
 
-  <main id="content">
-    <section class="shell hero" id="top">
-      <div class="hero-grid">
-        <div>
-          <p class="venue">NeurIPS 2026</p>
-          <p class="eyebrow">9.24B · Flow Matching DiT · Earth Observation</p>
-          <h1>A geo-aware generative foundation model for Earth observation.</h1>
-          <p class="deck">Trained from scratch on EO data with native text, ground sample distance, latitude, and longitude conditioning.</p>
-          <p class="authors"><a href="https://jeonghyeokdo.github.io/">Jeonghyeok Do</a><i>·</i><a href="https://scholar.google.com/citations?user=bGXte_4AAAAJ&amp;hl=en">Munchurl Kim</a><i>·</i><span>KAIST</span></p>
-          <div class="buttons"><a class="primary" href="static/assets/GeoCore-9B-paper.pdf">Read the paper</a><a href="https://github.com/KAIST-VICLab/GeoCore-9B">Code ↗</a><a href="https://huggingface.co/JeonghyeokDo/GeoCore-9B">Model weights ↗</a></div>
-        </div>
-        <aside class="hero-note">
-          <p class="micro">Field note 01</p>
-          <blockquote>A 9B generative prior built for the orthographic, scale-aware structure of the Earth’s surface.</blockquote>
-          <dl><div><dt>Parameters</dt><dd>9.24B</dd></div><div><dt>Pre-training</dt><dd>Git-10M</dd></div><div><dt>Conditions</dt><dd>Text + geo</dd></div></dl>
-        </aside>
-      </div>
-      <div class="mosaic-label"><span></span><p>Selected zero-shot observations</p><b>10 / 10</b></div>
-      <div class="mosaic">
-        <figure><img src="static/assets/sample-forest-road.webp" alt="A curved road through dense forest"><figcaption>01</figcaption></figure>
-        <figure><img src="static/assets/sample-commercial.webp" alt="A dense commercial area"><figcaption>02</figcaption></figure>
-        <figure><img src="static/assets/sample-tennis-courts.webp" alt="Tennis courts surrounded by trees"><figcaption>03</figcaption></figure>
-        <figure><img src="static/assets/sample-solar-roofs.webp" alt="Blue industrial rooftops"><figcaption>04</figcaption></figure>
-        <figure><img src="static/assets/sample-roundabout.webp" alt="A roundabout surrounded by grass"><figcaption>05</figcaption></figure>
-        <figure><img src="static/assets/sample-highway.webp" alt="Houses along both sides of a highway"><figcaption>06</figcaption></figure>
-        <figure><img src="static/assets/sample-parking-lot.webp" alt="A parking lot beside trees"><figcaption>07</figcaption></figure>
-        <figure><img src="static/assets/sample-mountain.webp" alt="White rocks and brown mountain earth"><figcaption>08</figcaption></figure>
-        <figure><img src="static/assets/sample-intersection.webp" alt="A sparse residential intersection"><figcaption>09</figcaption></figure>
-        <figure><img src="static/assets/sample-beach.webp" alt="Several houses beside a beach"><figcaption>10</figcaption></figure>
-      </div>
-    </section>
-
-    <section class="shell section" id="overview">
-      <header class="section-title"><p class="section-tag"><b>01</b>Overview</p><div><h2>A foundation prior native to the overhead view.</h2></div></header>
-      <div class="overview">
-        <div class="abstract"><p>Existing EO generators often inherit the perspective and composition biases of natural-image diffusion models. GeoCore-9B instead trains a large Flow Matching-based Diffusion Transformer from scratch on satellite RGB imagery.</p><p>Local text tokens join continuous GSD, latitude, and longitude metadata. A training-only Geospatial Semantic Alignment objective stabilizes structure, and the resulting prior transfers to cloud removal and SAR-to-optical translation through parameter-efficient adaptation.</p></div>
-        <div class="notes">
-          <article><span>01 / Native scale</span><h3>Built from EO data</h3><p>The DiT backbone is initialized and trained from scratch on Git-10M.</p></article>
-          <article><span>02 / Geographic context</span><h3>Conditioned by place</h3><p>Text, GSD, latitude, and longitude jointly guide generation.</p></article>
-          <article><span>03 / Practical transfer</span><h3>Beyond proxy synthesis</h3><p>LoRA adaptation supports restoration and cross-modal translation.</p></article>
-        </div>
-      </div>
-      <div class="specs"><div><span>Architecture</span><strong>8 double + 24 single blocks</strong></div><div><span>Hidden / heads</span><strong>4096 / 32</strong></div><div><span>Training</span><strong>300K iters · batch 1024</strong></div><div><span>Output</span><strong>256 × 256 RGB optical</strong></div></div>
-    </section>
-
-    <section class="section tint" id="method"><div class="shell">
-      <header class="section-title"><p class="section-tag"><b>02</b>Method</p><div><h2>Flow matching, anchored by geospatial semantics.</h2><p>A scalable latent DiT learns the EO distribution while a satellite-specialist teacher supplies structural guidance only during pre-training.</p></div></header>
-      <figure class="plate method-figure"><div class="plate-media"><img src="static/assets/figure-method.webp" alt="GeoCore-9B training and inference architecture" loading="lazy"></div><figcaption><span>Fig. 01 · System map</span><p>Text features enter the DiT alongside GSD and geographic coordinates. The frozen DINOv3-Sat teacher and projection head are removed at inference.</p></figcaption></figure>
-      <div class="method-cards">
-        <article><b>A</b><h3>Geo-conditioned DiT</h3><p>T5 latent tokens and CLIP global text join sinusoidally encoded GSD, latitude, and longitude through AdaLN.</p></article>
-        <article><b>B</b><h3>Flow Matching</h3><p>The model predicts velocity along a linear path from Gaussian noise to the VAE latent.</p></article>
-        <article><b>C</b><h3>Semantic alignment</h3><p>Block 8 aligns with frozen DINOv3-Sat dense features at μ = 0.5, with zero inference overhead.</p></article>
-      </div>
-    </div></section>
-
-    <section class="shell section" id="generation">
-      <header class="section-title"><p class="section-tag"><b>03</b>Geo-aware generation</p><div><h2>Describe the scene. Set the scale. Locate it on Earth.</h2><p>Language controls semantics, GSD controls physical granularity, and coordinates retrieve broad geographic priors.</p></div></header>
-      <div class="feature">
-        <div class="feature-copy"><p class="micro">03.A / Text</p><h3>Text remains orthographic.</h3><p>GeoCore-9B follows prompts for infrastructure, terrain, and settlement without drifting into ordinary photographic composition.</p><ul><li>Dense built environments</li><li>Natural land cover</li><li>Fine man-made geometry</li></ul></div>
-        <figure class="plate"><div class="plate-media"><img src="static/assets/figure-text-control.webp" alt="Text-conditioned comparison with CRS-Diff and Text2Earth" loading="lazy"></div><figcaption><span>Fig. 02 · Text control</span><p>Cleaner EO structure across diverse scene descriptions.</p></figcaption></figure>
-      </div>
-
-      <div class="gsd">
-        <div class="gsd-head"><div><p class="micro">03.B / GSD</p><h3>One scene, many physical scales.</h3><p>Select a study set to inspect the transition from fine local detail to broad land cover.</p></div><div class="tabs" role="group" aria-label="GSD study"><button data-gsd="overview" aria-pressed="true">Overview</button><button data-gsd="built" aria-pressed="false">Built form</button><button data-gsd="land" aria-pressed="false">Land cover</button><button data-gsd="terrain" aria-pressed="false">Terrain</button></div></div>
-        <figure class="plate interactive" id="gsd-figure"><div class="plate-media"><img src="static/assets/figure-gsd-control.webp" alt="Full scale GSD comparison" loading="lazy"></div><figcaption><span>Fig. 03 · Full scale study</span><p>GeoCore-9B changes visual granularity across 1–32 m GSD while preserving scene identity.</p></figcaption></figure>
-      </div>
-
-      <div class="feature reverse">
-        <div class="feature-copy"><p class="micro">03.C / Coordinates</p><h3>Coordinates alone recover geographic priors.</h3><p>Without text, the model produces distinct terrain priors for New York City, the Sahara, Antarctica, and the Amazon.</p><aside>This shows broad conditioning, not exact scene retrieval or fine-grained localization.</aside></div>
-        <figure class="plate"><div class="plate-media"><img src="static/assets/figure-coordinate-control.webp" alt="Coordinate-only generations for four world regions" loading="lazy"></div><figcaption><span>Fig. 04 · Coordinate-only control</span><p>Text is removed; only latitude and longitude are supplied.</p></figcaption></figure>
-      </div>
-    </section>
-
-    <section class="section forest" id="alignment"><div class="shell">
-      <header class="section-title"><p class="section-tag"><b>04</b>GSA study</p><div><h2>Sharper structure, faster convergence, no inference tax.</h2><p>The matched 9B ablation changes only the Geospatial Semantic Alignment weight.</p></div></header>
-      <div class="alignment">
-        <figure class="plate"><div class="plate-media"><img src="static/assets/figure-gsa-ablation.webp" alt="Generation comparison without and with GSA" loading="lazy"></div><figcaption><span>Fig. 05 · Structural fidelity</span><p>GSA reduces fragmented boundaries in farms, roofs, roads, and roundabouts.</p></figcaption></figure>
-        <div>
-          <figure class="plate chart"><div class="plate-media"><img src="static/assets/figure-gsa-convergence.webp" alt="FID curves with and without GSA" loading="lazy"></div><figcaption><span>Fig. 06 · Training trajectory</span><p>Lower FID throughout pre-training on a fixed 10K Git-10M subset.</p></figcaption></figure>
-          <dl class="deltas"><div><dt>RSICD FID</dt><dd>−9.61</dd></div><div><dt>SAR translation FID</dt><dd>−7.87</dd></div><div><dt>Cloud removal PSNR</dt><dd>+1.256 dB</dd></div></dl>
-          <p class="teacher-note">The teacher and projection head supervise pre-training only. Both are discarded before downstream adaptation and inference.</p>
+<header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: Remote sensing">
+    <p class="lineage-menu-head"><b>Research line</b>Remote sensing</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/C-DiffSET_site/"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></a></li>
+      <li class="lineage-menu-stage"><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></span></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoSET_site/"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.svg" width="2295" height="410" alt="GeoCore-9B:" fetchpriority="high">
+      <span class="hero-title">Towards <span class="hero-accent nowrap">Geo-Aware</span> Generative Foundation Models in Earth Observation</span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>&dagger;</sup></span>
+    </p>
+    <p class="hero-affil">Korea Advanced Institute of Science and Technology (KAIST), South Korea</p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Corresponding author</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">NeurIPS 2026</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="#" data-soon><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/GeoCore-9B" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="https://huggingface.co/JeonghyeokDo/GeoCore-9B" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-model"/></svg>Weights</a>
+      <a class="btn" href="#generation"><svg class="icon" aria-hidden="true"><use href="#i-gallery"/></svg>Results</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>Existing generative models for earth observation (EO) predominantly rely on fine-tuning natural image priors, which limits their scalability and introduces perspective biases that conflict with geospatial constraints. To address this, we introduce <b>GeoCore-9B</b>, a 9-billion-parameter generative foundation model, which is the first of its scale to be trained from scratch exclusively on EO data. Unlike previous EO foundation models, GeoCore-9B is built upon a Flow Matching-based Diffusion Transformer (DiT) and natively conditions generation on text descriptions and continuous geospatial metadata, including ground sample distances, latitudes, and longitudes.</p>
+          <p>To overcome the convergence and spatial disorientation challenges of training at this scale, we propose a Geospatial Semantic Alignment loss. This objective distills structural Earth surface priors (e.g., terrain and urban areas) from a frozen specialist teacher network, constraining the diffusion latent trajectory during training without adding inference overhead.</p>
+          <p>Pre-trained on the global-scale Git-10M dataset, GeoCore-9B demonstrates strong downstream versatility. Beyond standard proxy generative tasks, we show that GeoCore-9B can be effectively adapted for practical EO applications, including highly challenging tasks such as cloud removal and SAR-to-optical cross-modal translation. Extensive evaluations confirm that GeoCore-9B establishes new state-of-the-art performance in both visual fidelity and geographic structural accuracy.</p>
         </div>
       </div>
-    </div></section>
+    </details>
+  </div>
+</header>
 
-    <section class="shell section" id="results">
-      <header class="section-title"><p class="section-tag"><b>05</b>Results</p><div><h2>A generative prior that transfers to practical EO tasks.</h2><p>GeoCore-9B is adapted with LoRA while its pre-trained backbone remains frozen.</p></div></header>
-      <div class="table-wrap" tabindex="0"><table><thead><tr><th>Task / dataset</th><th>Metric 01</th><th>Metric 02</th><th>Metric 03</th><th>Metric 04</th></tr></thead><tbody>
-        <tr><th><span>Text-to-image</span>RSICD</th><td><strong>22.15</strong><small>IS ↑</small></td><td class="best"><strong>18.82</strong><small>FID ↓ · best</small></td><td><strong>27.15</strong><small>CLIP ↑</small></td><td>—</td></tr>
-        <tr><th><span>Cloud removal</span>Sen2-MTC</th><td class="best"><strong>20.809</strong><small>PSNR ↑ · best</small></td><td class="best"><strong>0.799</strong><small>SSIM ↑ · best</small></td><td><strong>0.256</strong><small>LPIPS ↓</small></td><td>—</td></tr>
-        <tr><th><span>SAR-to-optical</span>QXS-SAROPT</th><td class="best"><strong>12.05</strong><small>FID ↓ · best</small></td><td><strong>0.377</strong><small>LPIPS ↓</small></td><td class="best"><strong>0.0163</strong><small>HF-SCC ↑ · best</small></td><td><strong>0.370</strong><small>SSIM ↑</small></td></tr>
-      </tbody></table></div>
+<main id="main">
 
-      <div class="downstream">
-        <div class="feature-copy"><p class="micro">05.A / Practical adaptation</p><h3 id="task-title">Clouds out. Structure retained.</h3><p id="task-body">GeoCore-9B reconstructs roads, fields, and boundaries beneath severe cloud contamination.</p><div class="tabs two"><button data-task="cloud" aria-pressed="true">Cloud removal</button><button data-task="sar" aria-pressed="false">SAR-to-optical</button></div></div>
-        <div class="downstream-figs" id="task-figures">
-          <figure class="plate"><div class="plate-media"><img src="static/assets/figure-cloud-removal-1.webp" alt="Cloud removal comparison set one" loading="lazy"></div><figcaption><span>Study set 01</span><p>Input, specialist baselines, GeoCore-9B, and ground truth.</p></figcaption></figure>
-          <figure class="plate"><div class="plate-media"><img src="static/assets/figure-cloud-removal-2.webp" alt="Cloud removal comparison set two" loading="lazy"></div><figcaption><span>Study set 02</span><p>Additional qualitative comparisons under the same protocol.</p></figcaption></figure>
+  <!-- Headline + zero-shot generation: paper Figs. 2-4 (appendix Figs. 9-12 in disclosures) -->
+  <section class="section section--headline" id="generation" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">Geo-aware generation at 9B scale</h2>
+        <p class="lead">One Flow Matching DiT, trained from scratch on EO data, generates satellite imagery from text, GSD and coordinates.</p>
+      </header>
+
+      <div class="tabs gen-tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Generation condition">
+            <button class="tab" role="tab" type="button" id="tab-gen-text" aria-controls="panel-gen-text" aria-selected="true">Text<small>ten prompts</small></button>
+            <button class="tab" role="tab" type="button" id="tab-gen-gsd" aria-controls="panel-gen-gsd" aria-selected="false">GSD<small>1&ndash;32&nbsp;m</small></button>
+            <button class="tab" role="tab" type="button" id="tab-gen-coord" aria-controls="panel-gen-coord" aria-selected="false">Coordinates<small>no text</small></button>
+          </div>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-gen-text" aria-labelledby="tab-gen-text" tabindex="-1" style="--ar: 0.9225">
+          <figure class="figure fig-fit">
+            <a class="figure-media zoom" href="static/images/text_full.jpg" data-title="Text-conditioned generation">
+              <img src="static/images/text_2000.webp"
+                   srcset="static/images/text_1200.webp 1200w, static/images/text_2000.webp 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 120px) * 0.9225))), min(calc(100vw - 32px), max(760px, calc((100vh - 120px) * 0.9225)))"
+                   width="2000" height="2168" fetchpriority="high" decoding="async"
+                   alt="Ten text prompts in a five-by-two grid, each with images from CRS-Diff, Text2Earth and GeoCore-9B: two tennis courts surrounded by trees, houses on both sides of a highway, houses by the beach, an industrial area with blue workshops, a commercial area, an intersection in a residential area, a curved road through a dense forest, white rocks and brown earth on a mountain, a parking lot next to trees, and a roundabout surrounded by grass.">
+            </a>
+            <figcaption><b>Text-conditioned generation.</b> Prompts vary while the geospatial metadata stays fixed; CRS-Diff and Text2Earth often show structural artifacts or unnatural textures.</figcaption>
+          </figure>
+          <details class="disclosure more-figs" id="more-text" data-animate>
+            <summary>More text prompts <span class="summary-sub">Fig.&nbsp;9 &middot; six prompts</span></summary>
+            <div class="disclosure-panel"><div class="disclosure-body">
+              <figure class="figure">
+                <a class="figure-media zoom" href="static/images/text_more_full.jpg" data-title="More text-conditioned generations">
+                  <img src="static/images/text_more_2000.webp"
+                       srcset="static/images/text_more_1200.webp 1200w, static/images/text_more_2000.webp 2000w"
+                       sizes="(min-width: 1304px) min(1204px, max(724px, calc((100vh - 120px) * 0.9225 - 36px))), min(calc(100vw - 68px), max(724px, calc((100vh - 120px) * 0.9225 - 36px)))"
+                       width="2000" height="1313" loading="lazy" decoding="async"
+                       alt="Six more text prompts, each with images from CRS-Diff, Text2Earth and GeoCore-9B: circular farmlands, a sparse residential area on a meadow, a dense commercial area, storage tanks beside a meadow, ice floes on the sea, and a mobile home park.">
+                </a>
+                <figcaption><b>More text-conditioned generations.</b> Circular farmlands, a sparse residential area, a dense commercial area, storage tanks, ice floes and a mobile home park.</figcaption>
+              </figure>
+            </div></div>
+          </details>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-gen-gsd" aria-labelledby="tab-gen-gsd" tabindex="-1" style="--ar: 1.1802" hidden>
+          <figure class="figure fig-fit">
+            <a class="figure-media zoom" href="static/images/gsd_full.jpg" data-title="Generation across ground sample distances">
+              <img src="static/images/gsd_2000.webp"
+                   srcset="static/images/gsd_1200.webp 1200w, static/images/gsd_2000.webp 2000w"
+                   sizes="(min-width: 1304px) min(1240px, max(760px, calc((100vh - 120px) * 1.1802))), min(calc(100vw - 32px), max(760px, calc((100vh - 120px) * 1.1802)))"
+                   width="2000" height="1695" loading="lazy" decoding="async"
+                   alt="Two prompts, circular farmlands and a dense commercial area, each generated by CRS-Diff, Text2Earth and GeoCore-9B at a ground sample distance of 1, 4, 8, 16 and 32 metres, one row per GSD.">
+            </a>
+            <figcaption><b>Scale-aware generation.</b> The same prompt and coordinates at a GSD of 1&nbsp;m to 32&nbsp;m: from fine structural details to broad land-cover patterns.</figcaption>
+          </figure>
+          <details class="disclosure more-figs" id="more-gsd" data-animate>
+            <summary>More GSD sweeps <span class="summary-sub">Figs.&nbsp;10&ndash;12 &middot; six prompts</span></summary>
+            <div class="disclosure-panel"><div class="disclosure-body">
+              <div class="stack">
+                <figure class="figure">
+                  <a class="figure-media zoom" href="static/images/gsd_more1_full.jpg" data-title="GSD sweep: commercial and industrial areas">
+                    <img src="static/images/gsd_more1_2000.webp"
+                         srcset="static/images/gsd_more1_1200.webp 1200w, static/images/gsd_more1_2000.webp 2000w"
+                         sizes="(min-width: 1304px) min(1204px, max(724px, calc((100vh - 120px) * 1.1802 - 36px))), min(calc(100vw - 68px), max(724px, calc((100vh - 120px) * 1.1802 - 36px)))"
+                         width="2000" height="1695" loading="lazy" decoding="async"
+                         alt="A commercial area and an industrial area with blue workshops, generated by CRS-Diff, Text2Earth and GeoCore-9B at a GSD of 1, 4, 8, 16 and 32 metres.">
+                  </a>
+                  <figcaption><b>Commercial and industrial areas.</b> GSD 1&nbsp;m to 32&nbsp;m.</figcaption>
+                </figure>
+                <figure class="figure">
+                  <a class="figure-media zoom" href="static/images/gsd_more2_full.jpg" data-title="GSD sweep: lake and sparse residential area">
+                    <img src="static/images/gsd_more2_2000.webp"
+                         srcset="static/images/gsd_more2_1200.webp 1200w, static/images/gsd_more2_2000.webp 2000w"
+                         sizes="(min-width: 1304px) min(1204px, max(724px, calc((100vh - 120px) * 1.1802 - 36px))), min(calc(100vw - 68px), max(724px, calc((100vh - 120px) * 1.1802 - 36px)))"
+                         width="2000" height="1695" loading="lazy" decoding="async"
+                         alt="Forests and meadows around a lake and a sparse residential area on a meadow, generated by CRS-Diff, Text2Earth and GeoCore-9B at a GSD of 1, 4, 8, 16 and 32 metres.">
+                  </a>
+                  <figcaption><b>A lake and a sparse residential area.</b> GSD 1&nbsp;m to 32&nbsp;m.</figcaption>
+                </figure>
+                <figure class="figure">
+                  <a class="figure-media zoom" href="static/images/gsd_more3_full.jpg" data-title="GSD sweep: mountain and sea ice">
+                    <img src="static/images/gsd_more3_2000.webp"
+                         srcset="static/images/gsd_more3_1200.webp 1200w, static/images/gsd_more3_2000.webp 2000w"
+                         sizes="(min-width: 1304px) min(1204px, max(724px, calc((100vh - 120px) * 1.1802 - 36px))), min(calc(100vw - 68px), max(724px, calc((100vh - 120px) * 1.1802 - 36px)))"
+                         width="2000" height="1695" loading="lazy" decoding="async"
+                         alt="White rocks and brown earth on a mountain, and ice floes floating on the sea, generated by CRS-Diff, Text2Earth and GeoCore-9B at a GSD of 1, 4, 8, 16 and 32 metres.">
+                  </a>
+                  <figcaption><b>Mountain and sea ice.</b> GSD 1&nbsp;m to 32&nbsp;m.</figcaption>
+                </figure>
+              </div>
+            </div></div>
+          </details>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-gen-coord" aria-labelledby="tab-gen-coord" tabindex="-1" hidden>
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/latlon_full.jpg" data-title="Text-free generation from latitude and longitude">
+              <img src="static/images/latlon_2000.webp"
+                   srcset="static/images/latlon_1200.webp 1200w, static/images/latlon_2000.webp 2000w"
+                   sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                   width="2000" height="697" loading="lazy" decoding="async"
+                   alt="Four coordinate pairs, each with a reference description and images from CRS-Diff and GeoCore-9B: (40.75, -73.98), dense skyscrapers in New York City; (24.00, 25.00), sand dunes in the Sahara Desert; (-80.00, 0.00), ice fields in Antarctica; (-3.00, -60.00), green forests in the Amazon.">
+            </a>
+            <figcaption><b>Text-free generation from latitude and longitude.</b> Coordinates are the only input; the reference names the expected terrain. Without text, CRS-Diff produces artifacts and repeating patterns.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Downstream adaptation: interactive gallery from the native tiles of Figs. 7, 13 and 14 -->
+  <section class="section section--band" id="downstream" aria-labelledby="downstream-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="downstream-title">Adapted to cloud removal and <span class="nowrap">SAR-to-optical</span></h2>
+        <p class="lead">GeoCore-9B adapted with LoRA, next to task-specific baselines on the same <span class="nowrap">Sen2-MTC</span> and <span class="nowrap">QXS-SAROPT</span> inputs, six scenes per task. Select a tile to compare it with the ground truth.</p>
+      </header>
+
+      <div class="tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Downstream task">
+            <button class="tab" role="tab" type="button" id="tab-g-cloud-removal" aria-controls="panel-g-cloud-removal" aria-selected="true">Cloud removal<small>Sen2-MTC</small></button>
+            <button class="tab" role="tab" type="button" id="tab-g-sar-to-optical" aria-controls="panel-g-sar-to-optical" aria-selected="false">SAR-to-optical<small>QXS-SAROPT</small></button>
+          </div>
+        </div>
+        <div class="legend" aria-label="Tile legend">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--input"></span>Input</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--ours"></span>GeoCore-9B (ours)</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--gt"></span>Ground truth</span>
+          <span class="legend-item"><span class="legend-swatch"></span>Task-specific baseline</span>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-cloud-removal" aria-labelledby="tab-g-cloud-removal" tabindex="-1">
+          <div data-gallery="cloud-removal"></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-sar-to-optical" aria-labelledby="tab-g-sar-to-optical" tabindex="-1" hidden>
+          <div data-gallery="sar-to-optical"></div>
+        </div>
+      </div>
+      <noscript><p class="gallery-noscript">The interactive gallery needs JavaScript. Figures 7, 13 and 14 of the paper show the same scenes.</p></noscript>
+      <p class="carousel-hint"><span class="hint-pointer">Use the arrows or the <kbd>&larr;</kbd>&thinsp;<kbd>&rarr;</kbd> keys to change scene &middot; click a tile to open the comparison slider</span><span class="hint-touch">Swipe or use the arrows to change scene &middot; tap a tile to open the comparison slider</span></p>
+<script type="application/json" id="gallery-data">
+{"root":"static/tiles/","tileMin":160,"compareScale":2,"datasets":[{"id":"cloud-removal","name":"Cloud removal on Sen2-MTC","unit":"Scene","dir":"cloud-removal","cols":[{"n":"Input cloudy","v":"input","k":"input","f":"01_input-cloudy.jpg","w":256,"h":256},{"n":"GeoCore-9B","v":"Ours","k":"ours","f":"04_geocore-9b.jpg","w":256,"h":256},{"n":"Ground truth","v":"reference","k":"gt","f":"05_ground-truth.jpg","w":256,"h":256},{"n":"UnCRtainTS","v":"task-specific","k":"baseline","f":"02_uncrtaints.jpg","w":256,"h":256},{"n":"DiffCR","v":"task-specific","k":"baseline","f":"03_diffcr.jpg","w":256,"h":256}],"scenes":[{"dir":"s01","fig":"Fig. 7"},{"dir":"s02","fig":"Fig. 7"},{"dir":"s03","fig":"Fig. 7"},{"dir":"s04","fig":"Fig. 13"},{"dir":"s05","fig":"Fig. 13"},{"dir":"s06","fig":"Fig. 13"}]},{"id":"sar-to-optical","name":"SAR-to-optical on QXS-SAROPT","unit":"Scene","dir":"sar-to-optical","cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":256,"h":256},{"n":"GeoCore-9B","v":"Ours","k":"ours","f":"04_geocore-9b.jpg","w":256,"h":256},{"n":"Ground truth","v":"reference","k":"gt","f":"05_ground-truth.jpg","w":256,"h":256},{"n":"cBBDM","v":"task-specific","k":"baseline","f":"02_cbbdm.jpg","w":256,"h":256},{"n":"C-DiffSET","v":"task-specific","k":"baseline","f":"03_c-diffset.jpg","w":256,"h":256}],"scenes":[{"dir":"s01","fig":"Fig. 7"},{"dir":"s02","fig":"Fig. 7"},{"dir":"s03","fig":"Fig. 7"},{"dir":"s04","fig":"Fig. 14"},{"dir":"s05","fig":"Fig. 14"},{"dir":"s06","fig":"Fig. 14"}]}]}
+</script>
+    </div>
+  </section>
+
+  <!-- Quantitative results -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead">GeoCore-9B leads <b>all three RSICD metrics</b> after LoRA text-to-image adaptation, with the <b>best PSNR and SSIM</b> for cloud removal and the <b>best FID</b> for <span class="nowrap">SAR-to-optical</span> translation.</p>
+      </header>
+
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t1" aria-controls="panel-t1" aria-selected="true">Table 1<small>RSICD text-to-image</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="false">Table 2<small>Downstream tasks</small></button>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t1" aria-labelledby="tab-t1" tabindex="-1">
+<figure class="table-figure" id="table-1">
+<figcaption><span class="fig-label">Table 1.</span> Comparison with previous text-to-image methods on the RSICD dataset. <b>Bold</b> indicates the best result.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 (scrolls horizontally)"><table class="results" id="tab-rsicd-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Method</th>
+<th scope="col" class="metric">IS<span class="arrow">↑</span></th>
+<th scope="col" class="metric">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">CLIP<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Attn-GAN</td><td>11.71</td><td>95.81</td><td>20.19</td></tr>
+<tr><td class="col-method">DAE-GAN</td><td>7.71</td><td>93.15</td><td>19.69</td></tr>
+<tr><td class="col-method">StrucGAN</td><td>5.84</td><td class="na">–</td><td class="na">–</td></tr>
+<tr><td class="col-method">DF-GAN</td><td>9.51</td><td>109.41</td><td>19.76</td></tr>
+<tr><td class="col-method">Lafite</td><td>10.70</td><td>74.11</td><td>22.52</td></tr>
+<tr><td class="col-method">DALL-E</td><td>2.59</td><td>191.93</td><td>20.13</td></tr>
+<tr><td class="col-method">Txt2Img-MHN</td><td>5.99</td><td>102.44</td><td>20.27</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">RSDiff</td><td>7.22</td><td>66.49</td><td class="na">–</td></tr>
+<tr><td class="col-method">CRS-Diff</td><td>18.39</td><td>50.72</td><td>20.33</td></tr>
+<tr><td class="col-method">Text2Earth</td><td class="na">–</td><td>24.49</td><td>25.62</td></tr>
+<tr class="ours"><td class="col-method">GeoCore-9B (Ours)</td><td class="best">22.15</td><td class="best">18.82</td><td class="best">27.15</td></tr>
+</tbody>
+</table></div></div></div>
+<p class="table-note">GeoCore-9B is adapted to RSICD with LoRA; RSICD has no GSD or coordinates, so learned null geospatial embeddings are used in fine-tuning and inference.</p>
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1" hidden>
+<figure class="table-figure" id="table-2">
+<figcaption><span class="fig-label">Table 2.</span> Practical downstream adaptation results of GeoCore-9B. We evaluate cloud removal on Sen2-MTC and SAR-to-optical cross-modal translation on QXS-SAROPT. GeoCore-9B is adapted by simple fine-tuning and compared with task-specific or adapted baselines. <b>Bold</b> and <u>underline</u> indicate the best and second-best results, respectively.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-pair"><div><p class="table-subcap">(a) Cloud Removal</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (a) (scrolls horizontally)"><table class="results" id="tab-downstream-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Methods</th>
+<th scope="col" class="metric">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="4"><span class="group-label">Task-specific specialist methods</span></td></tr>
+<tr><td class="col-method">McGAN</td><td>17.448</td><td>0.513</td><td>0.447</td></tr>
+<tr><td class="col-method">Pix2Pix</td><td>16.985</td><td>0.455</td><td>0.535</td></tr>
+<tr><td class="col-method">DSen2-CR</td><td>16.827</td><td>0.534</td><td>0.446</td></tr>
+<tr><td class="col-method">STGAN</td><td>18.152</td><td>0.587</td><td>0.513</td></tr>
+<tr><td class="col-method">CTGAN</td><td>18.308</td><td>0.609</td><td>0.384</td></tr>
+<tr><td class="col-method">CR-TS-Net</td><td>18.585</td><td>0.615</td><td>0.342</td></tr>
+<tr><td class="col-method">PMAA</td><td>18.369</td><td>0.614</td><td>0.392</td></tr>
+<tr><td class="col-method">UnCRtainTS</td><td>18.770</td><td>0.631</td><td>0.333</td></tr>
+<tr><td class="col-method">DDPM-CR</td><td>18.742</td><td>0.614</td><td>0.329</td></tr>
+<tr><td class="col-method">DiffCR</td><td>19.150</td><td>0.671</td><td>0.291</td></tr>
+<tr><td class="col-method">EMRDM</td><td class="second">20.067</td><td class="second">0.709</td><td class="best">0.255</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="4"><span class="group-label">Foundation model adaptation</span></td></tr>
+<tr class="ours"><td class="col-method">GeoCore-9B (Ours)</td><td class="best">20.809</td><td class="best">0.799</td><td class="second">0.256</td></tr>
+</tbody>
+</table></div></div></div><div><p class="table-subcap">(b) SAR-to-Optical Image Translation</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (b) (scrolls horizontally)"><table class="results" id="tab-downstream-t1">
+<thead>
+<tr>
+<th scope="col" class="col-method">Methods</th>
+<th scope="col" class="metric">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">HF-SCC<span class="arrow">↑</span></th>
+<th scope="col" class="metric">SSIM<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="5"><span class="group-label">Task-specific or adapted baselines</span></td></tr>
+<tr><td class="col-method">Pix2Pix</td><td>196.89</td><td>0.454</td><td>0.0000</td><td>0.247</td></tr>
+<tr><td class="col-method">CycleGAN</td><td>195.38</td><td>0.455</td><td>0.0001</td><td>0.251</td></tr>
+<tr><td class="col-method">SAR-SMTNet</td><td>117.69</td><td>0.435</td><td>0.0003</td><td>0.260</td></tr>
+<tr><td class="col-method">CFCA-SET</td><td>79.06</td><td>0.406</td><td>0.0006</td><td>0.273</td></tr>
+<tr><td class="col-method">BBDM</td><td>65.15</td><td>0.522</td><td>0.0004</td><td>0.238</td></tr>
+<tr><td class="col-method">ControlNet</td><td>22.39</td><td>0.434</td><td>0.0001</td><td>0.257</td></tr>
+<tr><td class="col-method">Uni-ControlNet</td><td>22.48</td><td>0.437</td><td>0.0002</td><td>0.257</td></tr>
+<tr><td class="col-method">StegoGAN</td><td>85.60</td><td>0.391</td><td>0.0019</td><td>0.280</td></tr>
+<tr><td class="col-method">DGDM</td><td>147.23</td><td>0.634</td><td>0.0001</td><td>0.288</td></tr>
+<tr><td class="col-method">cBBDM</td><td>69.47</td><td>0.420</td><td>0.0023</td><td>0.304</td></tr>
+<tr><td class="col-method">C-DiffSET</td><td class="second">18.15</td><td class="best">0.293</td><td class="second">0.0108</td><td class="best">0.372</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="5"><span class="group-label">Foundation model adaptation</span></td></tr>
+<tr class="ours"><td class="col-method">GeoCore-9B (Ours)</td><td class="best">12.05</td><td class="second">0.377</td><td class="best">0.0163</td><td class="second">0.370</td></tr>
+</tbody>
+</table></div></div></div></div>
+<p class="table-note">GeoCore-9B is fine-tuned with LoRA while the pre-trained backbone stays frozen. On QXS-SAROPT, FID drops from 18.15 (<span class="nowrap">C-DiffSET</span>) to <b>12.05</b>.</p>
+</figure>
         </div>
       </div>
 
-      <aside class="scope"><div><p class="micro">Scope note</p><h3>RGB optical output, bounded by the frozen VAE.</h3></div><div><p>In SAR-to-optical translation, SAR is an input condition; the output remains RGB optical.</p><p>The natural-image VAE upper-bounds recoverable detail. Current audits support 256 × 256 tasks, not preservation of every EO microstructure.</p></div><figure><img src="static/assets/figure-vae-reconstruction.webp" alt="Frozen VAE reconstruction audit" loading="lazy"><figcaption>Frozen-VAE reconstruction on Git-10M.</figcaption></figure></aside>
-    </section>
+      <div class="disclosures">
+      <details class="disclosure" id="gsa-ablation" data-animate>
+        <summary>Geospatial Semantic Alignment ablation <span class="summary-sub">Figs.&nbsp;5&ndash;6, Table&nbsp;4</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/gsa_visual_full.jpg" data-title="Generations with and without the GSA loss">
+              <img src="static/images/gsa_visual_2000.webp"
+                   srcset="static/images/gsa_visual_1200.webp 1200w, static/images/gsa_visual_2000.webp 2000w"
+                   sizes="(min-width: 1304px) 1204px, calc(100vw - 68px)"
+                   width="2000" height="768" loading="lazy" decoding="async"
+                   alt="Six prompts generated by a model trained without the GSA loss (top row) and with it (bottom row): circular farmlands, a dense commercial area, houses by the beach, an industrial area with blue workshops, a parking lot and a roundabout. Without GSA the layouts are fragmented and the boundaries distorted.">
+            </a>
+            <figcaption><b>Without and with the GSA loss.</b> Top: <i>&mu;</i>&nbsp;=&nbsp;0, with fragmented textures and distorted boundaries; bottom: with GSA, cleaner layouts and sharper object boundaries.</figcaption>
+          </figure>
+          <div class="gsa-row">
+            <figure class="figure fid-fig">
+              <a class="figure-media figure-media--plain zoom" href="static/images/fid_curve.png" data-title="FID across training iterations with and without GSA">
+                <img src="static/images/fid_curve.png" width="1400" height="979" loading="lazy" decoding="async"
+                     alt="Line plot of FID on a 10K subset of Git-10M against training iterations. With the GSA loss, FID is lower at 50K, 150K and 300K; the run without GSA is also evaluated at 400K.">
+              </a>
+              <figcaption><b>Faster convergence.</b> FID on a 10K Git-10M subset across training iterations.</figcaption>
+            </figure>
+<figure class="table-figure" id="table-4">
+<figcaption><span class="fig-label">Table 4.</span> Matched downstream comparison with and without GSA. All settings other than the pre-training GSA weight are held fixed. HF-SCC uses the corrected, baseline-consistent definition.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (scrolls horizontally)"><table class="results" id="tab-gsa-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Task</th>
+<th scope="col" class="metric">w/ GSA (<i>μ</i> = 0.5)</th>
+<th scope="col" class="metric">w/o GSA (<i>μ</i> = 0)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="3"><span class="group-label">RSICD text-to-image</span></td></tr>
+<tr><td class="col-method">IS</td><td class="best">22.15</td><td>19.16</td></tr>
+<tr><td class="col-method">FID</td><td class="best">18.82</td><td>28.43</td></tr>
+<tr><td class="col-method">CLIP</td><td class="best">27.15</td><td>24.21</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="3"><span class="group-label">QXS-SAROPT translation</span></td></tr>
+<tr><td class="col-method">FID</td><td class="best">12.05</td><td>19.92</td></tr>
+<tr><td class="col-method">LPIPS</td><td class="best">0.377</td><td>0.436</td></tr>
+<tr><td class="col-method">HF-SCC</td><td class="best">0.0163</td><td>0.0098</td></tr>
+<tr><td class="col-method">SSIM</td><td class="best">0.370</td><td>0.324</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="3"><span class="group-label">Sen2-MTC cloud removal</span></td></tr>
+<tr><td class="col-method">PSNR</td><td class="best">20.809</td><td>19.553</td></tr>
+<tr><td class="col-method">SSIM</td><td class="best">0.799</td><td>0.683</td></tr>
+<tr><td class="col-method">LPIPS</td><td class="best">0.256</td><td>0.284</td></tr>
+</tbody>
+</table></div></div></div>
+<p class="table-note">GSA improves every reported metric: FID falls by 9.61 points on RSICD and 7.87 on QXS-SAROPT, and Sen2-MTC PSNR rises by 1.256&nbsp;dB.</p>
+</figure>
+          </div>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="vae" data-animate>
+        <summary>Frozen VAE on EO data <span class="summary-sub">Table&nbsp;3, Fig.&nbsp;8</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-3">
+<figcaption><span class="fig-label">Table 3.</span> Frozen-VAE encode–decode fidelity on the pre-training and downstream domains. SAR intensities are replicated from one channel to three channels before VAE encoding.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (scrolls horizontally)"><table class="results" id="tab-vae-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Domain</th>
+<th scope="col" class="metric"><i>n</i></th>
+<th scope="col" class="metric">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">HF-SCC<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Git-10M RGB</td><td>100,000</td><td>31.48</td><td>0.931</td><td class="na">–</td><td>0.710</td></tr>
+<tr><td class="col-method">QXS-SAROPT optical</td><td>2,000</td><td>38.93</td><td>0.968</td><td>0.011</td><td>0.766</td></tr>
+<tr><td class="col-method">QXS-SAROPT SAR (1ch → 3ch)</td><td>2,000</td><td>28.77</td><td>0.932</td><td>0.023</td><td>0.782</td></tr>
+<tr><td class="col-method">Sen2-MTC cloudy</td><td>687</td><td>35.48</td><td>0.943</td><td>0.013</td><td>0.416</td></tr>
+<tr><td class="col-method">Sen2-MTC cloud-free</td><td>687</td><td>35.58</td><td>0.924</td><td>0.016</td><td>0.564</td></tr>
+</tbody>
+</table></div></div></div>
+<p class="table-note">HF-SCC from 0.416 to 0.782 on the downstream domains supports the frozen VAE for the evaluated 256&thinsp;&times;&thinsp;256 tasks; the lower Sen2-MTC values expose a domain-dependent limitation.</p>
+</figure>
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/vae_recon_full.jpg" data-title="VAE reconstruction on EO data">
+              <img src="static/images/vae_recon_2000.webp"
+                   srcset="static/images/vae_recon_1200.webp 1200w, static/images/vae_recon_2000.webp 2000w"
+                   sizes="(min-width: 1304px) 1204px, calc(100vw - 68px)"
+                   width="2000" height="654" loading="lazy" decoding="async"
+                   alt="Six Git-10M satellite images (top row) and their reconstructions by the frozen pretrained VAE (bottom row): farmland, fields along a river, greenhouses, a residential grid, an orchard by a road, and a roundabout next to a large roof.">
+            </a>
+            <figcaption><b>VAE reconstruction.</b> Top: original Git-10M images; bottom: reconstructions by the frozen pretrained VAE, without EO-specific fine-tuning.</figcaption>
+          </figure>
+          </div>
+        </div></div>
+      </details>
+      <details class="disclosure" id="analyses" data-animate>
+        <summary>Metadata interventions and feature probes <span class="summary-sub">Tables&nbsp;5&ndash;6</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-5">
+<figcaption><span class="fig-label">Table 5.</span> Paired metadata interventions. “Orig.” and “suppl.” score a shuffled-condition output against its original and newly supplied metadata, respectively. FID values support comparisons only within this protocol.</figcaption>
+<div class="table-meta"><div class="table-legend"><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 5 (scrolls horizontally)"><table class="results" id="tab-metadata-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Condition</th>
+<th scope="col" class="metric">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">GSD-bin acc.<span class="arrow">↑</span></th>
+<th scope="col" class="metric">15°-region acc.<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Full metadata</td><td>48.32</td><td>0.555</td><td>0.485</td></tr>
+<tr><td class="col-method">GSD null</td><td>54.96</td><td>0.293</td><td>0.460</td></tr>
+<tr><td class="col-method">GSD shuffled</td><td>49.46</td><td>0.286 (orig.) / 0.376 (suppl.)</td><td>0.424</td></tr>
+<tr><td class="col-method">Coordinates null</td><td>68.18</td><td>0.261</td><td>0.175</td></tr>
+<tr><td class="col-method">Coordinates shuffled</td><td>51.20</td><td>0.492</td><td>0.110 (orig.) / 0.366 (suppl.)</td></tr>
+</tbody>
+</table></div></div></div>
+<p class="table-note">1,000 Git-10M samples with fixed caption, seed and sampler. Nulling the coordinates lowers region accuracy from 0.485 to 0.175; with shuffled coordinates, outputs agree more with the supplied regions than with the original ones (0.366 versus 0.110). In a global-feature near-duplicate test against all 10,503,567 pre-training images, none of 500 coordinate-only generations exceeds the threshold.</p>
+</figure>
 
-    <section class="section resources" id="resources"><div class="shell">
-      <header class="section-title"><p class="section-tag"><b>06</b>Resources</p><div><h2>Read, reproduce, and build on GeoCore-9B.</h2></div></header>
-      <div class="resource-links">
-        <a href="static/assets/GeoCore-9B-paper.pdf"><span>Manuscript</span><h3>Paper PDF</h3><p>Method, controlled analyses, results, and limitations.</p><b>↗</b></a>
-        <a href="https://github.com/KAIST-VICLab/GeoCore-9B"><span>Implementation</span><h3>GitHub repository</h3><p>Inference, models, evaluation, configurations, and scripts.</p><b>↗</b></a>
-        <a href="https://huggingface.co/JeonghyeokDo/GeoCore-9B"><span>Checkpoint</span><h3>Hugging Face</h3><p>Model card, configuration, and released weights.</p><b>↗</b></a>
+<figure class="table-figure" id="table-6">
+<figcaption><span class="fig-label">Table 6.</span> Frozen-feature linear probes on EuroSAT, LoveDA, and BRIGHT. The train/validation sizes are shown in parentheses.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 6 (scrolls horizontally)"><table class="results" id="tab-probes-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Task (train/val)</th>
+<th scope="col" class="col-venue">Metric</th>
+<th scope="col" class="metric"><i>τ</i> = .25</th>
+<th scope="col" class="metric"><i>τ</i> = .50</th>
+<th scope="col" class="metric"><i>τ</i> = .75</th>
+<th scope="col" class="metric">DINOv3-Sat</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">EuroSAT (12,960/3,240)</td><td class="col-venue">Top-1</td><td>97.3%</td><td>97.5%</td><td>97.3%</td><td class="best">98.0%</td></tr>
+<tr><td class="col-method">LoveDA (3,000/1,200)</td><td class="col-venue">mIoU</td><td>0.328</td><td>0.382</td><td>0.282</td><td class="best">0.451</td></tr>
+<tr><td class="col-method">BRIGHT (2,500/349 pairs)</td><td class="col-venue">mIoU</td><td>0.402</td><td class="best">0.482</td><td>0.381</td><td>0.442</td></tr>
+</tbody>
+</table></div></div></div>
+<p class="table-note">One linear layer on frozen DiT features. At <i>&tau;</i>&nbsp;=&nbsp;0.50, GeoCore-9B is within 0.5 top-1 points of DINOv3-Sat on EuroSAT and exceeds it on BRIGHT (0.482 versus 0.442); DINOv3-Sat is also the GSA teacher.</p>
+</figure>
+          </div>
+        </div></div>
+      </details>
       </div>
-      <div class="code-grid">
-        <article class="code"><header><div><span>Quick start</span><h3>Generate from text and geo metadata.</h3></div><button class="copy" data-copy-target="#quick-start" aria-label="Copy inference command">Copy</button></header><pre><code id="quick-start">git clone https://github.com/KAIST-VICLab/GeoCore-9B
-cd GeoCore-9B &amp;&amp; pip install -r requirements.txt
+    </div>
+  </section>
 
-# frozen Flux.2 autoencoder, Apache-2.0 copy (not the FLUX.2-dev one)
-huggingface-cli download black-forest-labs/FLUX.2-klein-base-4B \
-    vae/diffusion_pytorch_model.safetensors --local-dir FLUX.2-klein-base-4B
+  <!-- Method (compact) -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">Geo-aware conditioning, training-only alignment</h2>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/framework_full.jpg" data-title="GeoCore-9B framework">
+          <img src="static/images/framework_1600.webp"
+               srcset="static/images/framework_1200.webp 1200w, static/images/framework_1600.webp 1600w, static/images/framework_2000.webp 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="724" loading="lazy" decoding="async"
+               alt="GeoCore-9B framework. Training: an EO image is encoded by a frozen VAE encoder and noised along a linear trajectory; a DiT predicts the velocity under the Flow Matching loss. Local text tokens from a frozen text encoder join the image tokens; a global text embedding, the timestep and the metadata (GSD, latitude, longitude) are summed into one conditioning vector for AdaLN modulation. A frozen geospatial feature extractor (teacher) supervises the k-th DiT block through a projection head and the Geospatial Semantic Alignment loss. Inference: an ODE solver and the frozen VAE decoder.">
+        </a>
+        <figcaption><b>GeoCore-9B framework.</b> A Flow Matching DiT conditioned on text tokens and geospatial metadata; the teacher and projection head are used in training only.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">01</span><b>A 9B Flow Matching DiT, from scratch.</b> 32 DiT blocks in the latent space of a pretrained VAE, trained on Git-10M.</li>
+        <li><span class="kp-num">02</span><b>Text and geospatial metadata.</b> T5-XXL tokens join the image tokens; CLIP text, GSD, latitude and longitude embeddings modulate the DiT through AdaLN.</li>
+        <li><span class="kp-num">03</span><b>Geospatial Semantic Alignment.</b> A frozen DINOv3-Sat teacher supervises block-8 features during training only, with no inference overhead.</li>
+      </ol>
+    </div>
+  </section>
 
-python inference.py \
-    --ckpt /path/to/GeoCore-9B --vae FLUX.2-klein-base-4B/vae/diffusion_pytorch_model.safetensors \
-    --prompt "A satellite view of a highly dense urban city with towering skyscrapers" \
-    --lon 126.97 --lat 37.56 --res 0.0 \
-    --num-samples 4 --out samples/</code></pre></article>
-        <article class="code citation"><header><div><span>Citation</span><h3>Cite GeoCore-9B.</h3></div><button class="copy" data-copy-target="#bibtex" aria-label="Copy BibTeX">Copy</button></header><pre><code id="bibtex">@inproceedings{do2026geocore,
-  title     = {GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation},
-  author    = {Do, Jeonghyeok and Kim, Munchurl},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2026}
-}</code></pre></article>
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+<pre><code id="bibtex-code">@inproceedings{do2026geocore,
+  title={GeoCore-9B: Towards Geo-Aware Generative Foundation Models in Earth Observation},
+  author={Do, Jeonghyeok and Kim, Munchurl},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2026}
+}</code></pre>
       </div>
-      <div class="ack"><span>Acknowledgment</span><p>This work was supported in part by the National Research Foundation of Korea (NRF) grant funded by the Korean government (MSIT) under the Sejong Science Fellowship Program (RS-2026-25484549) for the project "Visualizing the Invisible Earth: A Reliability-Aware All-in-One SAR Analysis Framework with Foundation Models," and in part by the "Advanced GPU Utilization Support Program" funded by the Government of the Republic of Korea (Ministry of Science and ICT).</p></div>
-    </div></section>
-  </main>
+    </div>
+  </section>
 
-  <footer><div class="shell footer-inner"><div class="footer-brand"><img src="static/assets/geocore-logo-mark-trimmed.png" alt=""><div><strong>GeoCore-9B</strong><span>KAIST Video and Image Computing Lab · 2026</span></div></div><p>Website template inspired by <a href="https://nerfies.github.io/">Nerfies</a>. Source available on <a href="https://github.com/KAIST-VICLab/kaist-viclab.github.io">GitHub</a>.</p><a href="#top">Back to top ↑</a></div></footer>
-  <script src="static/field-journal.js"></script>
+</main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: Remote sensing">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">Remote sensing</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/C-DiffSET_site/"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></a></li>
+      <li class="lineage-stage"><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></span></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/GeoSET_site/"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></a><a class="lineage-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.png" width="81" height="84" alt="" loading="lazy"><span class="wordmark">GeoCore<span>-9B</span></span></span>&nbsp;&middot; NeurIPS 2026&nbsp;&middot; Korea Advanced Institute of Science and Technology (KAIST)</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="#" data-soon>Paper</a>
+      <a href="https://github.com/KAIST-VICLab/GeoCore-9B" target="_blank" rel="noopener">Code</a>
+      <a href="https://huggingface.co/JeonghyeokDo/GeoCore-9B" target="_blank" rel="noopener">Weights</a>
+      <a href="mailto:ehwjdgur0913@kaist.ac.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
+</footer>
+
 </body>
 </html>

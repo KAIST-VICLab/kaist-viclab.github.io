@@ -1,0 +1,134 @@
+/* ==========================================================================
+   SOfA project page: brand tokens and page components.
+   The shared components (layout, nav, hero, section heads, figures, tabs,
+   tables, disclosures, key points, lightbox, BibTeX, footer) are in
+   family.css, which this file follows. Brand colours come from the logo:
+   ink #1C2738, SOfA red #CD3719 ("OfA"), SOfA green #349028 ("S").
+   ========================================================================== */
+
+/* ---------- 1. Brand tokens ---------------------------------------------- */
+:root {
+  --accent: #CD3719;           /* SOfA red (logo "OfA"), 5.0:1 on white */
+  --accent-text: #CD3719;      /* small text, white-on-colour fills (= --accent here) */
+  --accent-strong: #A42B12;    /* hover */
+  --accent-soft: #FCF3F1;      /* tinted fills */
+  --accent-line: #F3CDC6;      /* tinted borders */
+  --brand-s: #349028;          /* SOfA green (logo "S") */
+  --logo-k: 1;                 /* hero logo height factor (wordmark = GeoSET wordmark) */
+}
+
+/* wordmark (nav, footer): the logo's two colours, green "S" + red "OfA" */
+.wordmark { color: var(--brand-s); }
+/* hero title: "One for All" in the logo's "OfA" red (.hero-accent), "Skeleton" in the logo's "S" green */
+.hero-accent-s { color: var(--brand-s); }
+
+/* the title is longer than the other family titles: two lines on wide screens */
+@media (min-width: 1000px) { .hero-title { max-width: 34ch; } }
+/* phones: the three names fit on one line from 375 to 414 px (the family's 22 px gap drops the last name by 1-15 px) */
+@media (max-width: 420px) { .hero-authors { column-gap: 12px; } }
+
+/* ---------- 2. Headline figure (paper Fig. 1) ---------------------------- */
+/* the concept figure has large type, so it stops at the content width */
+.teaser .figure-media { max-width: min(100%, var(--w-content)); margin-inline: auto; }
+.teaser figcaption { max-width: 100ch; }
+/* carousel slides: large, but never taller than the viewport, so the whole figure can be seen at once */
+.fig-carousel .slide[style*="--ar"] .figure-media {
+  max-width: min(100%, max(var(--min-w, 760px), calc((100vh - 150px) * var(--ar))));
+  margin-inline: auto;
+}
+@supports (height: 100svh) {
+  .fig-carousel .slide[style*="--ar"] .figure-media {
+    max-width: min(100%, max(var(--min-w, 760px), calc((100svh - 150px) * var(--ar))));
+  }
+}
+/* Fig. 5 (the NTU protocol diagram) has type as large as the teaser's, so it also stops at the content width */
+.fig-carousel #fig-5 .figure-media {
+  max-width: min(100%, var(--w-content), max(760px, calc((100vh - 150px) * var(--ar))));
+}
+@supports (height: 100svh) {
+  .fig-carousel #fig-5 .figure-media {
+    max-width: min(100%, var(--w-content), max(760px, calc((100svh - 150px) * var(--ar))));
+  }
+}
+
+/* ---------- 3. Paper figures: prev, thumbnail strip, next ----------------- */
+/* horizontal scroller with edge fades (fade classes set by main.js) */
+.hscroll {
+  position: relative;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.hscroll::-webkit-scrollbar { display: none; }
+.carousel-nav { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 18px; }
+.carousel-nav .thumbs { flex: 0 1 auto; min-width: 0; }
+.thumbs { display: flex; gap: 10px; padding: 3px; scroll-padding-inline: 3px; }
+.thumb {
+  flex: 0 0 156px;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 5px 5px 7px; border-radius: var(--radius); text-align: left;
+  background: var(--bg); border: 1px solid var(--border);
+  transition: border-color .15s, box-shadow .15s;
+  scroll-snap-align: start;
+}
+.thumb:hover { border-color: var(--border-strong); }
+.thumb img {
+  width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain;
+  border-radius: var(--radius-s); background: #fff; border: 1px solid var(--border);
+}
+.thumb span {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  padding: 0 3px; font-size: .8rem; line-height: 1.35; color: var(--muted); font-weight: 500;
+}
+.thumb span b { color: var(--ink); font-weight: 700; margin-right: 2px; }
+.thumb[aria-selected="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+@media (max-width: 640px) {
+  .carousel-nav .carousel-btn { display: none; }
+  .thumb { flex-basis: 136px; }
+}
+
+/* ---------- 4. Tables: tab row, sub-tables, pairs, grids, SOfA rows ------- */
+.table-subcap { margin: 0 0 8px; font: 600 .875rem/1.4 var(--font-sans); color: var(--text); }
+.table-pair { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); align-items: start; margin-top: 4px; }
+@media (min-width: 760px) { .table-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 28px; } }
+/* two separate table figures side by side (disclosures) */
+.table-grid { display: grid; gap: clamp(28px, 3.5vw, 40px) 28px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .table-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.results-note { margin-top: 14px; }
+.table-figure .table-note { margin-top: 10px; }
+
+/* the paper's "Sensor-Unified" category row carries the SOfA tint */
+.results tr.group--ours td { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+/* cross / check marks (Tables 1 and 5) */
+.results .mark-x { color: var(--faint); }
+.results .mark-ok { color: var(--brand-s); font-weight: 700; }
+/* Table 1: the SOfA column */
+.results .col-ours { background: var(--accent-soft); color: var(--text); }
+.results thead th.col-ours { color: var(--accent-text); }
+.results tbody tr:not(.group):hover td.col-ours { background: color-mix(in srgb, var(--accent) 10%, #fff); }
+.results--text td { white-space: nowrap; }
+/* compact tables (Tables 5 and 13) keep their columns close enough to read across */
+#table-5, #table-13 { width: 100%; max-width: 860px; margin-inline: auto; }
+#table-14 { width: 100%; max-width: 960px; margin-inline: auto; }
+/* Tables 3 and 4 are pairs of method + one value: keep each table narrow enough to read across (left-aligned under the caption) */
+#table-3 .table-pair, #table-4 .table-pair { max-width: 880px; }
+/* Table 5's full-model row starts with a check mark, not a method cell: give it the SOfA bar too */
+.results tr.ours > td:first-child:not(.col-method) { box-shadow: inset 3px 0 0 var(--ours-bar); }
+/* disclosure titles: no single-word second line; sub-labels ("Tables 9-12") never break inside */
+.disclosure > summary { text-wrap: balance; }
+.summary-sub { white-space: nowrap; }
+/* no single-word last lines in key points, captions and notes (family.css applies this to p only) */
+.keypoints li, .figure > figcaption, .table-figure > figcaption, .table-note { text-wrap: pretty; }
+
+/* ---------- 5. Print ------------------------------------------------------ */
+@media print {
+  .topnav, .copy-btn, .carousel-nav .carousel-btn, .skip-link { display: none !important; }
+  .section { padding-block: 24px; }
+}
+
+/* ---------- BibTeX: prior-work entry (SLiM) under the paper's own entry */
+.bibtex + .bibtex { margin-top: 16px; }
+.bibtex-label { margin-right: auto; font: 600 .8125rem/1.35 var(--font-sans); color: var(--muted); }
+.bibtex-label a { color: var(--accent-text); text-decoration: none; }
+.bibtex-label a:hover { text-decoration: underline; }
+.bibtex pre { white-space: pre-wrap; overflow-wrap: anywhere; }
