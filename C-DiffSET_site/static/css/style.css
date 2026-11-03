@@ -281,3 +281,9 @@ dialog.cmp { width: min(max(560px, calc(var(--cmp-w, 400px) + 48px)), calc(100% 
 
 /* ---------- 7. BibTeX: the long title line wraps instead of scrolling (as the same entry on ReFlowSET) */
 .bibtex pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* follow-up entries (ReFlowSET, GeoSET) under the paper's own entry */
+.bibtex + .bibtex { margin-top: 16px; }
+.bibtex-label { margin-right: auto; font: 600 .8125rem/1.35 var(--font-sans); color: var(--muted); }
+.bibtex-label a { color: var(--accent-text); text-decoration: none; }
+.bibtex-label a:hover { text-decoration: underline; }
+@media (pointer: coarse) { .bibtex-label a { display: inline-block; padding: 12px 0; margin: -12px 0; } }

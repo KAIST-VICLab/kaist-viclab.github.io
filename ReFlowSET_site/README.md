@@ -1,7 +1,7 @@
 # ReFlowSET project page
 
 Source of the project page for **ReFlowSET: Representation-Aligned Latent Flow Matching for SAR-to-EO Image Translation**
-(Jeonghyeok Do, Seungchul Lee, Munchurl Kim; KAIST and Stellarvision Inc.; arXiv preprint, 2026).
+(Jeonghyeok Do, Seungchul Lee, Munchurl Kim; KAIST and Stellarvision Inc.; IEEE GRSL 2026).
 
 - Live page: https://kaist-viclab.github.io/ReFlowSET_site/
 - Code repository: https://github.com/KAIST-VICLab/ReFlowSET
