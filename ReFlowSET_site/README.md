@@ -32,7 +32,7 @@ static/css/style.css      ReFlowSET brand colours (top of the file) and the gall
 static/js/main.js         interactive gallery (tile strips in carousels), comparison slider, table view toggle
 static/images/            figures (web size + *_full for the lightbox), og.jpg (social preview) and the logo files
 static/tiles/             per-method image tiles of the qualitative comparison for the interactive gallery
-static/paper/             the paper (PDF)
+static/paper/             the preprint (PDF), no longer linked: the Paper buttons open IEEE Xplore
 ```
 
 ## Logo
@@ -44,7 +44,7 @@ and the logo's colours (ink `#1C2738`, blue `#0055B4`).
 
 ## Links
 
-- Paper: `static/paper/ReFlowSET.pdf`
+- Paper: https://ieeexplore.ieee.org/document/11780259 (DOI 10.1109/LGRS.2026.3750856)
 - arXiv: https://arxiv.org/abs/2609.00968
 - Code: https://github.com/KAIST-VICLab/ReFlowSET
 - Models: https://huggingface.co/JeonghyeokDo/ReFlowSET (checkpoints of the retrained baselines:
