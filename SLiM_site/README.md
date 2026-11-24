@@ -39,8 +39,9 @@ The SLiM logo is included: `static/images/logo.webp` is the hero lockup (the log
 browser and home-screen icons. The page title and headings use Outfit (loaded from Google Fonts), and the logo's colours
 (ink `#1C2738`, blue `#1692BA`, orange `#EA5E3A`).
 
-## Paper link
+## Links
 
-The NeurIPS paper is not linked yet. Until it is, the Paper button and the navigation bar's Paper link carry a `data-soon`
-attribute: they are shown as pending (with a "soon" badge) and do not navigate, with or without JavaScript. To publish the
-link, set the real URL as their `href` and remove `data-soon` in `index.html`; no CSS or JavaScript file needs editing.
+- Paper: https://openreview.net/forum?id=KUcwclmRbm (NeurIPS 2026, OpenReview)
+- arXiv: https://arxiv.org/abs/2603.10648
+- Code: https://github.com/KAIST-VICLab/SLiM
+- Models: https://huggingface.co/JeonghyeokDo/SLiM

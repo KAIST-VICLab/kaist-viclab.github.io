@@ -43,9 +43,9 @@ The GeoCore-9B logo is included: `static/images/logo.svg` is the hero title (the
 `apple-touch-icon.png` are the browser and home-screen icons. The page title and headings use the wordmark's typeface,
 Outfit (loaded from Google Fonts), and the mark's colours (forest green `#0C4A32`, red `#C6421B`).
 
-## Paper link
+## Links
 
-The NeurIPS paper link is not public yet. Until it is, the Paper button, the navigation bar's Paper link and the footer's
-Paper link carry a `data-soon` attribute and `href="#"`; such a link is shown as pending (the Paper button carries a
-"soon" badge) and does not navigate, with or without JavaScript. Once the paper is online, removing `data-soon` and
-setting the real `href` on these three links in `index.html` is enough; no CSS or JavaScript file needs editing.
+- Paper: https://openreview.net/forum?id=gS9eEA4mRE (NeurIPS 2026, OpenReview)
+- arXiv: https://arxiv.org/abs/2608.01896
+- Code: https://github.com/KAIST-VICLab/GeoCore-9B
+- Weights: https://huggingface.co/JeonghyeokDo/GeoCore-9B
