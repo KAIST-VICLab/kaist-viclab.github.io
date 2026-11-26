@@ -53,3 +53,6 @@
 [submodule "AVSR-Diff"]
 	path = AVSR-Diff
 	url = https://github.com/GeunhyukYouk/avsr-diff-site.git
+[submodule "taco-zero-site"]
+	path = taco-zero-site
+	url = https://github.com/sateodoro/taco-zero-site.git
