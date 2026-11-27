@@ -16,8 +16,8 @@
       <tr style="padding:0px">
         <td style="padding:0px">
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr style="padding:0px">
-              <td style="padding:2.5%;width:63%;vertical-align:middle">
+            <tr class="lab-head" style="padding:0px">
+              <td class="lab-intro" style="padding:2.5%;width:63%;vertical-align:middle">
                 <p class="name" style="text-align: center;">
                   KAIST VICLab
                 </p>
@@ -33,7 +33,7 @@
                   <a href="https://github.com/KAIST-VICLab/">Github</a>
                 </p>
               </td>
-              <td style="padding:2.5%;width:37%;max-width:37%">
+              <td class="lab-photo" style="padding:2.5%;width:37%;max-width:37%">
                 <a href="images/viclab_profile.png"><img style="width:100%;max-width:100%;object-fit: cover; border-radius: 50%;" alt="profile photo" src="images/viclab_profile.png" class="hoverZoomLink"></a>
               </td>
             </tr>
@@ -976,6 +976,23 @@
           } else {
             row.style.display = 'none';
           }
+        });
+      }
+    </script>
+
+    <script>
+      // Touch screens have no hover: there a row's hover video would take the first tap (iOS shows
+      // the video, and only the second tap opens the link), so the rows lose their hover handlers
+      // and the videos stay off (stylesheet.css hides them).
+      if (window.matchMedia && window.matchMedia('(hover: none)').matches) {
+        document.querySelectorAll('tr[onmouseover], tr[onmouseout]').forEach(function (tr) {
+          tr.removeAttribute('onmouseover');
+          tr.removeAttribute('onmouseout');
+        });
+        document.querySelectorAll('.two video').forEach(function (v) {
+          v.removeAttribute('autoplay');
+          v.preload = 'none';
+          v.pause();
         });
       }
     </script>

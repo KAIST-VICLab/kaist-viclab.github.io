@@ -196,3 +196,46 @@ span.highlight {
     font-size: 0.8em;
   }
 }
+/* ---------- Touch screens and phones -------------------------------------- */
+/* touch screens: no hover, so no hover videos (index.html also takes the rows' hover handlers
+   away there, so a first tap opens a paper's link instead of playing its video) */
+@media (hover: none) {
+  .two { display: none; }
+}
+
+/* Phones: one column. The page is laid out in two-column tables (the lab photo beside the
+   introduction, a thumbnail beside each paper); below 600 px those columns would squeeze the text
+   into a narrow strip, so there every table is one column: the lab's name, its photo and the
+   introduction; each paper's thumbnail above its text, a hairline between papers. The year
+   filter keeps working: the display: none it sets on a row wins over this sheet. */
+@media (max-width: 600px) {
+  body { margin: 0; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body, td, th, tr, p, a, strong { font-size: 15px; }
+  p { line-height: 1.55; }
+  table, tbody, tr, td { display: block; }
+  table { width: 100% !important; }
+  td { width: auto !important; max-width: none !important; }
+
+  /* the head: name, photo, introduction, links */
+  .lab-head { display: flex; flex-direction: column; padding: 0 16px !important; }
+  .lab-intro { display: contents; }
+  .lab-head .name { order: -2; padding-top: 28px; font-size: 30px; }
+  .lab-photo { order: -1; padding: 16px 0 6px !important; text-align: center; }
+  .lab-photo img { width: 72% !important; max-width: 280px !important; }
+  .lab-head p { margin: 10px 0; }
+
+  /* the research text */
+  h2 { font-size: 22px; }
+
+  /* the papers */
+  tr[data-year] { padding: 24px 16px; border-top: 1px solid #ececec; }
+  tr[data-year] > td { padding: 0 !important; }
+  .one { width: 100%; height: auto; margin: 0 0 14px; }
+  .one img { display: block; width: 100%; height: auto; max-height: 240px; object-fit: contain; }
+  .papertitle { display: inline-block; margin-bottom: 4px; font-size: 16px; line-height: 1.35; }
+  tr[data-year] p { margin: 10px 0 0; }
+
+  /* the credit line at the foot: centred, its link at the size of its text */
+  p[style*="font-size:small"] { padding: 0 16px; text-align: center !important; }
+  p[style*="font-size:small"] a { font-size: inherit; }
+}
